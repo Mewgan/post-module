@@ -1,0 +1,49 @@
+{% for post in posts %}
+
+    {% set params = {} %}
+    {% for arg in args %}
+        {% set params = params|merge({(arg.route):attribute(post,arg.column)}) %}
+    {% endfor %}
+
+    <div class="row">
+        <article>
+            <div class="col-md-4">
+                <img src="{{ asset(post.thumbnail.path) }}" alt="" style="width:100%;">
+            </div>
+            <div class="col-md-8">
+                {% set link = {'name' : route, 'params': params } %}
+
+                <h2><a v-link="{{ link| json_encode }}">{{ post.title }}</a></h2>
+                <p>{{ post.description }}</p>
+                <em>{{ post.updated_at | date("d/m/Y") }}</em>
+            </div>
+        </article>
+    </div>
+{% endfor %}
+
+{% if pagination.pages_count > 1 %}
+    <div class="row">
+        <ul class="pagination center-align">
+            {% if pagination.page>1 %}
+                <li class="waves-effect"><a href="?page=1"><<</a></li>
+                <li class="waves-effect"><a href="?page={{ pagination.page-1 }}"><</a></li>
+            {% endif %}
+            {% for p in range(max(pagination.page-4, 1),min(pagination.page+4, pagination.pages_count)) %}
+                <li class="{% if p == pagination.page %}active{% else %}waves-effect{% endif %}"><a class="current-page"
+                                                                                                    href="?page={{ p }}">{{ p }}</a>
+                </li>
+            {% endfor %}
+            {% if pagination.page<pagination.pages_count %}
+                <li class="waves-effect"><a href="?page={{ pagination.page+1 }}">></a></li>
+                <li class="waves-effect"><a href="?page={{ pagination.pages_count }}">>></a></li>
+            {% endif %}
+        </ul>
+    </div>
+{% endif %}
+
+{% block js %}
+    <script>
+
+
+    </script>
+{% endblock %}
