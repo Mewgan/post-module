@@ -49,15 +49,18 @@ class LoadPostTemplate extends AbstractFixture implements OrderedFixtureInterfac
     public function load(ObjectManager $manager)
     {
         foreach($this->data as $key => $data){
-            $template = new Template();
+            $template = (Template::where('name',$data['name'])->count() == 0)
+                ? new Template()
+                : Template::findOneByName($data['name']);
             $template->setName($data['name']);
             $template->setTitle($data['title']);
             $template->setContent($data['content']);
             $template->setCategory($data['category']);
             $template->setScope($data['scope']);
             $template->setType($data['type']);
-            $this->addReference($key,$template);
+            $this->addReference($key, $template);
             $manager->persist($template);
+
         }
         $manager->flush();
     }
@@ -69,6 +72,6 @@ class LoadPostTemplate extends AbstractFixture implements OrderedFixtureInterfac
      */
     public function getOrder()
     {
-        return 20;
+        return 1;
     }
 }

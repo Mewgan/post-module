@@ -15,12 +15,15 @@ class LoadPostModuleCategory extends AbstractFixture implements OrderedFixtureIn
         'slug' => 'post',
         'description' => 'Module pour afficher des articles',
         'icon' => 'fa fa-newspaper-o fa-4x',
-        'author' => 'S.Sumugan'
+        'author' => 'S.Sumugan',
+        'version' => '0.1'
     ];
 
     public function load(ObjectManager $manager)
     {
-        $cat = new ModuleCategory();
+        $cat = (ModuleCategory::where('name',$this->data['name'])->count() == 0)
+            ? new ModuleCategory()
+            : ModuleCategory::findOneByName($this->data['name']);
         $cat->setName($this->data['name']);
         $cat->setTitle($this->data['title']);
         $cat->setSlug($this->data['slug']);
@@ -40,6 +43,6 @@ class LoadPostModuleCategory extends AbstractFixture implements OrderedFixtureIn
      */
     public function getOrder()
     {
-        return 21;
+        return 2;
     }
 }

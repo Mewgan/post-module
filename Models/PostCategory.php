@@ -21,7 +21,7 @@ class PostCategory extends Model
      */
     protected $id;
     /**
-     * @Column(type="string")
+     * @Column(type="string", unique=true)
      */
     protected $name;
     /**

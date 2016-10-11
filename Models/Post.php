@@ -177,9 +177,9 @@ class Post extends Model
     }
 
     /**
-     * @param PostCategory $categories
+     * @param ArrayCollection $categories
      */
-    public function setPostCategories(PostCategory $categories)
+    public function setPostCategories(ArrayCollection $categories)
     {
         $this->categories = $categories;
     }

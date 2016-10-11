@@ -6,6 +6,7 @@ use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Jet\Models\Media;
+use Jet\Models\Website;
 
 class LoadPostMedia extends AbstractFixture implements OrderedFixtureInterface
 {
@@ -33,12 +34,14 @@ class LoadPostMedia extends AbstractFixture implements OrderedFixtureInterface
     public function load(ObjectManager $manager)
     {
         foreach($this->data as $data){
-            $media = new Media();
+            $media = (Media::where('path',$data['path'])->count() == 0)
+                ? new Media()
+                : Media::findOneByPath($data['path']);
             $media->setTitle($data['title']);
             $media->setPath($data['path']);
             $media->setType($data['type']);
             $media->setSize($data['size']);
-            if(isset($data['website']))$media->setWebsite($this->getReference($data['website']));
+            if(isset($data['website']))$media->setWebsite(Website::findOneByDomain($data['website']));
             $media->setAccessLevel($data['access_level']);
             $media->setAlt($data['alt']);
             $manager->persist($media);
@@ -54,6 +57,6 @@ class LoadPostMedia extends AbstractFixture implements OrderedFixtureInterface
      */
     public function getOrder()
     {
-        return 23;
+        return 4;
     }
 }

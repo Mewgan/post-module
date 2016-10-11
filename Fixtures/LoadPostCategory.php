@@ -5,6 +5,8 @@ namespace Jet\Modules\Post\Fixtures;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Jet\Models\Website;
+use Jet\Modules\Post\Models\Post;
 use Jet\Modules\Post\Models\PostCategory;
 
 class LoadPostCategory extends AbstractFixture implements OrderedFixtureInterface
@@ -13,22 +15,25 @@ class LoadPostCategory extends AbstractFixture implements OrderedFixtureInterfac
         [
             'name' => 'Service',
             'slug' => 'service',
-            'website' => 'Aster Website',
+            'website' => 'http://aster-society.in-salon.dev',
         ],
         [
             'name' => 'Actualité',
             'slug' => 'actualite',
-            'website' => 'Aster Website',
+            'website' => 'http://aster-society.in-salon.dev',
         ],
     ];
 
     public function load(ObjectManager $manager)
     {
         foreach($this->data as $key => $data) {
-            $postCategory = new PostCategory();
+            $website = Website::findOneByDomain($data['website']);
+            $postCategory = (PostCategory::where('name',$data['name'])->where('website',$website)->count() == 0)
+                ? new PostCategory()
+                : PostCategory::findOneBy(['name' => $data['name'], 'website' => $website]);
             $postCategory->setName($data['name']);
             $postCategory->setSlug($data['slug']);
-            $postCategory->setWebsite($this->getReference($data['website']));
+            $postCategory->setWebsite($website);
             $this->addReference($data['slug'], $postCategory);
             $manager->persist($postCategory);
         }
@@ -42,6 +47,6 @@ class LoadPostCategory extends AbstractFixture implements OrderedFixtureInterfac
      */
     public function getOrder()
     {
-        return 24;
+        return 5;
     }
 }

@@ -1,6 +1,7 @@
 <?php
 namespace Jet\Modules\Post\Fixtures;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -9,7 +10,7 @@ use Jet\Models\Module;
 
 class LoadPostModule extends AbstractFixture implements OrderedFixtureInterface
 {
-    private $modules = [
+    private $data = [
         'module_single_post' => [
             'name' => 'Article',
             'callback' => 'Jet\Modules\Post\Controllers\FrontPostController@read',
@@ -35,15 +36,19 @@ class LoadPostModule extends AbstractFixture implements OrderedFixtureInterface
 
     public function load(ObjectManager $manager)
     {
-        foreach($this->modules as $key => $data){
-            $module = new Module();
+        foreach($this->data as $key => $data){
+            $module = (Module::where('callback',$data['callback'])->count() == 0)
+                ? new Module()
+                : Module::findOneByCallback($data['callback']);
             $module->setName($data['name']);
             $module->setCallback($data['callback']);
             $module->setDescription($data['description']);
             $module->setCategory($this->getReference($data['category']));
             $module->setAccessLevel($data['access_level']);
+            $templates = new ArrayCollection();
             foreach ($data['templates'] as $template)
-                $module->addTemplate($this->getReference($template));
+                $templates[] = $this->getReference($template);
+            $module->setTemplates($templates);
             $this->addReference($key, $module);
             $manager->persist($module);
         }
@@ -57,6 +62,6 @@ class LoadPostModule extends AbstractFixture implements OrderedFixtureInterface
      */
     public function getOrder()
     {
-        return 22;
+        return 3;
     }
 }

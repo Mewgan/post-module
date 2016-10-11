@@ -2,9 +2,11 @@
 
 namespace Jet\Modules\Post\Fixtures;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Jet\Models\Website;
 use Jet\Modules\Post\Models\Post;
 
 class LoadPost extends AbstractFixture implements OrderedFixtureInterface
@@ -20,7 +22,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'categories' => [
                 'actualite'
             ],
-            'website' => 'Aster Website'
+            'website' => 'http://aster-society.in-salon.dev'
         ],
         [
             'title' => 'Service 1',
@@ -31,7 +33,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'categories' => [
                 'service'
             ],
-            'website' => 'Aster Website'
+            'website' => 'http://aster-society.in-salon.dev'
         ],
         [
             'title' => 'Service 2',
@@ -42,7 +44,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'categories' => [
                 'service'
             ],
-            'website' => 'Aster Website'
+            'website' => 'http://aster-society.in-salon.dev'
         ],
         [
             'title' => 'Service 3',
@@ -53,7 +55,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'categories' => [
                 'service'
             ],
-            'website' => 'Aster Website'
+            'website' => 'http://aster-society.in-salon.dev'
         ],
         /* Balsamine website posts */
         [
@@ -65,7 +67,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'categories' => [
                 'service'
             ],
-            'website' => 'Balsamine Website'
+            'website' => 'http://balsamine-society.in-salon.dev'
         ],
         [
             'title' => 'Balsamine Service 2',
@@ -76,7 +78,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'categories' => [
                 'service'
             ],
-            'website' => 'Balsamine Website'
+            'website' => 'http://balsamine-society.in-salon.dev'
         ],
         [
             'title' => 'Balsamine Service 3',
@@ -87,7 +89,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'categories' => [
                 'service'
             ],
-            'website' => 'Balsamine Website'
+            'website' => 'http://balsamine-society.in-salon.dev'
         ],
         /* Luffy website posts */
         [
@@ -99,22 +101,27 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'categories' => [
                 'service'
             ],
-            'website' => 'Luffy Website'
+            'website' => 'http://luffy-society.in-salon.dev'
         ],
     ];
 
     public function load(ObjectManager $manager)
     {
         foreach($this->data as $key => $data) {
-            $post = new Post();
+            $website =  Website::findOneByDomain($data['website']);
+            $post = (Post::where('slug',$data['slug'])->where('website',$website)->count() == 0)
+                ? new Post()
+                : Post::findOneBy(['slug' => $data['slug'], 'website' => $website]);
             $post->setTitle($data['title']);
             $post->setSlug($data['slug']);
             $post->setDescription($data['short_description']);
             $post->setContent($data['content']);
             $post->setThumbnail($this->getReference($data['thumbnail']));
+            $categories = new ArrayCollection();
             foreach ($data['categories'] as $category)
-                $post->addPostCategory($this->getReference($category));
-            $post->setWebsite($this->getReference($data['website']));
+                $categories[] = $this->getReference($category);
+            $post->setPostCategories($categories);
+            $post->setWebsite($website);
             $manager->persist($post);
         }
 
@@ -128,6 +135,6 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
      */
     public function getOrder()
     {
-        return 25;
+        return 6;
     }
 }
