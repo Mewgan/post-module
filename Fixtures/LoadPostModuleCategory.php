@@ -16,7 +16,8 @@ class LoadPostModuleCategory extends AbstractFixture implements OrderedFixtureIn
         'description' => 'Module pour afficher des articles',
         'icon' => 'fa fa-newspaper-o fa-4x',
         'author' => 'S.Sumugan',
-        'version' => '0.1'
+        'version' => '0.1',
+        'update_available' => false
     ];
 
     public function load(ObjectManager $manager)
@@ -30,6 +31,7 @@ class LoadPostModuleCategory extends AbstractFixture implements OrderedFixtureIn
         $cat->setIcon($this->data['icon']);
         $cat->setAuthor($this->data['author']);
         $cat->setVersion($this->data['version']);
+        $cat->setUpdateAvailable($this->data['update_available']);
         $cat->setDescription($this->data['description']);
         $manager->persist($cat);
         $this->addReference($this->data['slug'], $cat);
