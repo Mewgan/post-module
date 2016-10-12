@@ -28,12 +28,12 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
                         'table' => 'post',
                         'column' => 'id',
                         'value' => 1
-                    ]  
+                    ]
                 ],
             ]
         ],
         'aster_list_static_home_post_content' => [
-            'name' => 'Liste de services',
+            'name' => 'Liste de services dynamique',
             'block' => 'list_post',
             'scope' => 'specified',
             'website' => 'http://aster-society.in-salon.dev',
@@ -59,7 +59,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             ]
         ],
         'aster_list_static_post_content' => [
-            'name' => 'Liste de services',
+            'name' => 'Liste de services statique',
             'block' => 'list_post',
             'scope' => 'specified',
             'website' => 'http://aster-society.in-salon.dev',
@@ -148,7 +148,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             ]
         ],
         'balsamine_list_static_home_post_content' => [
-            'name' => 'Liste de services',
+            'name' => 'Liste de services dynamique',
             'block' => 'list_post',
             'scope' => 'specified',
             'website' => 'http://balsamine-society.in-salon.dev',
@@ -174,7 +174,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             ]
         ],
         'balsamine_list_static_post_content' => [
-            'name' => 'Liste de services',
+            'name' => 'Liste de services statique',
             'block' => 'list_post',
             'scope' => 'specified',
             'website' => 'http://balsamine-society.in-salon.dev',

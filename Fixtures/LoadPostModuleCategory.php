@@ -29,6 +29,7 @@ class LoadPostModuleCategory extends AbstractFixture implements OrderedFixtureIn
         $cat->setSlug($this->data['slug']);
         $cat->setIcon($this->data['icon']);
         $cat->setAuthor($this->data['author']);
+        $cat->setVersion($this->data['version']);
         $cat->setDescription($this->data['description']);
         $manager->persist($cat);
         $this->addReference($this->data['slug'], $cat);
