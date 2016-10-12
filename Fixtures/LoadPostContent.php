@@ -248,9 +248,9 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
     {
         foreach($this->data as $key => $data) {
             $website = Website::findOneByDomain($data['website']);
-            $content = (Content::where('website',$website)->where('block',$data['block'])->where('data',serialize($data['data']))->count() == 0)
+            $content = (Content::where('website',$website)->where('block',$data['block'])->where('name',$data['name'])->count() == 0)
                 ?  new Content()
-                : Content::findOneBy(['website' => $website, 'block' => $data['block'], 'data' => serialize($data['data'])]);
+                : Content::findOneBy(['website' => $website, 'block' => $data['block'], 'name' => $data['name']]);
             $content->setName($data['name']);
             $content->setBlock($data['block']);
             $content->setScope($data['scope']);
