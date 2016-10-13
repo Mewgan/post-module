@@ -14,7 +14,7 @@ class LoadPostModuleCategory extends AbstractFixture implements OrderedFixtureIn
         'title' => 'Article',
         'slug' => 'post',
         'description' => 'Module pour afficher des articles',
-        'icon' => 'fa fa-newspaper-o fa-4x',
+        'icon' => 'fa fa-newspaper-o',
         'author' => 'S.Sumugan',
         'version' => '0.1',
         'update_available' => false
