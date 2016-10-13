@@ -17,7 +17,8 @@ class LoadPostModuleCategory extends AbstractFixture implements OrderedFixtureIn
         'icon' => 'fa fa-newspaper-o',
         'author' => 'S.Sumugan',
         'version' => '0.1',
-        'update_available' => false
+        'update_available' => false,
+        'access_level' => 4
     ];
 
     public function load(ObjectManager $manager)
@@ -32,6 +33,7 @@ class LoadPostModuleCategory extends AbstractFixture implements OrderedFixtureIn
         $cat->setAuthor($this->data['author']);
         $cat->setVersion($this->data['version']);
         $cat->setUpdateAvailable($this->data['update_available']);
+        $cat->setAccessLevel($this->data['access_level']);
         $cat->setDescription($this->data['description']);
         $manager->persist($cat);
         $this->addReference($this->data['slug'], $cat);

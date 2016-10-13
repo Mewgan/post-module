@@ -16,7 +16,7 @@ class LoadPostModule extends AbstractFixture implements OrderedFixtureInterface
             'callback' => 'Jet\Modules\Post\Controllers\FrontPostController@read',
             'description' => 'Affiche un seul article',
             'category' => 'post',
-            'access_level' => 2,
+            'access_level' => 4,
             'templates' => [
                 'post_whole_content',
                 'post_only_body'
@@ -27,7 +27,7 @@ class LoadPostModule extends AbstractFixture implements OrderedFixtureInterface
             'callback' => 'Jet\Modules\Post\Controllers\FrontPostController@all',
             'description' => 'Liste d\'articles par catégorie',
             'category' => 'post',
-            'access_level' => 2,
+            'access_level' => 4,
             'templates' => [
                 'post_basic_list'
             ]
