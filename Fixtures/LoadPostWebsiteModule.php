@@ -45,9 +45,7 @@ class LoadPostWebsiteModule extends AbstractFixture implements OrderedFixtureInt
                 'module_post_list',
                 'module_single_post',
             ],
-            'exclude' => [
-                'posts' => [4]
-            ],
+            'exclude' => [4],
         ],
         'http://zoro-society.in-salon.dev' => [
             'modules' => [

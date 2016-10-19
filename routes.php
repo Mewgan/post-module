@@ -1,17 +1,15 @@
 <?php
 
 return [
-    
-    '/module/post/create' => [
-        'use' => 'AdminPostController@create',
-        'name' => 'module.post.create',
-        'method' => 'POST'
+
+    '/module/post/*' => [
+        'use' => 'AdminPostController@{method}',
+        'ajax' => true
     ],
 
-    '/module/post/update' => [
-        'use' => 'AdminPostController@update',
-        'name' => 'module.post.create',
-        'method' => 'POST'
+    '/module/post-category/*' => [
+        'use' => 'AdminPostCategoryController@{method}',
+        'ajax' => true
     ],
     
 ];

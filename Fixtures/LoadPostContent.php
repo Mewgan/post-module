@@ -87,6 +87,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             'section' => 1,
             'data' => [
                 'class' => 'col-md-12',
+                'route_name' => 'module:post.type:dynamic.action:read',
                 'db' => [
                     [
                         'table' => 'post_category',
@@ -99,7 +100,6 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
                         'route' => 'category',
                     ],
                 ],
-                'route_name' => 'module:post.type:dynamic.action:read',
                 'link' => [
                     [
                         'column' => 'slug',

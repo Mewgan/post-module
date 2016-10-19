@@ -70,10 +70,12 @@ class FrontPostController extends InSalonController
     private function getParams(Website $website, $data){
         $data['website_options'] = $website->getData();
         $data['params'] = (View::hasData('data') && isset(View::getData('data')['route_params'])) ? View::getData('data')['route_params'] : [];
-        $theme_website = $website->getTheme()->getWebsite();
-        $data['websites'] = ($theme_website->getId() != $website->getId())
-            ? [$website->getId(),$theme_website->getId()]
-            : [$website->getId()];
+        $data['published'] = true;
+        if(empty($this->websites)) {
+            $this->websites[] = (int)$website;
+            $this->getThemeWebsites($website);
+        }
+        $data['websites'] = $this->websites;
         return $data;
     }
 }

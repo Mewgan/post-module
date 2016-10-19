@@ -1,3 +1,5 @@
+import * as actions from './actions'
+
 export const state = {
     posts : {}
 };
@@ -20,5 +22,5 @@ export const mutations = {
 };
 
 export default {
-    state, mutations
+    state, mutations,actions
 }

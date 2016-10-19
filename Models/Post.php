@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping;
  * @Table(name="posts")
  * @HasLifecycleCallbacks
  */
-class Post extends Model
+class Post extends Model implements \JsonSerializable
 {
     /**
      * @Id
@@ -44,11 +44,8 @@ class Post extends Model
      */
     protected $thumbnail;
     /**
-     * @ManyToMany(targetEntity="PostCategory")
-     * @JoinTable(name="posts_categories",
-     *      joinColumns={@JoinColumn(name="post_id", referencedColumnName="id", onDelete="CASCADE")},
-     *      inverseJoinColumns={@JoinColumn(name="category_id", referencedColumnName="id", onDelete="CASCADE")}
-     *      )
+     * @ManyToMany(targetEntity="PostCategory", inversedBy="posts")
+     * @JoinTable(name="posts_categories")
      */
     protected $categories;
     /**
@@ -56,6 +53,10 @@ class Post extends Model
      * @JoinColumn(name="website_id", referencedColumnName="id", onDelete="CASCADE")
      */
     protected $website;
+    /**
+     * @Column(type="boolean")
+     */
+    protected $published = true;
     /**
      * @Column(type="datetime")
      */
@@ -169,7 +170,7 @@ class Post extends Model
     }
 
     /**
-     * @return PostCategory
+     * @return ArrayCollection
      */
     public function getPostCategories()
     {
@@ -206,6 +207,22 @@ class Post extends Model
     public function setWebsite($website)
     {
         $this->website = $website;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function isPublished()
+    {
+        return $this->published;
+    }
+
+    /**
+     * @param mixed $published
+     */
+    public function setPublished($published)
+    {
+        $this->published = $published;
     }
 
     /**
@@ -254,4 +271,29 @@ class Post extends Model
         $this->setUpdatedAt(new \DateTime('now'));
     }
 
+    /**
+     * Specify data which should be serialized to JSON
+     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     * @since 5.4.0
+     */
+    function jsonSerialize()
+    {
+        return [
+            'id' => $this->getId(),
+            'title' => $this->getTitle(),
+            'slug' => $this->getSlug(),
+            'thumbnail' => $this->getThumbnail(),
+            'description' => $this->getDescription(),
+            'content' => $this->getContent(),
+            'website' => [
+                'id' => $this->getWebsite()->getId(),
+                'domain' => $this->getWebsite()->getDomain(),
+            ],
+            'published' => $this->isPublished(),
+            'created_at' => $this->getCreatedAt(),
+            'updated_at' => $this->getUpdatedAt()
+        ];
+    }
 }

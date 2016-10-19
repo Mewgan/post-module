@@ -6,10 +6,10 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
- * Class PostRepository
+ * Class PostCategoryRepository
  * @package Jet\Modules\Post\Models
  */
-class PostRepository extends EntityRepository{
+class PostCategoryRepository extends EntityRepository{
 
     /**
      * @param $page
@@ -20,12 +20,11 @@ class PostRepository extends EntityRepository{
     public function listAll($page, $max, $params = []){
         
         $countSearch = false;
-        $query = Post::queryBuilder();
+        $query = PostCategory::queryBuilder();
         
-        $query->select('p')
-            ->from('Jet\Modules\Post\Models\Post','p')
-            ->leftJoin('p.website','w')
-            ->innerJoin('p.categories', 'c');
+        $query->select('c')
+            ->from('Jet\Modules\Post\Models\PostCategory','c')
+            ->leftJoin('c.website','w');
 
         if(isset($params['total_row']) && !empty($params['total_row'])) {
             $countSearch = true;
@@ -40,8 +39,7 @@ class PostRepository extends EntityRepository{
         if(isset($params['search']) && !empty($params['search'])) {
             $countSearch = true;
             $query->andWhere( $query->expr()->orX(
-                $query->expr()->like('p.title', ':search'),
-                $query->expr()->like('p.description', ':search'),
+                $query->expr()->like('c.slug', ':search'),
                 $query->expr()->like('c.name', ':search')
             ))->setParameter('search', '%'.$params['search'].'%');
         }
@@ -54,7 +52,7 @@ class PostRepository extends EntityRepository{
 
         (isset($params['order']) && !empty($params['order']) && !empty($params['order']['column']))
             ? $query->addOrderBy($params['order']['column'],strtoupper($params['order']['dir']))
-            : $query->orderBy('p.id','DESC');
+            : $query->orderBy('c.id','DESC');
 
         $pg = new Paginator($query);
         $data = $pg->getQuery()->getResult();
@@ -68,10 +66,9 @@ class PostRepository extends EntityRepository{
     public function countPost($params = []){
         $query = Post::queryBuilder();
 
-        $query->select('COUNT(p)')
-            ->from('Jet\Modules\Post\Models\Post','p')
-            ->innerJoin('p.categories', 'c')
-            ->leftJoin('p.website','w');
+        $query->select('COUNT(c)')
+            ->from('Jet\Modules\Post\Models\PostCategory','c')
+            ->leftJoin('c.website','w');
 
         $query = $this->getQueryWithParams($query,$params);
 
@@ -83,39 +80,14 @@ class PostRepository extends EntityRepository{
      * @return mixed
      */
     public function read($params = []){
-        $query = Post::em()->createQueryBuilder()
-            ->select('p')
-            ->from('Jet\Modules\Post\Models\Post','p')
-            ->innerJoin('p.categories', 'c')
-            ->leftJoin('p.website','w');
+        $query = PostCategory::em()->createQueryBuilder('c')
+            ->select('c')
+            ->from('Jet\Modules\Post\Models\PostCategory','c')
+            ->leftJoin('c.website','w');
 
-        $query = $this->getQueryWithParams($query,$params,'p');
+        $query = $this->getQueryWithParams($query,$params,'c');
         
         return $query->getQuery()->getSingleResult();
-    }
-
-    public function readAdmin($id){
-        $query = Post::em()->createQueryBuilder()
-            ->select('p')
-            ->from('Jet\Modules\Post\Models\Post','p')
-            ->leftJoin('p.categories', 'c')
-            ->leftJoin('p.website','w')
-            ->where('p.id = :id')
-            ->setParameter('id',$id);
-
-        return $query->getQuery()->getSingleResult();
-    }
-
-    public function getCategories($id){
-        $query = Post::em()->createQueryBuilder()
-            ->select('partial p.{id}')
-            ->addSelect('c')
-            ->from('Jet\Modules\Post\Models\Post','p')
-            ->leftJoin('p.categories', 'c')
-            ->where('p.id = :id')
-            ->setParameter('id',$id);
-
-        return $query->getQuery()->getArrayResult()[0];
     }
 
     /**
@@ -125,32 +97,21 @@ class PostRepository extends EntityRepository{
      * @return mixed
      */
     private function getQueryWithParams($query, $params , $alias = 'c'){
-        if(isset($params['published'])){
-            $query->where($query->expr()->eq('p.published',':published'))
-                ->setParameter('published',$params['published']);
-        }
 
         if(isset($params['websites'])){
-            $query->andWhere($query->expr()->in('w.id',':websites'))
+            $query->where($query->expr()->in('w.id',':websites'))
                 ->setParameter('websites',$params['websites']);
         }
 
-        if(isset($params['website_options']['parent_exclude'])){
-            if(isset($params['website_options']['parent_exclude']['posts'])  && !empty($params['website_options']['parent_exclude']['posts'])){
-                $query->andWhere($query->expr()->notIn('p.id',':exclude_post_ids'))
-                    ->setParameter('exclude_post_ids',$params['website_options']['parent_exclude']['posts']);
-            }
-
-            /*if(isset($params['website_options']['parent_exclude']['post_categories']) && !empty($params['website_options']['parent_exclude']['post_categories'])){
-                $query->andWhere($query->expr()->notIn('c.id',':exclude_category_ids'))
-                    ->setParameter('exclude_category_ids',$params['website_options']['parent_exclude']['post_categories']);
-            }*/
+        if(isset($params['website_options']['parent_exclude']) && isset($params['website_options']['parent_exclude']['posts'])){
+            $query->andWhere($query->expr()->notIn('c.id',':exclude_ids'))
+                ->setParameter('exclude_ids',$params['website_options']['parent_exclude']['posts']);
         }
-
+ 
         if(isset($params['db']) && !empty($params['db'])){
             foreach ($params['db'] as $key => $db) {
                 if(isset($db['route']))
-                    $query->andWhere('p.' . $db['column'] . ' = :column_' . $key)
+                    $query->andWhere('c.' . $db['column'] . ' = :column_' . $key)
                         ->setParameter('column_' . $key, $params['params'][$db['route']]);
                 elseif(isset($db['value']))
                     if (is_array($db['value']))
@@ -165,4 +126,18 @@ class PostRepository extends EntityRepository{
         return $query;
     }
 
+    public function getNames($websites,$params){
+        $query = PostCategory::queryBuilder()
+            ->select('partial c.{id,name,slug}')
+            ->addSelect('partial w.{id}')
+            ->from('Jet\Modules\Post\Models\PostCategory','c')
+            ->leftJoin('c.website','w')
+            ->where('c.website IN (:websites)')
+            ->setParameter('websites',$websites);
+        if(isset($params['parent_exclude']) && isset($params['parent_exclude']['post_categories']) && !empty($params['parent_exclude']['post_categories']))
+            $query->andWhere($query->expr()->notIn('c.id',':exclude_categories_ids'))
+                ->setParameter('exclude_categories_ids',$params['parent_exclude']['post_categories']);
+        return $query->getQuery()->getArrayResult();
+    }
+    
 } 

@@ -2,6 +2,7 @@
 
 namespace Jet\Modules\Post\Models;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Jet\Models\Website;
 use JetFire\Db\Model;
 use Doctrine\ORM\Mapping;
@@ -9,10 +10,10 @@ use Doctrine\ORM\Mapping;
 /**
  * Class PostCategory
  * @package Jet\Models
- * @Entity
+ * @Entity(repositoryClass="Jet\Modules\Post\Models\PostCategoryRepository")
  * @Table(name="post_categories")
  */
-class PostCategory extends Model
+class PostCategory extends Model implements \JsonSerializable
 {
     /**
      * @Id
@@ -21,7 +22,7 @@ class PostCategory extends Model
      */
     protected $id;
     /**
-     * @Column(type="string", unique=true)
+     * @Column(type="string")
      */
     protected $name;
     /**
@@ -33,6 +34,17 @@ class PostCategory extends Model
      * @JoinColumn(name="website_id", referencedColumnName="id", onDelete="CASCADE")
      */
     protected $website;
+    /**
+     * @ManyToMany(targetEntity="Post", mappedBy="categories")
+     */
+    protected $posts;
+
+    /**
+     * PostCategory constructor.
+     */
+    public function __construct() {
+        $this->posts = new ArrayCollection();
+    }
 
     /**
      * @return mixed
@@ -98,5 +110,46 @@ class PostCategory extends Model
         $this->website = $website;
     }
 
+    /**
+     * @return ArrayCollection
+     */
+    public function getPosts()
+    {
+        return $this->posts;
+    }
 
+    /**
+     * @param ArrayCollection $posts
+     */
+    public function setPosts(ArrayCollection $posts)
+    {
+        $this->posts = $posts;
+    }
+
+    /**
+     * @param Post $post
+     */
+    public function addPost(Post $post)
+    {
+        $post->addPostCategory($this);
+        $this->posts[] = $post;
+    }
+
+
+    /**
+     * Specify data which should be serialized to JSON
+     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     * @since 5.4.0
+     */
+    function jsonSerialize()
+    {
+        return  [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'slug' => $this->getSlug(),
+            'posts' => $this->getPosts()
+        ];
+    }
 }
