@@ -291,6 +291,7 @@ class Post extends Model implements \JsonSerializable
                 'id' => $this->getWebsite()->getId(),
                 'domain' => $this->getWebsite()->getDomain(),
             ],
+            'categories' => $this->getPostCategories()->toArray(),
             'published' => $this->isPublished(),
             'created_at' => $this->getCreatedAt(),
             'updated_at' => $this->getUpdatedAt()

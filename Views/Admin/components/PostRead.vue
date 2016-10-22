@@ -18,6 +18,13 @@
     .post-read article{
         padding: 10px;
     }
+    .post-read .right-bottom-bloc h3{
+        overflow: auto;
+        padding: 15px 10px;
+    }
+    .post-read .right-bottom-bloc button{
+        margin-left: 5px;
+    }
 </style>
 
 <template>
@@ -33,7 +40,7 @@
                 </ol>
 
             </div>
-            <div class="section-body contain-lg">
+            <div class="section-body">
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="card card-tiles style-default-light">
@@ -75,10 +82,13 @@
 
                                 <!-- BEGIN BLOG POST MENUBAR -->
                                 <div class="col-md-3">
-                                    <div class="card-body">
-                                        <h3 class="text-light">Image à la une <i class="pull-right text-danger fa fa-trash"></i></h3>
+                                    <div class="card-body right-bottom-bloc">
+                                        <h3 class="text-light">Image à la une
+                                            <button type="button" class="btn pull-right ink-reaction btn-floating-action btn-info"><i class="fa fa-pencil"></i></button>
+                                            <button type="button" class="btn pull-right ink-reaction btn-floating-action btn-danger"><i class="fa fa-trash"></i></button>
+                                        </h3>
                                         <img v-img="post.thumbnail.path" :alt="post.thumbnail.alt" width="100%">
-                                        <h3 class="text-light">Catégories <i class="pull-right text-info fa fa-plus"></i></h3>
+                                        <h3 class="text-light">Catégories <button type="button" class="btn pull-right ink-reaction btn-floating-action btn-info"><i class="fa fa-plus"></i></button></h3>
                                         <ul class="nav nav-pills nav-stacked nav-transparent">
                                             <li v-for="category in categories">
                                                 <a href="#"><div class="pull-right checkbox checkbox-styled checkbox-primary">
@@ -119,7 +129,6 @@
 
 <script type="text/babel">
 
-
     import Response from '../../../../../Blocks/AdminBlock/Front/components/Helper/Response.vue'
     import Loading from '../../../../../Blocks/AdminBlock/Front/components/Helper/Loading.vue'
     import Pagination from '../../../../../Blocks/AdminBlock/Front/components/Helper/Pagination.vue'
@@ -147,7 +156,6 @@
                     }
                 },
                 categories: {},
-                post_categories: {},
                 route: '',
                 file_type: ['image/jpg','image/png','image/gif'],
                 max_media: 24,
@@ -173,9 +181,9 @@
                 this.max_media = max;
             },
             checkCategory (category){
-                for(let index in this.post_categories) {
-                    if (this.post_categories.hasOwnProperty(index)) {
-                        if(this.post_categories[index].id == category)return true;
+                for(let index in this.post.categories) {
+                    if (this.post.categories.hasOwnProperty(index)) {
+                        if(this.post.categories[index].id == category)return true;
                     }
                 }
                 return false;
@@ -197,7 +205,6 @@
                                 }
                             }
                         }
-                        this.post_categories = response.data.categories.categories;
                     }
                     this.loading = false;
 

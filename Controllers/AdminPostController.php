@@ -19,7 +19,7 @@ class AdminPostController extends InSalonController
         $page = ($request->exists('page')) ? (int)$request->query('page') : 1;
 
         $this->websites[] = $website;
-        $website = Website::queryBuilder()->select('w')->from('Jet\Models\Website','w')->where('w.id = :id')->setParameter('id',$website)->getQuery()->getSingleResult();
+        $website = Website::findOneById($website);
         $this->getThemeWebsites($website);
 
         $params = [
@@ -52,9 +52,9 @@ class AdminPostController extends InSalonController
         $this->getThemeWebsites($website);
         $route = Route::repo()->getRouteByName('module:post.type:dynamic.action:read', $this->websites, $website->getData());
         $post = Post::repo()->readAdmin($id);
-        $categories = Post::repo()->getCategories($id);
+
         if (!is_null($post))
-            return $this->json(['status' => 'success', 'resource' => $post, 'route' => (isset($route[0]))?$route[0]:'', 'categories' => $categories]);
+            return $this->json(['status' => 'success', 'resource' => $post, 'route' => (isset($route[0]))?$route[0]:'']);
         return $this->json(['status' => 'error', 'message' => 'Article inexistant']);
     }
 

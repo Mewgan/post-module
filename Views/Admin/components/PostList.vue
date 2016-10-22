@@ -36,6 +36,9 @@
         top: 0;
         right: 5px;
     }
+    .list-post .edit-category i{
+        margin-right: 10px;
+    }
     .list-post .edit-category:hover i{
         font-size:2em;
     }
@@ -59,7 +62,7 @@
                 Ajouter une catégorie
             </button>
         </div>
-        <div class="section-body contain-lg">
+        <div class="section-body">
             <div class="card tabs-left style-default-light">
 
                 <!-- BEGIN SEARCH BAR -->

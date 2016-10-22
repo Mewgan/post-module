@@ -56,7 +56,7 @@ class PostCategoryRepository extends EntityRepository{
 
         $pg = new Paginator($query);
         $data = $pg->getQuery()->getResult();
-        return ['data' => $data, 'total' => ($countSearch)?count($data):(int)$this->countPost($params)];
+        return ['data' => $data, 'total' => ($countSearch)?count($data):$this->countPost($params)];
     }
 
     /**
