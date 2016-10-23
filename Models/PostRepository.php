@@ -165,4 +165,22 @@ class PostRepository extends EntityRepository{
         return $query;
     }
 
+    public function getPostRules($websites,$exclude){
+        $query = Post::queryBuilder()
+            ->select(['p.id as id','p.title as name'])
+            ->from('Jet\Modules\Post\Models\Post','p')
+            ->leftJoin('p.website','w');
+
+        $query->where($query->expr()->in('w.id',':websites'))
+            ->setParameter('websites',$websites);
+
+        if(isset($exclude['parent_exclude']) && isset($exclude['parent_exclude']['posts'])){
+            $query->andWhere($query->expr()->notIn('p.id',':exclude_ids'))
+                ->setParameter('exclude_ids',$exclude['parent_exclude']['posts']);
+        }
+        return $query->getQuery()
+            ->getArrayResult();
+    }
+
+
 } 

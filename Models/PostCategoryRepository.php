@@ -139,5 +139,23 @@ class PostCategoryRepository extends EntityRepository{
                 ->setParameter('exclude_categories_ids',$params['parent_exclude']['post_categories']);
         return $query->getQuery()->getArrayResult();
     }
+
+    public function getPostCategoryRules($websites,$exclude){
+        $query = PostCategory::queryBuilder()
+            ->select('partial c.{id,name}')
+            ->from('Jet\Modules\Post\Models\PostCategory','c')
+            ->leftJoin('c.website','w');
+
+        $query->where($query->expr()->in('w.id',':websites'))
+            ->setParameter('websites',$websites);
+
+        if(isset($exclude['parent_exclude']) && isset($exclude['parent_exclude']['post_categories'])){
+            $query->andWhere($query->expr()->notIn('c.id',':exclude_ids'))
+                ->setParameter('exclude_ids',$exclude['parent_exclude']['post_categories']);
+        }
+
+        return $query->getQuery()
+            ->getArrayResult();
+    }
     
 } 
