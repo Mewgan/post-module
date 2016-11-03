@@ -111,7 +111,7 @@ class PostCategory extends Model implements \JsonSerializable
     }
 
     /**
-     * @return ArrayCollection
+     * @return mixed
      */
     public function getPosts()
     {
@@ -119,9 +119,9 @@ class PostCategory extends Model implements \JsonSerializable
     }
 
     /**
-     * @param ArrayCollection $posts
+     * @param $posts
      */
-    public function setPosts(ArrayCollection $posts)
+    public function setPosts($posts)
     {
         $this->posts = $posts;
     }

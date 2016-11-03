@@ -79,8 +79,7 @@ class AdminPostCategoryController extends InSalonController
                     $new_category->setName($category);
                     $new_category->setSlug(slugify($category));
                     $new_category->setWebsite($post_category_website);
-                    foreach ($post_category->getPosts() as $post)
-                        $new_category->addPost($post);
+                    $new_category->setPosts($post_category->getPosts());
                     if(!PostCategory::watchAndSave($new_category))
                         return $this->json(['status' => 'error', 'message' => 'La catégorie n\'a pas été mis à jour']);
                     if(!isset($post_categories_exclude[$id]))$post_categories_exclude[] = $id;

@@ -104,8 +104,7 @@ class AdminPostController extends InSalonController
                     $new_post->setPublished($request->get('state'));
                     $new_post->setWebsite($post_website);
                     $new_post->setThumbnail($post->getThumbnail());
-                    foreach ($post->getPostCategories() as $category)
-                        $new_post->addPostCategory($category);
+                    $new_post->setPostCategories($post->getPostCategories());
                     Post::watchAndSave($new_post);
                     if(!isset($posts_exclude[$id]))$posts_exclude[] = $id;
                 }else

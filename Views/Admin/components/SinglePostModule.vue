@@ -6,6 +6,18 @@
 
 <script type="text/babel">
     export default{
-        name: 'single-post'
+        name: 'single-post',
+        props: {
+            content: {
+                type: Object,
+                required: true
+            },
+            page: {
+                required: true
+            },
+            website: {
+                required: true
+            }
+        }
     }
 </script>
