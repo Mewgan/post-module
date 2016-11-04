@@ -13,57 +13,53 @@
             <label for="content_module">Module</label>
         </div>
         <div>
-            <h5>Configuration :</h5>
-            <table class="table table-bordered no-margin">
-                <tbody>
-                <tr v-for="(db,i) in content.data.db">
-                    <td>{{i}}</td>
-                    <td>
-                        <div class="form-group">
-                            <select :id="'db_table_'+i" v-model="db.alias" class="form-control">
-                                <option v-for="(table,alias) in tables" :value="alias">{{table}}</option>
-                            </select>
-                            <label :for="'db_table_'+i">Table</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-group">
-                            <select :id="'db_column_'+i" v-model="db.column" class="form-control">
-                                <option v-for="column in columns" :value="column">{{column}}</option>
-                            </select>
-                            <label :for="'db_column_'+i">Colonne</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-group">
-                            <select :id="'db_value_'+i" class="stylesheets-select form-control select2-list" multiple>
-                                <option v-for="value in getValues(db.alias)" :value="value.id">{{value.title}}</option>
-                            </select>
-                            <label :for="'db_value_'+i">Valeur</label>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" v-model="db.route" class="form-control" :id="'db_route_'+i">
-                            <label :for="'db_route_'+i">Route</label>
-                        </div>
-                    </td>
-                    <td>
-                        <button type="button" @click="removeDbField(i)" class="btn ink-reaction btn-floating-action btn-danger"><i class="fa fa-times"></i></button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            <button type="button" @click="addDbField" class="btn ink-reaction pull-right btn-floating-action btn-info add-route"><i class="fa fa-plus"></i></button>
+            <div>
+                <ul class="nav nav-tabs nav-justified" data-toggle="tabs">
+                    <li :class="classStatic"><a href="#content_static">Statique</a></li>
+                    <li :class="classDynamic"><a href="#content_dynamic">Dynamique</a></li>
+                </ul>
+            </div><!--end .card-head -->
+            <div class="card-body tab-content">
+                <div :class="[classStatic, 'tab-pane']" id="content_static">
+                    <table class="table table-bordered no-margin">
+                        <tbody>
+                        <tr v-for="(db,i) in content.data.db">
+                            <td>{{i}}</td>
+                            <td>
+                                <div class="form-group">
+                                    <input type="text" v-model="db.table" class="form-control" :id="'db_table_'+i">
+                                    <label :for="'db_table_'+i">Table</label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <input type="text" v-model="db.column" class="form-control" :id="'db_column_'+i">
+                                    <label :for="'db_column_'+i">Colonne</label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <input type="text" v-model="db.value" class="form-control" :id="'db_value_'+i">
+                                    <label :for="'db_value_'+i">Valeur</label>
+                                </div>
+                            </td>
+                            <td>
+                                <button type="button" class="btn ink-reaction btn-floating-action btn-danger"><i class="fa fa-times"></i></button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div :class="[classDynamic, 'tab-pane']" id="content_dynamic">
+                    Coming soon !
+                </div>
+            </div><!--end .card-body -->
         </div>
     </form>
 </template>
 
 <script type="text/babel">
 
-    /* CSS */
-    import '../../../../../Blocks/AdminBlock/Resources/public/css/libs/select2/select2.css'
-
-    /* JS*/
-    import '../../../../../Blocks/AdminBlock/Resources/public/js/libs/select2/select2.min'
     import {AppVendor} from '../../../../../Blocks/AdminBlock/Resources/public/js/app'
 
     export default{
@@ -80,49 +76,24 @@
                 required: true
             }
         },
-        data(){
-            return {
-                tables : {
-                    p: 'Article',
-                    c: 'Catégorie'
-                },
-                columns: ['id','slug'],
-                selectValues: null
-            }
-        },
         computed: {
-
+            classStatic: function () {
+                return {
+                    active: (!'data' in this.content || ('data' in this.content && 'type' in this.content.data && this.content.data.type == 'static'))
+                }
+            },
+            classDynamic: function () {
+                return {
+                    active: ('data' in this.content && 'type' in this.content.data && this.content.data.type == 'dynamic')
+                }
+            }
         },
         methods: {
-            addDbField(){
-                this.content.data.db.push({
-                    alias: '',
-                    column: '',
-                    value: [],
-                    route: ''
-                });
-            },
-            removeDbField(index){
-                this.content.data.db.splice(index, 1);
-            },
-            addLinkField(){
-                this.content.data.link.push({
-                    alias: '',
-                    column: '',
-                    route: '',
-                });
-            },
-            removeLinkField(index){
-                this.content.data.link.splice(index, 1);
-            },
-            getValues(table){
 
-            }
         },
         mounted () {
             this.$nextTick(function () {
                 AppVendor()._initTabs();
-
                 if(this.content.data.length == 0){
                     this.$set(this.content,'data', {
                         class: '',
@@ -133,10 +104,6 @@
                         link: []
                     });
                 }
-
-                this.selectValues = $(".libraries-select").select2({
-                    allowClear: true
-                });
             });
         }
     }
