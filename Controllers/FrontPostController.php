@@ -24,7 +24,7 @@ class FrontPostController extends InSalonController
     public function all(Request $request, Website $website, $content){
 
         $data = $content->getData();
-        $max = (isset($data['pagination_max'])) ? (int)$data['pagination_max'] : 2;
+        $max = (isset($data['total_row'])) ? (int)$data['total_row'] : 10;
         $page = ($request->exists('page')) ? (int)$request->query('page') : 1;
         
         if(!empty($data)) {
@@ -72,7 +72,7 @@ class FrontPostController extends InSalonController
         $data['params'] = (View::hasData('data') && isset(View::getData('data')['route_params'])) ? View::getData('data')['route_params'] : [];
         $data['published'] = true;
         if(empty($this->websites)) {
-            $this->websites[] = (int)$website;
+            $this->websites[] = $website;
             $this->getThemeWebsites($website);
         }
         $data['websites'] = $this->websites;

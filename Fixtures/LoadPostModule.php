@@ -13,6 +13,7 @@ class LoadPostModule extends AbstractFixture implements OrderedFixtureInterface
     private $data = [
         'module_single_post' => [
             'name' => 'Article',
+            'slug' => 'single-post',
             'callback' => 'Jet\Modules\Post\Controllers\FrontPostController@read',
             'description' => 'Affiche un seul article',
             'category' => 'post',
@@ -24,6 +25,7 @@ class LoadPostModule extends AbstractFixture implements OrderedFixtureInterface
         ],
         'module_post_list' => [
             'name' => 'Liste d\'articles',
+            'slug' => 'list-post',
             'callback' => 'Jet\Modules\Post\Controllers\FrontPostController@all',
             'description' => 'Liste d\'articles par catégorie',
             'category' => 'post',
@@ -41,6 +43,7 @@ class LoadPostModule extends AbstractFixture implements OrderedFixtureInterface
                 ? new Module()
                 : Module::findOneByCallback($data['callback']);
             $module->setName($data['name']);
+            $module->setSlug($data['slug']);
             $module->setCallback($data['callback']);
             $module->setDescription($data['description']);
             $module->setCategory($this->getReference($data['category']));

@@ -9,12 +9,22 @@ use Jet\Models\Account;
 use Jet\Models\Route;
 use Jet\Models\Website;
 use Jet\Modules\Post\Models\Post;
+use Jet\Modules\Post\Models\PostCategory;
 use JetFire\Framework\System\Request;
 
+/**
+ * Class AdminPostController
+ * @package Jet\Modules\Post\Controllers
+ */
 class AdminPostController extends InSalonController
 {
 
-    public function all(Request $request,$website){
+    /**
+     * @param Request $request
+     * @param $website
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function all(Request $request, $website){
         $max = ($request->exists('max')) ? (int)$request->query('max') : 10;
         $page = ($request->exists('page')) ? (int)$request->query('page') : 1;
 
@@ -41,11 +51,19 @@ class AdminPostController extends InSalonController
         ];
         return $this->json(['status' => 'success', 'content' => $themes]);
     }
-    
+
+    /**
+     *
+     */
     public function create(){
 
     }
 
+    /**
+     * @param $website
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function read($website, $id){
         $this->websites[] = $website;
         $website = Website::findOneById($website);
@@ -58,10 +76,18 @@ class AdminPostController extends InSalonController
         return $this->json(['status' => 'error', 'message' => 'Article inexistant']);
     }
 
+    /**
+     *
+     */
     public function update(){
         
     }
 
+    /**
+     * @param Request $request
+     * @param $website
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function delete(Request $request, $website)
     {
         if ($request->method() == 'DELETE' && $request->exists('ids')) {
@@ -87,6 +113,11 @@ class AdminPostController extends InSalonController
         return $this->json(['status' => 'error', 'message' => 'Le(s) article(s) n\'ont pas pu être supprimé(s)']);
     }
 
+    /**
+     * @param Request $request
+     * @param $website
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function changeState(Request $request, $website)
     {
         if ($request->method() == 'PUT' && $request->exists(['ids', 'state'])) {
@@ -104,8 +135,7 @@ class AdminPostController extends InSalonController
                     $new_post->setPublished($request->get('state'));
                     $new_post->setWebsite($post_website);
                     $new_post->setThumbnail($post->getThumbnail());
-                    foreach ($post->getPostCategories() as $category)
-                        $new_post->addPostCategory($category);
+                    $new_post->setPostCategories($post->getPostCategories());
                     Post::watchAndSave($new_post);
                     if(!isset($posts_exclude[$id]))$posts_exclude[] = $id;
                 }else
@@ -118,13 +148,28 @@ class AdminPostController extends InSalonController
         }
         return $this->json(['status' => 'error', 'message' => 'Le(s) article(s) n\'ont pas pu être mis à jour']);
     }
-    
+
+    /**
+     *
+     */
     public function createContent(){
         
     }
 
+    /**
+     *
+     */
     public function updateContent(){
 
     }
-    
+
+    public function listTableValues($website,$table){
+        $this->websites[] = $website;
+        $website = Website::findOneById($website);
+        $this->getThemeWebsites($website);
+
+        return ($table == 'c')
+            ? $this->json(PostCategory::repo()->listTableValues($this->websites, $website->getData()))
+            : $this->json(Post::repo()->listTableValues($this->websites, $website->getData()));
+    }
 }

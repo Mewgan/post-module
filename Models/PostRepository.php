@@ -89,7 +89,7 @@ class PostRepository extends EntityRepository{
             ->innerJoin('p.categories', 'c')
             ->leftJoin('p.website','w');
 
-        $query = $this->getQueryWithParams($query,$params,'p');
+        $query = $this->getQueryWithParams($query,$params);
         
         return $query->getQuery()->getSingleResult();
     }
@@ -121,10 +121,9 @@ class PostRepository extends EntityRepository{
     /**
      * @param $query
      * @param $params
-     * @param string $alias
      * @return mixed
      */
-    private function getQueryWithParams($query, $params , $alias = 'c'){
+    private function getQueryWithParams($query, $params){
         if(isset($params['published'])){
             $query->where($query->expr()->eq('p.published',':published'))
                 ->setParameter('published',$params['published']);
@@ -149,20 +148,56 @@ class PostRepository extends EntityRepository{
 
         if(isset($params['db']) && !empty($params['db'])){
             foreach ($params['db'] as $key => $db) {
-                if(isset($db['route']))
-                    $query->andWhere('p.' . $db['column'] . ' = :column_' . $key)
+                if(isset($db['route']) && !empty($db['route']))
+                    $query->andWhere($db['alias'] . '.' . $db['column'] . ' = :column_' . $key)
                         ->setParameter('column_' . $key, $params['params'][$db['route']]);
-                elseif(isset($db['value']))
+                elseif(isset($db['value']) && !empty($db['value'])) {
                     if (is_array($db['value']))
-                        $query->andWhere($alias.'.' . $db['column'] . ' IN :column_' . $key)
+                        $query->andWhere($db['alias'] . '.' . $db['column'] . ' IN :column_' . $key)
                             ->setParameter('column_' . $key, $db['value']);
                     else
-                        $query->andWhere($alias.'.' . $db['column'] . ' = :column_' . $key)
+                        $query->andWhere($db['alias'] . '.' . $db['column'] . ' = :column_' . $key)
                             ->setParameter('column_' . $key, $db['value']);
+                }
             }
         }
 
         return $query;
+    }
+
+    public function getPostRules($websites,$exclude){
+        $query = Post::queryBuilder()
+            ->select(['p.id as id','p.title as name'])
+            ->from('Jet\Modules\Post\Models\Post','p')
+            ->leftJoin('p.website','w');
+
+        $query->where($query->expr()->in('w.id',':websites'))
+            ->setParameter('websites',$websites);
+
+        if(isset($exclude['parent_exclude']) && isset($exclude['parent_exclude']['posts'])){
+            $query->andWhere($query->expr()->notIn('p.id',':exclude_ids'))
+                ->setParameter('exclude_ids',$exclude['parent_exclude']['posts']);
+        }
+        return $query->getQuery()
+            ->getArrayResult();
+    }
+
+    public function listTableValues($websites, $exclude){
+        $query = Post::queryBuilder()
+            ->select(['p.id as id' ,'p.title as title'])
+            ->from('Jet\Modules\Post\Models\Post','p')
+            ->leftJoin('c.website','w');
+
+        $query->where($query->expr()->in('w.id',':websites'))
+            ->setParameter('websites',$websites);
+
+        if(isset($exclude['parent_exclude']) && isset($exclude['parent_exclude']['posts'])){
+            $query->andWhere($query->expr()->notIn('p.id',':exclude_ids'))
+                ->setParameter('exclude_ids',$exclude['parent_exclude']['posts']);
+        }
+
+        return $query->getQuery()
+            ->getArrayResult();
     }
 
 } 

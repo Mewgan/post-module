@@ -6,6 +6,7 @@ use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Jet\Models\Content;
+use Jet\Models\Page;
 use Jet\Models\Section;
 use Jet\Models\Website;
 
@@ -16,42 +17,48 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
         'aster_welcome_content' => [
             'name' => 'Bienvenue',
             'block' => 'home_content',
-            'scope' => 'specified',
             'website' => 'http://aster-society.in-salon.dev',
             'module' => 'module_single_post',
             'template' => 'post_whole_content',
             'section' => 1,
+            'page' => '1',
             'data' => [
                 'class' => 'col-md-6',
+                'type' => 'static',
                 'db' => [
                     [
-                        'table' => 'post',
+                        'alias' => 'p',
                         'column' => 'id',
-                        'value' => 1
+                        'value' => '1',
+                        'route' => ''
                     ]
                 ],
             ]
         ],
         'aster_list_static_home_post_content' => [
-            'name' => 'Liste de services dynamique',
+            'name' => 'Liste de services statique',
             'block' => 'list_post',
-            'scope' => 'specified',
             'website' => 'http://aster-society.in-salon.dev',
             'module' => 'module_post_list',
             'template' => 'post_basic_list',
             'section' => null,
+            'page' => '1',
             'data' => [
                 'class' => 'col-md-6',
+                'type' => 'static',
                 'route_name' => 'module:post.type:dynamic.action:read',
                 'total_row' => 3,
                 'db' => [
                     [
+                        'alias' => 'c',
                         'column' => 'slug',
-                        'value' => 'service',
+                        'value' => ['service'],
+                        'route' => ''
                     ]
                 ],
                 'link' => [
                     [
+                        'alias' => 'p',
                         'column' => 'slug',
                         'route' => 'slug'
                     ]
@@ -61,16 +68,18 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
         'aster_list_static_post_content' => [
             'name' => 'Liste de services statique',
             'block' => 'list_post',
-            'scope' => 'specified',
             'website' => 'http://aster-society.in-salon.dev',
             'module' => 'module_post_list',
             'template' => 'post_basic_list',
             'section' => null,
+            'page' => '2',
             'data' => [
                 'class' => 'col-md-12',
+                'type' => 'static',
                 'route_name' => 'module:post.type:dynamic.action:read',
                 'link' => [
                     [
+                        'alias' => 'p',
                         'column' => 'slug',
                         'route' => 'slug'
                     ]
@@ -80,28 +89,32 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
         'aster_list_dynamic_post_content' => [
             'name' => 'Liste d\'article',
             'block' => 'list_post',
-            'scope' => 'specified',
             'website' => 'http://aster-society.in-salon.dev',
             'module' => 'module_post_list',
             'template' => 'post_basic_list',
             'section' => 1,
+            'page' => '3',
             'data' => [
                 'class' => 'col-md-12',
+                'type' => 'dynamic',
                 'route_name' => 'module:post.type:dynamic.action:read',
                 'db' => [
                     [
-                        'table' => 'post_category',
+                        'alias' => 'c',
                         'column' => 'id',
                         'route' => 'id',
+                        'value' => []
                     ],
                     [
-                        'table' => 'post_category',
+                        'alias' => 'c',
                         'column' => 'slug',
                         'route' => 'category',
+                        'value' => []
                     ],
                 ],
                 'link' => [
                     [
+                        'alias' => 'p',
                         'column' => 'slug',
                         'route' => 'slug',
                     ]
@@ -111,18 +124,20 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
         'aster_single_post_content' => [
             'name' => 'Article',
             'block' => 'single_post',
-            'scope' => 'specified',
             'website' => 'http://aster-society.in-salon.dev',
             'module' => 'module_single_post',
             'template' => 'post_whole_content',
             'section' => 1,
+            'page' => '4',
             'data' => [
                 'class' => 'col-md-12',
+                'type' => 'dynamic',
                 'db' => [
                     [
-                        'table' => 'post',
+                        'alias' => 'p',
                         'column' => 'slug',
                         'route' => 'slug',
+                        'value' => ''
                     ]
                 ]
             ]
@@ -131,42 +146,48 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
         'balsamine_welcome_content' => [
             'name' => 'Bienvenue',
             'block' => 'home_content',
-            'scope' => 'specified',
             'website' => 'http://balsamine-society.in-salon.dev',
             'module' => 'module_single_post',
             'template' => 'post_whole_content',
             'section' => 1,
+            'page' => '5',
             'data' => [
                 'class' => 'col-md-6',
+                'type' => 'static',
                 'db' => [
                     [
-                        'table' => 'post',
+                        'alias' => 'p',
                         'column' => 'id',
-                        'value' => 5
+                        'value' => '5',
+                        'route' => ''
                     ]
                 ],
             ]
         ],
         'balsamine_list_static_home_post_content' => [
-            'name' => 'Liste de services dynamique',
+            'name' => 'Liste de services statique',
             'block' => 'list_post',
-            'scope' => 'specified',
             'website' => 'http://balsamine-society.in-salon.dev',
             'module' => 'module_post_list',
             'template' => 'post_basic_list_js',
             'section' => null,
+            'page' => '5',
             'data' => [
                 'class' => 'col-md-6',
+                'type' => 'static',
                 'route_name' => 'module:post.type:dynamic.action:read',
                 'total_row' => 3,
                 'db' => [
                     [
+                        'alias' => 'c',
                         'column' => 'slug',
-                        'value' => 'service',
+                        'value' => ['service'],
+                        'route' => ''
                     ]
                 ],
                 'link' => [
                     [
+                        'alias' => 'p',
                         'column' => 'slug',
                         'route' => 'slug'
                     ]
@@ -176,16 +197,18 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
         'balsamine_list_static_post_content' => [
             'name' => 'Liste de services statique',
             'block' => 'list_post',
-            'scope' => 'specified',
             'website' => 'http://balsamine-society.in-salon.dev',
             'module' => 'module_post_list',
             'template' => 'post_basic_list_js',
             'section' => null,
+            'page' => '6',
             'data' => [
                 'class' => 'col-md-12',
+                'type' => 'static',
                 'route_name' => 'module:post.type:dynamic.action:read',
                 'link' => [
                     [
+                        'alias' => 'p',
                         'column' => 'slug',
                         'route' => 'slug'
                     ]
@@ -195,28 +218,32 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
         'balsamine_list_dynamic_post_content' => [
             'name' => 'Liste d\'article',
             'block' => 'list_post',
-            'scope' => 'specified',
             'website' => 'http://balsamine-society.in-salon.dev',
             'module' => 'module_post_list',
             'template' => 'post_basic_list_js',
             'section' => 1,
+            'page' => '7',
             'data' => [
                 'class' => 'col-md-12',
+                'type' => 'dynamic',
                 'db' => [
                     [
-                        'table' => 'post_category',
+                        'alias' => 'c',
                         'column' => 'id',
                         'route' => 'id',
+                        'value' => []
                     ],
                     [
-                        'table' => 'post_category',
+                        'alias' => 'c',
                         'column' => 'slug',
                         'route' => 'category',
+                        'value' => []
                     ],
                 ],
                 'route_name' => 'module:post.type:dynamic.action:read',
                 'link' => [
                     [
+                        'alias' => 'p',
                         'column' => 'slug',
                         'route' => 'slug',
                     ]
@@ -226,18 +253,20 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
         'balsamine_single_post_content' => [
             'name' => 'Article',
             'block' => 'single_post',
-            'scope' => 'specified',
             'website' => 'http://balsamine-society.in-salon.dev',
             'module' => 'module_single_post',
             'template' => 'post_whole_content',
             'section' => 1,
+            'page' => '8',
             'data' => [
                 'class' => 'col-md-12',
+                'type' => 'dynamic',
                 'db' => [
                     [
-                        'table' => 'post',
+                        'alias' => 'p',
                         'column' => 'slug',
                         'route' => 'slug',
+                        'value' => []
                     ]
                 ]
             ]
@@ -253,7 +282,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
                 : Content::findOneBy(['website' => $website, 'block' => $data['block'], 'name' => $data['name']]);
             $content->setName($data['name']);
             $content->setBlock($data['block']);
-            $content->setScope($data['scope']);
+            if(!is_null($data['page']))$content->setPage(Page::findOneById($data['page']));
             $content->setWebsite($website);
             $content->setModule($this->getReference($data['module']));
             $content->setTemplate($this->getReference($data['template']));
