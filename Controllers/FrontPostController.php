@@ -2,7 +2,7 @@
 
 namespace Jet\Modules\Post\Controllers;
 
-use Jet\InSalonBlock\Controllers\InSalonController;
+use Jet\AdminBlock\Controllers\AdminController;
 use Jet\Models\Content;
 use Jet\Models\Website;
 use Jet\Modules\Post\Models\Post;
@@ -13,7 +13,7 @@ use JetFire\Framework\System\Request;
  * Class FrontPostController
  * @package Jet\Modules\Post
  */
-class FrontPostController extends InSalonController
+class FrontPostController extends AdminController
 {
     /**
      * @param Request $request
@@ -24,7 +24,7 @@ class FrontPostController extends InSalonController
     public function all(Request $request, Website $website, $content){
 
         $data = $content->getData();
-        $max = (isset($data['total_row'])) ? (int)$data['total_row'] : 10;
+        $max = (isset($data['total_row']) && !empty($data['total_row'])) ? (int)$data['total_row'] : 10;
         $page = ($request->exists('page')) ? (int)$request->query('page') : 1;
         
         if(!empty($data)) {
@@ -36,7 +36,7 @@ class FrontPostController extends InSalonController
                 'pages_count' => $pages_count,
                 'count_all' => $response['total'],
             ];
-            $args = isset($data['link']) ? $data['link'] : ['column' => 'id', 'route' => 'id'];
+            $args = (isset($data['link']) && !empty($data['link'])) ? $data['link'] : [];
             $route = isset($data['route_name']) ? $data['route_name'] : '';
 
             return (empty($posts))

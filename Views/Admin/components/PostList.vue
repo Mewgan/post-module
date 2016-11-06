@@ -67,7 +67,7 @@
 
                 <!-- BEGIN SEARCH BAR -->
                 <div class="card-body style-primary no-y-padding">
-                    <form class="form form-inverse search-post">
+                    <form class="form form-inverse search-item">
                         <div class="form-group">
                             <div class="input-group input-group-lg">
                                 <div class="input-group-content">
@@ -90,8 +90,8 @@
                     <li class="post-category post-all active"><a @click="refresh(resource);addClass('all')">Tous les
                         articles</a></li>
                     <li :class="'post-category post-' + category.slug" v-for="category in categories">
-                        <a @click="setParam(resource,'filter',{column:'c.id',operator:'eq',value:category.id});addClass(category.slug)">
-                            <i :title="getIconTitle('Cette catégorie',category.website.id)" :class="'category-icon '+getIconClass(category.website.id)"></i>
+                        <a @click="setParams({resource:resource.name, key: 'filter', value: {column:'c.id',operator:'eq',value:category.id}});addClass(category.slug)">
+                            <i :title="getIconTitle('Cette catégorie',category.website.id)" :class="'category-icon ' + getIconClass(category.website.id)"></i>
                             <span class="category-title">{{category.name}}</span>
                         </a>
                         <span @click="selectCategory(category)" data-toggle="modal" data-target="#editPostCategoryModal" class="pull-right clearfix edit-category"><i class="fa fa-pencil"></i></span>
@@ -108,11 +108,11 @@
                                 <!-- BEGIN PAGE HEADER -->
                                 <div class="margin-bottom-xxl">
                                     <label class="text-light text-lg">Lister : </label>
-                                    <select v-model.number="max_list">
+                                    <select v-model.number="resource.max">
                                         <option v-for="option in max_options" :value="option">{{option}}
                                         </option>
                                     </select>
-                                    <span class="text-light text-lg">Total <strong>{{total}}</strong></span>
+                                    <span class="text-light text-lg">Total <strong>{{resource.total}}</strong></span>
                                     <div class="btn-group btn-group-sm pull-right">
                                         <button type="button" class="btn btn-default-light dropdown-toggle"
                                                 data-toggle="dropdown">
@@ -120,14 +120,14 @@
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-right animation-dock" role="menu">
                                             <li>
-                                                <a @click="setParam(resource,'order',{column:'p.updated_at',dir:'asc'})">Date
+                                                <a @click="setParams({resource: resource.name, key: 'order', value: {column:'p.updated_at',dir:'asc'}});addClass('all')">Date
                                                     croissant</a></li>
                                             <li>
-                                                <a @click="setParam(resource,'order',{column:'p.updated_at',dir:'desc'})">Date
+                                                <a @click="setParams({resource: resource.name, key: 'order', value: {column:'p.updated_at',dir:'desc'}});addClass('all')">Date
                                                     décroissant</a></li>
-                                            <li><a @click="setParam(resource,'order',{column:'p.title',dir:'asc'})">Titre
+                                            <li><a @click="setParams({resource: resource.name, key: 'order', value: {column:'p.title',dir:'asc'}});addClass('all')">Titre
                                                 croissant</a></li>
-                                            <li><a @click="setParam(resource,'order',{column:'p.title',dir:'desc'})">Titre
+                                            <li><a @click="setParams({resource: resource.name, key: 'order', value: {column:'p.title',dir:'desc'}});addClass('all')">Titre
                                                 décroissant</a></li>
                                         </ul>
                                     </div>
@@ -147,10 +147,10 @@
 
                                 <!-- BEGIN RESULT LIST -->
                                 <div class="list-results list-results-underlined">
-                                    <div v-for="post in posts" class="col-xs-12 post-box">
+                                    <div v-for="post in resource.data" class="col-xs-12 post-box">
                                         <div class="checkbox checkbox-styled checkbox-primary">
                                             <label>
-                                                <input type="checkbox" :value="post.id" v-model="selected_posts">
+                                                <input type="checkbox" :value="post.id" v-model="selected_items">
                                                 <span></span>
                                             </label>
                                         </div>
@@ -186,8 +186,7 @@
                                 <!-- END RESULTS LIST -->
 
                                 <!-- BEGIN PAGING -->
-                                <pagination :launch="launch" :max="max" @updateResource="updatePosts" :resource_name="resource"
-                                            :resource_url="api"></pagination>
+                                <pagination :resource="resource"></pagination>
                                 <!-- END PAGING -->
 
                             </div><!--end .col -->
@@ -282,7 +281,7 @@
     import Loading from '../../../../../Blocks/AdminBlock/Front/components/Helper/Loading.vue'
     import Pagination from '../../../../../Blocks/AdminBlock/Front/components/Helper/Pagination.vue'
 
-    import {mapGetters, mapActions} from 'vuex'
+    import {mapActions} from 'vuex'
 
     export default
     {
@@ -290,36 +289,21 @@
         data () {
             return {
                 website_id: this.$route.params.website_id,
-                categories: {},
-                posts: {},
-                api: ADMIN_DOMAIN + '/module/post/all/' + this.$route.params.website_id,
-                search_value: '',
-                selected_posts: [],
-                max_options: [10, 20, 30],
-                max: 10,
-                total: 0,
-                resource: 'website-' + this.$route.params.website_id + '-posts',
-                icon_class: '',
-                launch: true,
-                loading: false,
-                category: {},
-                new_category: ''
-            }
-        },
-        computed: {
-            ...mapGetters([
-                'pagination'
-            ]),
-            max_list: {
-                get: function () {
-                    if (this.resource in this.pagination && 'max' in this.pagination[this.resource]) {
-                        return this.pagination[this.resource]['max']
-                    }
-                    return this.max;
+                resource: {
+                    url: ADMIN_DOMAIN + '/module/post/all/' + this.$route.params.website_id,
+                    name: 'posts_' + this.$route.params.website_id,
+                    data: [],
+                    max: 10,
+                    total: 0
                 },
-                set: function (newValue) {
-                    this.max = newValue;
-                }
+                category: {},
+                new_category: '',
+                categories: {},
+                search_value: '',
+                selected_items: [],
+                icon_class: '',
+                max_options: [10, 20, 30],
+                loading: false
             }
         },
         methods: {
@@ -327,17 +311,10 @@
                 'create', 'read', 'update','destroy', 'setParams', 'refresh', 'updateResourceValue', 'deleteResources'
             ]),
             search () {
-                if (this.search_value !== '')this.setParam(this.resource, 'search', this.search_value);
-            },
-            updatePosts (posts, total, max) {
-                this.posts = posts;
-                this.total = total;
-                this.max = max;
-                this.launch = false;
-            },
-            setParam (resource, key, value){
-                this.setParams({resource, key, value});
-                this.addClass('all');
+                if (this.search_value !== ''){
+                    this.setParams({resource: this.resource.name, key: 'search', value: this.search_value});
+                    this.addClass('all');
+                }
             },
             addClass (slug){
                 $('.post-category').removeClass('active');
@@ -350,28 +327,28 @@
                 return (this.website_id == website) ? content + ' vient du site' : content + ' vient du thème parent';
             },
             selectPost (post){
-                this.selected_posts = [post];
+                this.selected_items = [post];
             },
             updatePostState (state) {
-                if (this.selected_posts.length > 0) {
+                if (this.selected_items.length > 0) {
                     this.loading = true;
                     this.update({
                         api: ADMIN_DOMAIN + '/module/post/change-state/' + this.website_id,
                         value: {
                             state: parseInt(state),
-                            ids: this.selected_posts
+                            ids: this.selected_items
                         }
                     }).then((response) => {
                         if (response.data.status == 'success')
-                            this.selected_posts.forEach((id) => {
+                            this.selected_items.forEach((id) => {
                                 this.updateResourceValue({
-                                    resource: this.resource,
+                                    resource: this.resource.name,
                                     id,
                                     key: 'published',
                                     value: state
                                 });
                             });
-                        this.selected_posts = [];
+                        this.selected_items = [];
                         this.loading = false;
                         this.launch = true;
                     });
@@ -389,7 +366,7 @@
                 }).then((response) => {
                     if (response.data.status == 'success')
                         this.updateResourceValue({
-                            resource: this.resource,
+                            resource: this.resource.name,
                             id: post.id,
                             key: 'published',
                             value: state
@@ -400,14 +377,14 @@
                 this.launch = false;
             },
             deletePost () {
-                if (this.selected_posts.length > 0) {
+                if (this.selected_items.length > 0) {
                     this.loading = true;
                     this.deleteResources({
                         api: ADMIN_DOMAIN + '/module/post/delete/' + this.website_id,
-                        resource: this.resource,
-                        ids: this.selected_posts
+                        resource: this.resource.name,
+                        ids: this.selected_items
                     }).then(() => {
-                        this.selected_posts = [];
+                        this.selected_items = [];
                         this.loading = false;
                     });
                 }
@@ -461,7 +438,7 @@
         },
         mounted () {
             let o = this;
-            $(".search-post").submit(function (e) {
+            $(".search-item").submit(function (e) {
                 e.preventDefault();
                 o.search();
             });

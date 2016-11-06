@@ -24,14 +24,15 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             'page' => '1',
             'data' => [
                 'class' => 'col-md-6',
-                'type' => 'static',
                 'db' => [
                     [
-                        'table' => 'post',
+                        'alias' => 'p',
+                        'type' => 'static',
                         'column' => 'id',
-                        'value' => 1
+                        'value' => '1',
+                        'route' => ''
                     ]
-                ],
+                ]
             ]
         ],
         'aster_list_static_home_post_content' => [
@@ -44,19 +45,24 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             'page' => '1',
             'data' => [
                 'class' => 'col-md-6',
-                'type' => 'static',
                 'route_name' => 'module:post.type:dynamic.action:read',
                 'total_row' => 3,
                 'db' => [
                     [
+                        'alias' => 'c',
+                        'type' => 'static',
                         'column' => 'slug',
-                        'value' => 'service',
+                        'value' => ['service'],
+                        'route' => ''
                     ]
                 ],
                 'link' => [
                     [
+                        'alias' => 'p',
+                        'type' => 'dynamic',
+                        'route' => 'slug',
                         'column' => 'slug',
-                        'route' => 'slug'
+                        'value' => ''
                     ]
                 ],
             ]
@@ -71,10 +77,12 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             'page' => '2',
             'data' => [
                 'class' => 'col-md-12',
-                'type' => 'static',
                 'route_name' => 'module:post.type:dynamic.action:read',
+                'db' => [],
                 'link' => [
                     [
+                        'alias' => 'p',
+                        'type' => 'static',
                         'column' => 'slug',
                         'route' => 'slug'
                     ]
@@ -91,24 +99,30 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             'page' => '3',
             'data' => [
                 'class' => 'col-md-12',
-                'type' => 'dynamic',
                 'route_name' => 'module:post.type:dynamic.action:read',
                 'db' => [
                     [
-                        'table' => 'post_category',
+                        'alias' => 'c',
+                        'type' => 'dynamic',
                         'column' => 'id',
                         'route' => 'id',
+                        'value' => []
                     ],
                     [
-                        'table' => 'post_category',
+                        'alias' => 'c',
+                        'type' => 'dynamic',
                         'column' => 'slug',
                         'route' => 'category',
+                        'value' => []
                     ],
                 ],
                 'link' => [
                     [
-                        'column' => 'slug',
+                        'alias' => 'p',
+                        'type' => 'dynamic',
                         'route' => 'slug',
+                        'column' => 'slug',
+                        'value' => ''
                     ]
                 ]
             ]
@@ -123,12 +137,13 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             'page' => '4',
             'data' => [
                 'class' => 'col-md-12',
-                'type' => 'dynamic',
                 'db' => [
                     [
-                        'table' => 'post',
+                        'alias' => 'p',
+                        'type' => 'dynamic',
                         'column' => 'slug',
                         'route' => 'slug',
+                        'value' => ''
                     ]
                 ]
             ]
@@ -144,12 +159,13 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             'page' => '5',
             'data' => [
                 'class' => 'col-md-6',
-                'type' => 'static',
                 'db' => [
                     [
-                        'table' => 'post',
+                        'alias' => 'p',
+                        'type' => 'static',
                         'column' => 'id',
-                        'value' => 5
+                        'value' => '5',
+                        'route' => ''
                     ]
                 ],
             ]
@@ -164,19 +180,24 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             'page' => '5',
             'data' => [
                 'class' => 'col-md-6',
-                'type' => 'static',
                 'route_name' => 'module:post.type:dynamic.action:read',
                 'total_row' => 3,
                 'db' => [
                     [
+                        'alias' => 'c',
+                        'type' => 'static',
                         'column' => 'slug',
-                        'value' => 'service',
+                        'value' => ['service'],
+                        'route' => ''
                     ]
                 ],
                 'link' => [
                     [
+                        'alias' => 'p',
+                        'type' => 'dynamic',
+                        'route' => 'slug',
                         'column' => 'slug',
-                        'route' => 'slug'
+                        'value' => ''
                     ]
                 ],
             ]
@@ -191,12 +212,15 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             'page' => '6',
             'data' => [
                 'class' => 'col-md-12',
-                'type' => 'static',
                 'route_name' => 'module:post.type:dynamic.action:read',
+                'db' => [],
                 'link' => [
                     [
+                        'alias' => 'p',
+                        'type' => 'static',
+                        'route' => 'slug',
                         'column' => 'slug',
-                        'route' => 'slug'
+                        'value' => ''
                     ]
                 ],
             ]
@@ -211,24 +235,30 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             'page' => '7',
             'data' => [
                 'class' => 'col-md-12',
-                'type' => 'dynamic',
                 'db' => [
                     [
-                        'table' => 'post_category',
+                        'alias' => 'c',
+                        'type' => 'dynamic',
                         'column' => 'id',
                         'route' => 'id',
+                        'value' => []
                     ],
                     [
-                        'table' => 'post_category',
+                        'alias' => 'c',
+                        'type' => 'dynamic',
                         'column' => 'slug',
                         'route' => 'category',
+                        'value' => []
                     ],
                 ],
                 'route_name' => 'module:post.type:dynamic.action:read',
                 'link' => [
                     [
-                        'column' => 'slug',
+                        'alias' => 'p',
+                        'type' => 'dynamic',
                         'route' => 'slug',
+                        'column' => 'slug',
+                        'value' => ''
                     ]
                 ]
             ]
@@ -243,12 +273,13 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             'page' => '8',
             'data' => [
                 'class' => 'col-md-12',
-                'type' => 'dynamic',
                 'db' => [
                     [
-                        'table' => 'post',
+                        'alias' => 'p',
+                        'type' => 'dynamic',
                         'column' => 'slug',
                         'route' => 'slug',
+                        'value' => []
                     ]
                 ]
             ]

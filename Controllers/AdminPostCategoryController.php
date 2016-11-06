@@ -3,13 +3,13 @@
 namespace Jet\Modules\Post\Controllers;
 
 use Jet\AdminBlock\Classes\Auth;
-use Jet\InSalonBlock\Controllers\InSalonController;
+use Jet\AdminBlock\Controllers\AdminController;
 use Jet\Models\Account;
 use Jet\Models\Website;
 use Jet\Modules\Post\Models\PostCategory;
 use JetFire\Framework\System\Request;
 
-class AdminPostCategoryController extends InSalonController
+class AdminPostCategoryController extends AdminController
 {
 
     public function all(Request $request,$website){

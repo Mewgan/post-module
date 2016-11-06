@@ -4,17 +4,27 @@ namespace Jet\Modules\Post\Controllers;
 
 
 use Jet\AdminBlock\Classes\Auth;
-use Jet\InSalonBlock\Controllers\InSalonController;
+use Jet\AdminBlock\Controllers\AdminController;
 use Jet\Models\Account;
 use Jet\Models\Route;
 use Jet\Models\Website;
 use Jet\Modules\Post\Models\Post;
+use Jet\Modules\Post\Models\PostCategory;
 use JetFire\Framework\System\Request;
 
-class AdminPostController extends InSalonController
+/**
+ * Class AdminPostController
+ * @package Jet\Modules\Post\Controllers
+ */
+class AdminPostController extends AdminController
 {
 
-    public function all(Request $request,$website){
+    /**
+     * @param Request $request
+     * @param $website
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function all(Request $request, $website){
         $max = ($request->exists('max')) ? (int)$request->query('max') : 10;
         $page = ($request->exists('page')) ? (int)$request->query('page') : 1;
 
@@ -41,11 +51,19 @@ class AdminPostController extends InSalonController
         ];
         return $this->json(['status' => 'success', 'content' => $themes]);
     }
-    
+
+    /**
+     *
+     */
     public function create(){
 
     }
 
+    /**
+     * @param $website
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function read($website, $id){
         $this->websites[] = $website;
         $website = Website::findOneById($website);
@@ -58,10 +76,18 @@ class AdminPostController extends InSalonController
         return $this->json(['status' => 'error', 'message' => 'Article inexistant']);
     }
 
+    /**
+     *
+     */
     public function update(){
         
     }
 
+    /**
+     * @param Request $request
+     * @param $website
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function delete(Request $request, $website)
     {
         if ($request->method() == 'DELETE' && $request->exists('ids')) {
@@ -87,6 +113,11 @@ class AdminPostController extends InSalonController
         return $this->json(['status' => 'error', 'message' => 'Le(s) article(s) n\'ont pas pu être supprimé(s)']);
     }
 
+    /**
+     * @param Request $request
+     * @param $website
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function changeState(Request $request, $website)
     {
         if ($request->method() == 'PUT' && $request->exists(['ids', 'state'])) {
@@ -117,13 +148,30 @@ class AdminPostController extends InSalonController
         }
         return $this->json(['status' => 'error', 'message' => 'Le(s) article(s) n\'ont pas pu être mis à jour']);
     }
-    
+
+    /**
+     *
+     */
     public function createContent(){
         
     }
 
+    /**
+     *
+     */
     public function updateContent(){
 
     }
-    
+
+    public function listTableValues($website){
+        $this->websites[] = $website;
+        $website = Website::findOneById($website);
+        $this->getThemeWebsites($website);
+
+        return $this->json([
+            'c' => PostCategory::repo()->listTableValues($this->websites, $website->getData()),
+            'p' => Post::repo()->listTableValues($this->websites, $website->getData())
+        ]);
+        
+    }
 }

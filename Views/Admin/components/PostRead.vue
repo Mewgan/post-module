@@ -93,7 +93,7 @@
                                             <li v-for="category in categories">
                                                 <a href="#"><div class="pull-right checkbox checkbox-styled checkbox-primary">
                                                     <label>
-                                                        <input type="checkbox" :checked="checkCategory(category.id)">
+                                                        <input type="checkbox" v-model="post_categories" :value="category.id">
                                                         <span></span>
                                                     </label>
                                                 </div>{{category.name}}</a>
@@ -134,7 +134,7 @@
     import Pagination from '../../../../../Blocks/AdminBlock/Front/components/Helper/Pagination.vue'
     import Media from '../../../../../Blocks/AdminBlock/Front/components/Helper/Media.vue'
 
-    import {mapGetters, mapActions} from 'vuex'
+    import {mapActions} from 'vuex'
 
     export default
     {
@@ -155,6 +155,7 @@
                         domain: ''
                     }
                 },
+                post_categories: [],
                 categories: {},
                 route: '',
                 file_type: ['image/jpg','image/png','image/gif'],
@@ -165,11 +166,6 @@
                 launch_media: false
             }
         },
-        computed: {
-            ...mapGetters([
-                'pagination'
-            ])
-        },
         methods: {
             ...mapActions([
                 'create', 'read', 'update', 'destroy', 'setParams', 'refresh', 'updateResourceValue', 'deleteResources'
@@ -179,14 +175,6 @@
             },
             maxUpdate (max) {
                 this.max_media = max;
-            },
-            checkCategory (category){
-                for(let index in this.post.categories) {
-                    if (this.post.categories.hasOwnProperty(index)) {
-                        if(this.post.categories[index].id == category)return true;
-                    }
-                }
-                return false;
             }
         },
         mounted () {
@@ -213,7 +201,10 @@
                     this.read({api: ADMIN_DOMAIN + '/module/post-category/list-by-name/' + this.website_id}).then((response) => {
                         this.categories = response.data;
                         this.loading = false;
-                    })
+                    });
+                    for(let index in this.post.categories)
+                        if (this.post.categories.hasOwnProperty(index))
+                            this.post_categories.push(this.post.categories[index].id)
                 }).then(() => {
                     tinymce.init({
                         selector: '.post_content',

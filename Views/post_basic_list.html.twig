@@ -2,7 +2,15 @@
 
     {% set params = {} %}
     {% for arg in args %}
-        {% set params = params|merge({(arg.route):attribute(post,arg.column)}) %}
+        {% if arg.value != '' %}
+            {% set params = params|merge({(arg.route):arg.value}) %}
+        {% else %}
+            {% if arg.alias == 'p' %}
+                {% set params = params|merge({(arg.route):attribute(post,arg.column)}) %}
+            {% elseif arg.alias == 'c' %}
+                {% set params = params|merge({(arg.route):attribute(post.categories[0],arg.column)}) %}
+            {% endif %}
+        {% endif %}
     {% endfor %}
 
     <div class="row">
