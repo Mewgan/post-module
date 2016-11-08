@@ -10,62 +10,62 @@ use Jet\Models\Website;
 class LoadPostWebsiteModule extends AbstractFixture implements OrderedFixtureInterface
 {
     private $data = [
-        'http://aster-society.in-salon.dev' => [
+        'aster-society' => [
             'modules' => [
                 'module_post_list',
                 'module_single_post',
             ],
         ],
-        'http://balsamine-society.in-salon.dev' => [
+        'balsamine-society' => [
             'modules' => [
                 'module_post_list',
                 'module_single_post',
             ],
         ],
-        'http://heliotrope-society.in-salon.dev' => [
+        'heliotrope-society' => [
             'modules' => [
                 'module_post_list',
                 'module_single_post',
             ],
         ],
-        'http://pivoine-society.in-salon.dev' => [
+        'pivoine-society' => [
             'modules' => [
                 'module_post_list',
                 'module_single_post',
             ],
         ],
-        'http://rose-society.in-salon.dev' => [
+        'rose-society' => [
             'modules' => [
                 'module_post_list',
                 'module_single_post',
             ],
         ],
-        'http://luffy-society.in-salon.dev' => [
+        'luffy-society' => [
             'modules' => [
                 'module_post_list',
                 'module_single_post',
             ],
             'exclude' => [4],
         ],
-        'http://zoro-society.in-salon.dev' => [
+        'zoro-society' => [
             'modules' => [
                 'module_post_list',
                 'module_single_post',
             ],
         ],
-        'http://sanji-society.in-salon.dev' => [
+        'sanji-society' => [
             'modules' => [
                 'module_post_list',
                 'module_single_post',
             ],
         ],
-        'http://chopper-society.in-salon.dev' => [
+        'chopper-society' => [
             'modules' => [
                 'module_post_list',
                 'module_single_post',
             ],
         ],
-        'http://robin-society.in-salon.dev' => [
+        'robin-society' => [
             'modules' => [
                 'module_post_list',
                 'module_single_post'

@@ -22,7 +22,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'categories' => [
                 'actualite'
             ],
-            'website' => 'http://aster-society.in-salon.dev'
+            'website' => 'aster-society'
         ],
         [
             'title' => 'Service 1',
@@ -33,7 +33,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'categories' => [
                 'service'
             ],
-            'website' => 'http://aster-society.in-salon.dev'
+            'website' => 'aster-society'
         ],
         [
             'title' => 'Service 2',
@@ -55,7 +55,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'categories' => [
                 'service'
             ],
-            'website' => 'http://aster-society.in-salon.dev'
+            'website' => 'aster-society'
         ],
         /* Balsamine website posts */
         [
@@ -67,7 +67,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'categories' => [
                 'service'
             ],
-            'website' => 'http://balsamine-society.in-salon.dev'
+            'website' => 'balsamine-society'
         ],
         [
             'title' => 'Balsamine Service 2',
@@ -78,7 +78,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'categories' => [
                 'service'
             ],
-            'website' => 'http://balsamine-society.in-salon.dev'
+            'website' => 'balsamine-society'
         ],
         [
             'title' => 'Balsamine Service 3',
@@ -89,7 +89,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'categories' => [
                 'service'
             ],
-            'website' => 'http://balsamine-society.in-salon.dev'
+            'website' => 'balsamine-society'
         ],
         /* Luffy website posts */
         [
@@ -101,7 +101,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'categories' => [
                 'service'
             ],
-            'website' => 'http://luffy-society.in-salon.dev'
+            'website' => 'luffy-society'
         ],
     ];
 

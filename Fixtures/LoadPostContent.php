@@ -17,7 +17,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
         'aster_welcome_content' => [
             'name' => 'Bienvenue',
             'block' => 'home_content',
-            'website' => 'http://aster-society.in-salon.dev',
+            'website' => 'aster-society',
             'module' => 'module_single_post',
             'template' => 'post_whole_content',
             'section' => 1,
@@ -38,7 +38,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
         'aster_list_static_home_post_content' => [
             'name' => 'Liste de services statique',
             'block' => 'list_post',
-            'website' => 'http://aster-society.in-salon.dev',
+            'website' => 'aster-society',
             'module' => 'module_post_list',
             'template' => 'post_basic_list',
             'section' => null,
@@ -70,7 +70,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
         'aster_list_static_post_content' => [
             'name' => 'Liste de services statique',
             'block' => 'list_post',
-            'website' => 'http://aster-society.in-salon.dev',
+            'website' => 'aster-society',
             'module' => 'module_post_list',
             'template' => 'post_basic_list',
             'section' => null,
@@ -92,7 +92,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
         'aster_list_dynamic_post_content' => [
             'name' => 'Liste d\'article',
             'block' => 'list_post',
-            'website' => 'http://aster-society.in-salon.dev',
+            'website' => 'aster-society',
             'module' => 'module_post_list',
             'template' => 'post_basic_list',
             'section' => 1,
@@ -130,7 +130,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
         'aster_single_post_content' => [
             'name' => 'Article',
             'block' => 'single_post',
-            'website' => 'http://aster-society.in-salon.dev',
+            'website' => 'aster-society',
             'module' => 'module_single_post',
             'template' => 'post_whole_content',
             'section' => 1,
@@ -152,7 +152,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
         'balsamine_welcome_content' => [
             'name' => 'Bienvenue',
             'block' => 'home_content',
-            'website' => 'http://balsamine-society.in-salon.dev',
+            'website' => 'balsamine-society',
             'module' => 'module_single_post',
             'template' => 'post_whole_content',
             'section' => 1,
@@ -173,7 +173,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
         'balsamine_list_static_home_post_content' => [
             'name' => 'Liste de services statique',
             'block' => 'list_post',
-            'website' => 'http://balsamine-society.in-salon.dev',
+            'website' => 'balsamine-society',
             'module' => 'module_post_list',
             'template' => 'post_basic_list_js',
             'section' => null,
@@ -205,7 +205,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
         'balsamine_list_static_post_content' => [
             'name' => 'Liste de services statique',
             'block' => 'list_post',
-            'website' => 'http://balsamine-society.in-salon.dev',
+            'website' => 'balsamine-society',
             'module' => 'module_post_list',
             'template' => 'post_basic_list_js',
             'section' => null,
@@ -228,7 +228,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
         'balsamine_list_dynamic_post_content' => [
             'name' => 'Liste d\'article',
             'block' => 'list_post',
-            'website' => 'http://balsamine-society.in-salon.dev',
+            'website' => 'balsamine-society',
             'module' => 'module_post_list',
             'template' => 'post_basic_list_js',
             'section' => 1,
@@ -266,7 +266,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
         'balsamine_single_post_content' => [
             'name' => 'Article',
             'block' => 'single_post',
-            'website' => 'http://balsamine-society.in-salon.dev',
+            'website' => 'balsamine-society',
             'module' => 'module_single_post',
             'template' => 'post_whole_content',
             'section' => 1,

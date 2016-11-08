@@ -15,12 +15,12 @@ class LoadPostCategory extends AbstractFixture implements OrderedFixtureInterfac
         [
             'name' => 'Service',
             'slug' => 'service',
-            'website' => 'http://aster-society.in-salon.dev',
+            'website' => 'aster-society',
         ],
         [
             'name' => 'Actualité',
             'slug' => 'actualite',
-            'website' => 'http://aster-society.in-salon.dev',
+            'website' => 'aster-society',
         ],
     ];
 

@@ -2,7 +2,7 @@
 
 namespace Jet\Modules\Post\Controllers;
 
-use Jet\AdminBlock\Controllers\AdminController;
+use Jet\FrontBlock\Controllers\MainController;
 use Jet\Models\Content;
 use Jet\Models\Website;
 use Jet\Modules\Post\Models\Post;
@@ -13,7 +13,7 @@ use JetFire\Framework\System\Request;
  * Class FrontPostController
  * @package Jet\Modules\Post
  */
-class FrontPostController extends AdminController
+class FrontPostController extends MainController
 {
     /**
      * @param Request $request
