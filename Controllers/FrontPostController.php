@@ -38,7 +38,6 @@ class FrontPostController extends MainController
             ];
             $args = (isset($data['link']) && !empty($data['link'])) ? $data['link'] : [];
             $route = isset($data['route_name']) ? $data['route_name'] : '';
-
             return (empty($posts))
                 ? null
                 : $this->_renderContent($content->getTemplate(), 'src/Modules/Post/Views/', compact('posts','pagination','args','route'));
