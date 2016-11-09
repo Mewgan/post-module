@@ -87,7 +87,7 @@
 
                 <!-- BEGIN TAB RESULTS -->
                 <ul class="card-head nav nav-tabs tabs-accent post-categories" data-toggle="tabs">
-                    <li class="post-category post-all active"><a @click="refresh(resource);addClass('all')">Tous les
+                    <li class="post-category post-all active"><a @click="refresh(resource.name);addClass('all')">Tous les
                         articles</a></li>
                     <li :class="'post-category post-' + category.slug" v-for="category in categories">
                         <a @click="setParams({resource:resource.name, key: 'filter', value: {column:'c.id',operator:'eq',value:category.id}});addClass(category.slug)">
@@ -186,7 +186,7 @@
                                 <!-- END RESULTS LIST -->
 
                                 <!-- BEGIN PAGING -->
-                                <pagination :resource="resource"></pagination>
+                                <pagination :refresh="refresh_items" :resource="resource"></pagination>
                                 <!-- END PAGING -->
 
                             </div><!--end .col -->
@@ -199,7 +199,7 @@
         </div><!--end .section-body -->
 
         <div class="modal fade" id="deletePostModal" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel"
-             aria-hidden="true" style="display: none;">
+             aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -301,6 +301,7 @@
                 categories: {},
                 search_value: '',
                 selected_items: [],
+                refresh_items: false,
                 icon_class: '',
                 max_options: [10, 20, 30],
                 loading: false
@@ -350,8 +351,9 @@
                             });
                         this.selected_items = [];
                         this.loading = false;
-                        this.launch = true;
+                        this.refresh_items = true;
                     });
+                    this.refresh_items = false;
                 }
             },
             changeState (post) {
@@ -372,9 +374,9 @@
                             value: state
                         });
                     this.loading = false;
-                    this.launch = true;
+                    this.refresh_items = true;
                 });
-                this.launch = false;
+                this.refresh_items = false;
             },
             deletePost () {
                 if (this.selected_items.length > 0) {

@@ -99,7 +99,7 @@ class AdminPostController extends AdminController
                 foreach ($request->get('ids') as $id){
                     $post = Post::orm('pdo')->select('id','website_id')->where('id',$id)->get(true);
                     if($post['website_id'] != $website) {
-                        if (!isset($posts_exclude[$id])) $posts_exclude[] = $id;
+                        if (!in_array($id,$posts_exclude)) $posts_exclude[] = $id;
                     }else
                         Post::delete($id);
                 }
@@ -124,6 +124,7 @@ class AdminPostController extends AdminController
             $post_website = Website::findOneById($website);
             $data = $post_website->getData();
             $posts_exclude = (isset($data['parent_exclude']['posts']))?$data['parent_exclude']['posts']:[];
+            $posts_replace = (isset($data['parent_replace']['posts']))?$data['parent_replace']['posts']:[];
             foreach ($request->get('ids') as $id) {
                 $post = Post::findOneById($id);
                 if($post->getWebsite()->getId() != $website) {
@@ -137,11 +138,13 @@ class AdminPostController extends AdminController
                     $new_post->setThumbnail($post->getThumbnail());
                     $new_post->setPostCategories($post->getPostCategories());
                     Post::watchAndSave($new_post);
-                    if(!isset($posts_exclude[$id]))$posts_exclude[] = $id;
+                    if(!in_array($post->getId(),$posts_exclude))$posts_exclude[] = $post->getId();
+                    if(!isset($posts_replace[$post->getId()]))$posts_replace[$post->getId()] = $new_post->getId();
                 }else
                     Post::where('id', $id)->set(['published' => $request->get('state')]);
             }
             $data['parent_exclude']['posts'] = $posts_exclude;
+            $data['parent_replace']['posts'] = $posts_replace;
             $post_website->setData($data);
             Website::watchAndSave($post_website);
             return $this->json(['status' => 'success', 'message' => 'Le(s) article(s) ont bien été mis à jour']);

@@ -16,46 +16,46 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
         [
             'title' => 'Bienvenue',
             'slug' => 'bienvenue',
-            'short_description' => 'Bienvenue sur le site Aster',
-            'content' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
+            'short_description' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.',
+            'content' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
             'thumbnail' => '/france.png',
             'categories' => [
                 'actualite'
             ],
-            'website' => 'http://aster-society.in-salon.dev'
+            'website' => 'aster-society'
         ],
         [
             'title' => 'Service 1',
             'slug' => 'service-1',
-            'short_description' => 'Service 1 de Aster',
-            'content' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
+            'short_description' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.',
+            'content' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
             'thumbnail' => '/en.gif',
             'categories' => [
                 'service'
             ],
-            'website' => 'http://aster-society.in-salon.dev'
+            'website' => 'aster-society'
         ],
         [
             'title' => 'Service 2',
             'slug' => 'service-2',
-            'short_description' => 'Service 2 de Aster',
-            'content' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
+            'short_description' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.',
+            'content' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
             'thumbnail' => '/en.gif',
             'categories' => [
                 'service'
             ],
-            'website' => 'http://aster-society.in-salon.dev'
+            'website' => 'aster-society'
         ],
         [
             'title' => 'Service 3',
             'slug' => 'service-3',
-            'short_description' => 'Service 3 de Aster',
-            'content' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
+            'short_description' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.',
+            'content' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
             'thumbnail' => '/france.png',
             'categories' => [
                 'service'
             ],
-            'website' => 'http://aster-society.in-salon.dev'
+            'website' => 'aster-society'
         ],
         /* Balsamine website posts */
         [
@@ -67,7 +67,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'categories' => [
                 'service'
             ],
-            'website' => 'http://balsamine-society.in-salon.dev'
+            'website' => 'balsamine-society'
         ],
         [
             'title' => 'Balsamine Service 2',
@@ -78,7 +78,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'categories' => [
                 'service'
             ],
-            'website' => 'http://balsamine-society.in-salon.dev'
+            'website' => 'balsamine-society'
         ],
         [
             'title' => 'Balsamine Service 3',
@@ -89,19 +89,19 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'categories' => [
                 'service'
             ],
-            'website' => 'http://balsamine-society.in-salon.dev'
+            'website' => 'balsamine-society'
         ],
         /* Luffy website posts */
         [
             'title' => 'Luffy Service 1',
             'slug' => 'luffy-service-1',
-            'short_description' => 'Service de Luffy',
-            'content' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
+            'short_description' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.',
+            'content' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
             'thumbnail' => '/france.png',
             'categories' => [
                 'service'
             ],
-            'website' => 'http://luffy-society.in-salon.dev'
+            'website' => 'luffy-society'
         ],
     ];
 
