@@ -59,6 +59,18 @@ class PostCategoryRepository extends EntityRepository{
         return ['data' => $data, 'total' => ($countSearch)?count($data):$this->countPost($params)];
     }
 
+    public function frontListAll($params){
+        $query = PostCategory::queryBuilder();
+        $query->select('partial c.{id,name,slug}')
+            ->from('Jet\Modules\Post\Models\PostCategory','c')
+            ->leftJoin('c.website','w');
+
+        $query = $this->getQueryWithParams($query,$params);
+
+
+        return $query->getQuery()->getArrayResult();
+    }
+
     /**
      * @param array $params
      * @return int
@@ -93,10 +105,9 @@ class PostCategoryRepository extends EntityRepository{
     /**
      * @param $query
      * @param $params
-     * @param string $alias
      * @return mixed
      */
-    private function getQueryWithParams($query, $params , $alias = 'c'){
+    private function getQueryWithParams($query, $params){
 
         if(isset($params['websites'])){
             $query->where($query->expr()->in('w.id',':websites'))
@@ -106,21 +117,6 @@ class PostCategoryRepository extends EntityRepository{
         if(isset($params['website_options']['parent_exclude']) && isset($params['website_options']['parent_exclude']['post_categories'])){
             $query->andWhere($query->expr()->notIn('c.id',':exclude_ids'))
                 ->setParameter('exclude_ids',$params['website_options']['parent_exclude']['post_categories']);
-        }
- 
-        if(isset($params['db']) && !empty($params['db'])){
-            foreach ($params['db'] as $key => $db) {
-                if(isset($db['route']))
-                    $query->andWhere('c.' . $db['column'] . ' = :column_' . $key)
-                        ->setParameter('column_' . $key, $params['params'][$db['route']]);
-                elseif(isset($db['value']))
-                    if (is_array($db['value']))
-                        $query->andWhere($alias.'.' . $db['column'] . ' IN :column_' . $key)
-                            ->setParameter('column_' . $key, $db['value']);
-                    else
-                        $query->andWhere($alias.'.' . $db['column'] . ' = :column_' . $key)
-                            ->setParameter('column_' . $key, $db['value']);
-            }
         }
 
         return $query;

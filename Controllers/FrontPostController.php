@@ -6,6 +6,7 @@ use Jet\FrontBlock\Controllers\MainController;
 use Jet\Models\Content;
 use Jet\Models\Website;
 use Jet\Modules\Post\Models\Post;
+use Jet\Modules\Post\Models\PostCategory;
 use JetFire\Framework\Factories\View;
 use JetFire\Framework\System\Request;
 
@@ -38,9 +39,11 @@ class FrontPostController extends MainController
             ];
             $args = (isset($data['link']) && !empty($data['link'])) ? $data['link'] : [];
             $route = isset($data['route_name']) ? $data['route_name'] : '';
+            $categories = PostCategory::repo()->frontListAll($this->getParams($website,$data));
+            
             return (empty($posts))
                 ? null
-                : $this->_renderContent($content->getTemplate(), 'src/Modules/Post/Views/', compact('posts','pagination','args','route'));
+                : $this->_renderContent($content->getTemplate(), 'src/Modules/Post/Views/', compact('categories','posts','pagination','args','route'));
         }
         return null;
     }

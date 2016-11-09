@@ -1,6 +1,6 @@
 <style>
-    #mediaLibrary{
-        z-index: 999999;
+    #mediaLibrary0{
+        z-index: 999999 !important;
     }
     .post-read .title-input{
         color: #20252b;
@@ -219,7 +219,7 @@
                         file_browser_callback: function (field_name, url, type, win) {
                             o.launch_media = true;
                             o.media_target_id = field_name;
-                            $('#mediaLibrary').modal()
+                            $('#mediaLibrary0').modal()
                         }
                     });
                 });

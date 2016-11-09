@@ -166,7 +166,7 @@
                                     <label :for="'link_column_'+i">Colonne</label>
                                 </div>
                                 <div class="form-group">
-                                    <select :id="'link_value_'+i" v-model="link.value" class="form-control">
+                                    <select :id="'link_value_'+i" @change="setValueId(i,link.alias,link.column,link.value)" v-model="link.value" class="form-control">
                                         <option v-for="value in getValues(link.alias)" :value="value[link.column]">{{value.name}}</option>
                                     </select>
                                     <label :for="'link_value_'+i">Valeur</label>
@@ -208,7 +208,7 @@
 
     export default{
         name: 'list-post',
-        components: {Loading,RouteEditor},
+        components: {Loading, RouteEditor},
         props: {
             line: {
                 default: '0'
@@ -234,11 +234,11 @@
                     db: [],
                     link: []
                 },
-                tables : {
+                tables: {
                     p: 'Article',
                     c: 'Catégorie'
                 },
-                columns: ['','id','slug'],
+                columns: ['', 'id', 'slug'],
                 values: {
                     c: null,
                     p: null
@@ -255,8 +255,15 @@
                     let o = this;
                     this.$nextTick(function () {
                         $('.select2-list').on('change', function () {
-                            if ($(this).attr('data-index') in o.selectDbValues) {
-                                o.content_data.db[$(this).attr('data-index')].value = o.selectDbValues[$(this).attr('data-index')].val();
+                            let key = o.line + '@' + $(this).attr('data-index');
+                            if (key in o.selectDbValues) {
+                                o.content_data.db[$(this).attr('data-index')].value = o.selectDbValues[key].val();
+                                o.content_data.db[$(this).attr('data-index')].value_id = {};
+                                o.selectDbValues[key].val().forEach((element,k) => {
+                                    let table = o.content_data.db[$(this).attr('data-index')].alias;
+                                    let index = o.values[table].findIndex((i) => i[o.content_data.db[$(this).attr('data-index')].column] == element);
+                                    o.content_data.db[$(this).attr('data-index')].value_id[k] = o.values[table][index].id
+                                })
                             }
                         });
                     });
@@ -269,6 +276,12 @@
             ...mapActions([
                 'read'
             ]),
+            setValueId(key, table, col, val){
+                if (table in this.values && this.values[table] != null) {
+                    let index = this.values[table].findIndex((i) => i[col] == val);
+                    this.content_data.link[key].value_id = this.values[table][index].id
+                }
+            },
             classDbStatic (i) {
                 return {
                     active: (i in this.content_data.db && 'type' in this.content_data.db[i] && this.content_data.db[i].type == 'static')
@@ -286,7 +299,7 @@
             },
             classLinkDynamic (i) {
                 return {
-                    active: (i in this.content_data.link && 'type' in this.content_data.link[i] && this.content_data.link[i].type  == 'dynamic')
+                    active: (i in this.content_data.link && 'type' in this.content_data.link[i] && this.content_data.link[i].type == 'dynamic')
                 }
             },
             updateRoute(route){
@@ -299,6 +312,7 @@
                     type: 'static',
                     column: '',
                     value: [],
+                    value_id: [],
                     route: ''
                 });
                 this.$nextTick(function () {
@@ -317,7 +331,8 @@
                     type: 'static',
                     route: '',
                     column: '',
-                    value: ''
+                    value: '',
+                    value_id: ''
                 });
                 this.$nextTick(function () {
                     AppVendor()._initTabs();
@@ -329,10 +344,10 @@
             getValues(table){
                 return this.values[table];
             },
-            changeDbType(i,type){
+            changeDbType(i, type){
                 this.content_data.db[i].type = type;
             },
-            changeLinkType(i,type){
+            changeLinkType(i, type){
                 this.content_data.link[i].type = type;
             }
         },
@@ -357,7 +372,15 @@
             });
         },
         mounted () {
-            if('db' in this.content.data) this.content_data = this.content.data;
+            if ('db' in this.content.data) {
+                this.content_data = this.content.data;
+                this.content_data.db.forEach((el, index) => {
+                    this.selectDbValues[this.line + '@' + index] = $("#db_value_" + this.line + '_' + index).select2({
+                        allowClear: true
+                    });
+                    this.selectDbValues[this.line + '@' + index].val(el.value).trigger("change");
+                });
+            }
 
             this.$nextTick(function () {
                 AppVendor()._initTabs();

@@ -89,7 +89,7 @@
                         <div class="card-body tab-content">
                             <div :class="[classStatic(i), 'tab-pane']" id="content_static">
                                 <div class="form-group">
-                                    <select :id="'db_value_'+i" v-model="db.value" class="form-control">
+                                    <select :id="'db_value_'+i" @change="setValueId(i,db.alias,db.column,db.value)" v-model="db.value" class="form-control">
                                         <option v-for="value in getValues(db.alias)" :value="value[db.column]">{{value.name}}</option>
                                     </select>
                                     <label :for="'db_value_'+i">Valeur</label>
@@ -145,11 +145,11 @@
                     class: '',
                     db: []
                 },
-                tables : {
+                tables: {
                     p: 'Article',
                     c: 'Catégorie'
                 },
-                columns: ['','id','slug'],
+                columns: ['', 'id', 'slug'],
                 values: {
                     c: null,
                     p: null
@@ -170,6 +170,12 @@
             ...mapActions([
                 'read'
             ]),
+            setValueId(key,table, col, val){
+                if (table in this.values && this.values[table] != null) {
+                    let index = this.values[table].findIndex((i) => i[col] == val);
+                    this.content_data.db[key].value_id = this.values[table][index].id
+                }
+            },
             classStatic (i) {
                 return {
                     active: (i in this.content_data.db && 'type' in this.content_data.db[i] && this.content_data.db[i].type == 'static')
@@ -186,7 +192,8 @@
                     type: 'static',
                     column: '',
                     value: '',
-                    route: ''
+                    route: '',
+                    value_id: ''
                 });
                 this.$nextTick(function () {
                     AppVendor()._initTabs();
@@ -198,7 +205,7 @@
             getValues(table){
                 return this.values[table];
             },
-            changeType(i,type){
+            changeType(i, type){
                 this.content_data.db[i].type = type;
             }
         },
@@ -213,7 +220,7 @@
             });
         },
         mounted () {
-            if('db' in this.content.data)this.content_data = this.content.data;
+            if ('db' in this.content.data)this.content_data = this.content.data;
 
             this.$nextTick(function () {
                 AppVendor()._initTabs();

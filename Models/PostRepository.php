@@ -24,9 +24,12 @@ class PostRepository extends EntityRepository{
         
         $query->select('p')
             ->addSelect('partial c.{id,name,slug}')
+            ->addSelect('partial t.{id,path,alt}')
+            ->addSelect('partial w.{id,domain}')
             ->from('Jet\Modules\Post\Models\Post','p')
             ->leftJoin('p.website','w')
-            ->innerJoin('p.categories', 'c');
+            ->leftJoin('p.thumbnail','t')
+            ->leftJoin('p.categories', 'c');
 
         if(isset($params['total_row']) && !empty($params['total_row'])) {
             $countSearch = true;
@@ -58,7 +61,7 @@ class PostRepository extends EntityRepository{
             : $query->orderBy('p.id','DESC');
 
         $pg = new Paginator($query);
-        $data = $pg->getQuery()->getResult();
+        $data = $pg->getQuery()->getArrayResult();
         return ['data' => $data, 'total' => ($countSearch)?count($data):(int)$this->countPost($params)];
     }
 
@@ -71,7 +74,7 @@ class PostRepository extends EntityRepository{
 
         $query->select('COUNT(p)')
             ->from('Jet\Modules\Post\Models\Post','p')
-            ->innerJoin('p.categories', 'c')
+            ->leftJoin('p.categories', 'c')
             ->leftJoin('p.website','w');
 
         $query = $this->getQueryWithParams($query,$params);
@@ -150,16 +153,27 @@ class PostRepository extends EntityRepository{
         if(isset($params['db']) && !empty($params['db'])){
             foreach ($params['db'] as $key => $db) {
                 if(isset($db['type'])) {
-                    if ($db['type'] == 'dynamic' && isset($db['route']) && !empty($db['route']))
+                    if ($db['type'] == 'dynamic' && isset($db['route']) && !empty($db['route']) && isset($params['params'][$db['route']])) {
                         $query->andWhere($db['alias'] . '.' . $db['column'] . ' = :column_' . $key)
                             ->setParameter('column_' . $key, $params['params'][$db['route']]);
-                    elseif ($db['type'] == 'static' && isset($db['value']) && !empty($db['value'])) {
-                        if (is_array($db['value']))
-                            $query->andWhere($db['alias'] . '.' . $db['column'] . ' IN :column_' . $key)
-                                ->setParameter('column_' . $key, $db['value']);
-                        else
-                            $query->andWhere($db['alias'] . '.' . $db['column'] . ' = :column_' . $key)
-                                ->setParameter('column_' . $key, $db['value']);
+                    }
+                    elseif ($db['type'] == 'static' && isset($db['value_id']) && !empty($db['value_id'])) {
+                        $replace_content = ($db['alias'] == 'p') ? 'posts' : 'post_categories';
+                        if (is_array($db['value_id'])) {
+                            if(isset($params['website_options']['parent_replace']) && isset($params['website_options']['parent_replace'][$replace_content])) {
+                                foreach ($db['value_id'] as $k => $id) {
+                                    if (isset($params['website_options']['parent_replace'][$replace_content][$id]))
+                                        $db['value_id'][$k] = $params['website_options']['parent_replace'][$replace_content][$id];
+                                }
+                            }
+                            $query->andWhere($db['alias'] . '.id IN (:column_' . $key.')')
+                                ->setParameter('column_' . $key, $db['value_id']);
+                        }else {
+                            if(isset($params['website_options']['parent_replace']) && isset($params['website_options']['parent_replace'][$replace_content]) && isset($params['website_options']['parent_replace'][$replace_content][$db['value_id']]))
+                                $db['value_id'] = $params['website_options']['parent_replace'][$replace_content][$db['value_id']];
+                            $query->andWhere($db['alias'] . '.id = :column_' . $key)
+                                ->setParameter('column_' . $key, $db['value_id']);
+                        }
                     }
                 }
             }
