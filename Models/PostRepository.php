@@ -24,11 +24,8 @@ class PostRepository extends EntityRepository{
         
         $query->select('p')
             ->addSelect('partial c.{id,name,slug}')
-            ->addSelect('partial t.{id,path,alt}')
-            ->addSelect('partial w.{id,domain}')
             ->from('Jet\Modules\Post\Models\Post','p')
             ->leftJoin('p.website','w')
-            ->leftJoin('p.thumbnail','t')
             ->leftJoin('p.categories', 'c');
 
         if(isset($params['total_row']) && !empty($params['total_row'])) {
