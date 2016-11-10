@@ -54,7 +54,7 @@
         </div>
         <div>
             <h5 class="module-title">Configuration avancé :</h5>
-            <div class="form-group">
+            <div class="form-group" v-if="page != null">
                 <input type="text" class="form-control" id="page_url" :value="page.route.url" readonly><div class="form-control-line"></div>
                 <label for="page_url">Page url</label>
             </div>
@@ -132,8 +132,7 @@
                 required: true
             },
             page: {
-                type: Object,
-                required: true
+                default: null
             },
             website: {
                 required: true

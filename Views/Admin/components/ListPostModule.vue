@@ -59,15 +59,16 @@
             </div>
         </div>
         <h5 class="module-title">Choix du template :</h5>
-        <div class="form-group">
+       <!-- <div class="form-group">
             <select id="content_template" v-model="content.template.id" class="form-control">
                 <option v-for="template in templates" :value="template.id">{{template.title}}</option>
             </select>
             <label for="content_template">Template du contenu</label>
-        </div>
+        </div>-->
+        <template-editor :id="line" :templates="templates" :template="content.template" label="Template du contenu"></template-editor>
         <div>
             <h5 class="module-title">Configuration avancé :</h5>
-            <div class="form-group">
+            <div class="form-group" v-if="page != null">
                 <input type="text" class="form-control" id="page_url" :value="page.route.url" readonly><div class="form-control-line"></div>
                 <label for="page_url">Page url</label>
             </div>
@@ -202,13 +203,14 @@
     /* JS*/
     import Loading from '../../../../../Blocks/AdminBlock/Front/components/Helper/Loading.vue'
     import RouteEditor from '../../../../../Blocks/AdminBlock/Front/components/Helper/RouteEditor.vue'
+    import TemplateEditor from '../../../../../Blocks/AdminBlock/Front/components/Helper/TemplateEditor.vue'
 
     import {AppVendor} from '../../../../../Blocks/AdminBlock/Resources/public/js/app'
     import {mapActions} from 'vuex'
 
     export default{
         name: 'list-post',
-        components: {Loading, RouteEditor},
+        components: {Loading, RouteEditor, TemplateEditor},
         props: {
             line: {
                 default: '0'
@@ -218,8 +220,7 @@
                 required: true
             },
             page: {
-                type: Object,
-                required: true
+                default: null
             },
             website: {
                 required: true
