@@ -58,6 +58,14 @@
                                         <div class="row right-bloc">
                                             <strong><i class="fa fa-check-circle-o"></i> État : </strong><span v-if="post.published">Publié</span><span v-else>Brouillon</span><br />
                                             <strong><i class="fa fa-calendar"></i> Publié le : </strong>{{post.updated_at.date | moment('DD/MM/YYYY')}}
+                                            <div class="switch">
+                                                <label>
+                                                    Brouillon
+                                                    <input v-model="post.published" type="checkbox">
+                                                    <span class="lever"></span>
+                                                    Publié
+                                                </label>
+                                            </div>
                                         </div>
                                         <div class="row">
                                             <button type="button" class="col-md-6 btn ink-reaction btn-raised btn-danger">Supprimer</button>
@@ -73,8 +81,15 @@
                                 <!-- BEGIN BLOG POST TEXT -->
                                 <div class="col-md-9">
                                     <article class="style-default-bright">
+                                        <h4>Description</h4>
+                                        <div class="form-group">
+                                            <textarea class="form-control" id="post-description" v-model="post.description"></textarea>
+                                        </div>
+                                    </article>
+                                    <article class="style-default-bright">
+                                        <h4>Contenu</h4>
                                         <div>
-                                            <textarea class="post_content">{{post.content}}</textarea>
+                                            <tinymce-editor @updateContent="updateContent" :height="300" :id="post.slug" :launch="launch_tinymce" :dir="'/sites/' + website_id + '/'" :value="post.content"></tinymce-editor>
                                         </div>
                                     </article>
                                 </div><!--end .col -->
@@ -99,18 +114,6 @@
                                                 </div>{{category.name}}</a>
                                             </li>
                                         </ul>
-                                        <h3 class="text-light">Tags</h3>
-                                        <div class="list-tags">
-                                            <a class="btn btn-xs btn-primary">Wordpress</a>
-                                            <a class="btn btn-xs btn-primary">Technology</a>
-                                            <a class="btn btn-xs btn-primary">HTML5</a>
-                                            <a class="btn btn-xs btn-primary">Illustrator</a>
-                                            <a class="btn btn-xs btn-primary">Music</a>
-                                            <a class="btn btn-xs btn-primary">CSS3</a>
-                                            <a class="btn btn-xs btn-primary">Video</a>
-                                            <a class="btn btn-xs btn-primary">Photoshop</a>
-                                            <a class="btn btn-xs btn-primary">jQuery</a>
-                                        </div>
                                     </div><!--end .card-body -->
                                 </div><!--end .col -->
                                 <!-- END BLOG POST MENUBAR -->
@@ -121,7 +124,8 @@
                 </div><!--end .row -->
 
             </div><!--end .section -->
-            <media :launch_media="launch_media" :button="false" @updateTarget="targetUpdate" @updateMax="maxUpdate" :dir="'/sites/' + website_id + '/'" :accepted_file_type="file_type" :max_options="max_media_options"></media>
+
+            <!--<media :launch_media="launch_media" :button="false" @updateTarget="targetUpdate" :dir="'/sites/' + website_id + '/'" :accepted_file_type="file_type" :max_options="max_media_options"></media>-->
         </section>
     </div>
 </template>
@@ -132,13 +136,14 @@
     import Response from '../../../../../Blocks/AdminBlock/Front/components/Helper/Response.vue'
     import Loading from '../../../../../Blocks/AdminBlock/Front/components/Helper/Loading.vue'
     import Pagination from '../../../../../Blocks/AdminBlock/Front/components/Helper/Pagination.vue'
+    import TinymceEditor from '../../../../../Blocks/AdminBlock/Front/components/Helper/TinymceEditor.vue'
     import Media from '../../../../../Blocks/AdminBlock/Front/components/Helper/Media.vue'
 
     import {mapActions} from 'vuex'
 
     export default
     {
-        components: {Response, Loading, Pagination, Media},
+        components: {Response, Loading, Pagination, TinymceEditor, Media},
         data () {
             return {
                 website_id: this.$route.params.website_id,
@@ -163,15 +168,15 @@
                 max_media_options: [24,48,96],
                 media_target_id: null,
                 loading: false,
-                launch_media: false
+                launch_tinymce: false
             }
         },
         methods: {
             ...mapActions([
                 'create', 'read', 'update', 'destroy', 'setParams', 'refresh', 'updateResourceValue', 'deleteResources'
             ]),
-            targetUpdate (target) {
-                $('#'+this.media_target_id).val(PUBLIC_PATH + '/public/media' + target.path);
+            updateContent (content) {
+                this.post.content = content;
             },
             maxUpdate (max) {
                 this.max_media = max;
@@ -184,6 +189,7 @@
                 this.read({api: ADMIN_DOMAIN + '/module/post/read/' + this.website_id + '/' + this.post_id}).then((response) => {
                     if (response.data.status == 'success') {
                         this.post = response.data.resource;
+                        this.launch_tinymce = true;
                         if (response.data.route != '') {
                             let regex = {':slug': this.post.slug, ':id': this.post.id};
                             this.route = response.data.route.url;
@@ -205,23 +211,6 @@
                     for(let index in this.post.categories)
                         if (this.post.categories.hasOwnProperty(index))
                             this.post_categories.push(this.post.categories[index].id)
-                }).then(() => {
-                    tinymce.init({
-                        selector: '.post_content',
-                        language: 'fr_FR',
-                        height: 300,
-                        plugins: [
-                            'advlist autolink link image lists charmap preview hr anchor pagebreak',
-                            'wordcount visualblocks visualchars code insertdatetime media nonbreaking',
-                            'table directionality emoticons template textcolor'
-                        ],
-                        toolbar: 'undo redo | styleselect | forecolor bold italic | table link image | code',
-                        file_browser_callback: function (field_name, url, type, win) {
-                            o.launch_media = true;
-                            o.media_target_id = field_name;
-                            $('#mediaLibrary0').modal()
-                        }
-                    });
                 });
             });
         }
