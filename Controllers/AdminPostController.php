@@ -2,8 +2,7 @@
 
 namespace Jet\Modules\Post\Controllers;
 
-
-use Jet\AdminBlock\Classes\Auth;
+use Jet\Services\Auth;
 use Jet\AdminBlock\Controllers\AdminController;
 use Jet\Models\Account;
 use Jet\Models\Route;
@@ -22,7 +21,7 @@ class AdminPostController extends AdminController
     /**
      * @param Request $request
      * @param $website
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return array
      */
     public function all(Request $request, $website){
         $max = ($request->exists('max')) ? (int)$request->query('max') : 10;
@@ -49,7 +48,7 @@ class AdminPostController extends AdminController
             'count_all' => $response['total'],
             'data' => $response['data']
         ];
-        return $this->json(['status' => 'success', 'content' => $themes]);
+        return ['status' => 'success', 'content' => $themes];
     }
 
     /**
@@ -62,7 +61,7 @@ class AdminPostController extends AdminController
     /**
      * @param $website
      * @param $id
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return array
      */
     public function read($website, $id){
         $this->websites[] = $website;
@@ -72,8 +71,8 @@ class AdminPostController extends AdminController
         $post = Post::repo()->readAdmin($id);
 
         if (!is_null($post))
-            return $this->json(['status' => 'success', 'resource' => $post, 'route' => (isset($route[0]))?$route[0]:'']);
-        return $this->json(['status' => 'error', 'message' => 'Article inexistant']);
+            return ['status' => 'success', 'resource' => $post, 'route' => (isset($route[0]))?$route[0]:''];
+        return ['status' => 'error', 'message' => 'Article inexistant'];
     }
 
     /**
@@ -86,7 +85,7 @@ class AdminPostController extends AdminController
     /**
      * @param Request $request
      * @param $website
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return array
      */
     public function delete(Request $request, $website)
     {
@@ -106,17 +105,17 @@ class AdminPostController extends AdminController
                 $data['parent_exclude']['posts'] = $posts_exclude;
                 $post_website->setData($data);
                 Website::watchAndSave($post_website);
-                return $this->json(['status' => 'success', 'message' => 'Le(s) article(s) ont bien été supprimé(s)']);
+                return ['status' => 'success', 'message' => 'Le(s) article(s) ont bien été supprimé(s)'];
             }
-            return $this->json(['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour supprimer ces articles']);
+            return ['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour supprimer ces articles'];
         }
-        return $this->json(['status' => 'error', 'message' => 'Le(s) article(s) n\'ont pas pu être supprimé(s)']);
+        return ['status' => 'error', 'message' => 'Le(s) article(s) n\'ont pas pu être supprimé(s)'];
     }
 
     /**
      * @param Request $request
      * @param $website
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return array
      */
     public function changeState(Request $request, $website)
     {
@@ -147,9 +146,9 @@ class AdminPostController extends AdminController
             $data['parent_replace']['posts'] = $posts_replace;
             $post_website->setData($data);
             Website::watchAndSave($post_website);
-            return $this->json(['status' => 'success', 'message' => 'Le(s) article(s) ont bien été mis à jour']);
+            return ['status' => 'success', 'message' => 'Le(s) article(s) ont bien été mis à jour'];
         }
-        return $this->json(['status' => 'error', 'message' => 'Le(s) article(s) n\'ont pas pu être mis à jour']);
+        return ['status' => 'error', 'message' => 'Le(s) article(s) n\'ont pas pu être mis à jour'];
     }
 
     /**
@@ -171,10 +170,10 @@ class AdminPostController extends AdminController
         $website = Website::findOneById($website);
         $this->getThemeWebsites($website);
 
-        return $this->json([
+        return [
             'c' => PostCategory::repo()->listTableValues($this->websites, $website->getData()),
             'p' => Post::repo()->listTableValues($this->websites, $website->getData())
-        ]);
+        ];
         
     }
 }

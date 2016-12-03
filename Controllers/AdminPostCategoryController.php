@@ -2,7 +2,7 @@
 
 namespace Jet\Modules\Post\Controllers;
 
-use Jet\AdminBlock\Classes\Auth;
+use Jet\Services\Auth;
 use Jet\AdminBlock\Controllers\AdminController;
 use Jet\Models\Account;
 use Jet\Models\Website;
@@ -37,14 +37,14 @@ class AdminPostCategoryController extends AdminController
             'count_all' => $response['total'],
             'data' => $response['data']
         ];
-        return $this->json(['status' => 'success', 'content' => $themes]);
+        return ['status' => 'success', 'content' => $themes];
     }
 
     public function listByName($website){
         $this->websites[] = (int)$website;
         $website = Website::findOneById($website);
         $this->getThemeWebsites($website);
-        return $this->json(PostCategory::repo()->getNames($this->websites, $website->getData()));
+        return PostCategory::repo()->getNames($this->websites, $website->getData());
     }
     
     public function create(Request $request, $website){
@@ -52,12 +52,12 @@ class AdminPostCategoryController extends AdminController
             $category = $request->request->get('name');
             if(PostCategory::where('name',$category)->where('website',$website)->count() == 0){
                 if(PostCategory::create(['name' => $category, 'slug' => slugify($category), 'website' => Website::findOneById($website)]))
-                    return $this->json(['status' => 'success', 'message' => 'La catégorie a bien été créée']);
-                return $this->json(['status' => 'error', 'message' => 'La catégorie n\'a pas été créée']);
+                    return ['status' => 'success', 'message' => 'La catégorie a bien été créée'];
+                return ['status' => 'error', 'message' => 'La catégorie n\'a pas été créée'];
             }
-            return $this->json(['status' => 'error', 'message' => 'La catégorie existe déjà']);
+            return ['status' => 'error', 'message' => 'La catégorie existe déjà'];
         }
-        return $this->json(['status' => 'error', 'message' => 'Requête non autorisée']);
+        return ['status' => 'error', 'message' => 'Requête non autorisée'];
     }
 
     public function read($id){
@@ -68,7 +68,7 @@ class AdminPostCategoryController extends AdminController
         if ($request->method() == 'PUT') {
             $category = $request->request->get('name');
             if(PostCategory::where('name',$category)->where('website',$website)->count() > 1) {
-                return $this->json(['status' => 'error', 'message' => 'La catégorie existe déjà']);
+                return ['status' => 'error', 'message' => 'La catégorie existe déjà'];
             }else{
                 $post_category_website = Website::findOneById($website);
                 $data = $post_category_website->getData();
@@ -81,29 +81,29 @@ class AdminPostCategoryController extends AdminController
                     $new_category->setWebsite($post_category_website);
                     $new_category->setPosts($post_category->getPosts());
                     if(!PostCategory::watchAndSave($new_category))
-                        return $this->json(['status' => 'error', 'message' => 'La catégorie n\'a pas été mis à jour']);
+                        return ['status' => 'error', 'message' => 'La catégorie n\'a pas été mis à jour'];
                     if(!isset($post_categories_exclude[$id]))$post_categories_exclude[] = $id;
                 }else
                     if(!PostCategory::where('id', $id)->set(['name' => $category, 'slug' => slugify($category)]))
-                        return $this->json(['status' => 'error', 'message' => 'La catégorie n\'a pas été mis à jour']);
+                        return ['status' => 'error', 'message' => 'La catégorie n\'a pas été mis à jour'];
             }
             $data['parent_exclude']['post_categories'] = $post_categories_exclude;
             $post_category_website->setData($data);
             Website::watchAndSave($post_category_website);
-            return $this->json(['status' => 'success', 'message' => 'La catégorie a bien été mis à jour']);
+            return ['status' => 'success', 'message' => 'La catégorie a bien été mis à jour'];
         }
-        return $this->json(['status' => 'error', 'message' => 'Requête non autorisée']);
+        return ['status' => 'error', 'message' => 'Requête non autorisée'];
     }
 
 
-    public function delete(Request $request, $website)
+    public function delete(Request $request, Auth $auth, $website)
     {
         if ($request->method() == 'DELETE' && $request->exists('ids')) {
             $post_category_website = Website::findOneById($website);
             $data = $post_category_website->getData();
             $post_categories_exclude = (isset($data['parent_exclude']['post_categories']))?$data['parent_exclude']['post_categories']:[];
             $account = Account::repo()->getWebsiteAccount($website);
-            if(Auth::get('id') == $account->getId() || Auth::get('status')->level <= 2) {
+            if($auth->get('id') == $account->getId() || $auth->get('status')->level <= 2) {
                 foreach ($request->get('ids') as $id){
                     $category = PostCategory::orm('pdo')->select('id','website_id')->where('id',$id)->get(true);
                     if($category['website_id'] != $website) {
@@ -114,11 +114,11 @@ class AdminPostCategoryController extends AdminController
                 $data['parent_exclude']['post_categories'] = $post_categories_exclude;
                 $post_category_website->setData($data);
                 Website::watchAndSave($post_category_website);
-                return $this->json(['status' => 'success', 'message' => 'Les catégories ont bien été supprimées']);
+                return ['status' => 'success', 'message' => 'Les catégories ont bien été supprimées'];
             }
-            return $this->json(['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour supprimer ces catégories']);
+            return ['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour supprimer ces catégories'];
         }
-        return $this->json(['status' => 'error', 'message' => 'Les catégories n\'ont pas pu être supprimées']);
+        return ['status' => 'error', 'message' => 'Les catégories n\'ont pas pu être supprimées'];
     }
 
     public function createContent(){
