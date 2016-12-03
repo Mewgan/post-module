@@ -84,17 +84,18 @@ class AdminPostController extends AdminController
 
     /**
      * @param Request $request
+     * @param Auth $auth
      * @param $website
      * @return array
      */
-    public function delete(Request $request, $website)
+    public function delete(Request $request, Auth $auth, $website)
     {
         if ($request->method() == 'DELETE' && $request->exists('ids')) {
             $post_website = Website::findOneById($website);
             $data = $post_website->getData();
             $posts_exclude = (isset($data['parent_exclude']['posts']))?$data['parent_exclude']['posts']:[];
             $account = Account::repo()->getWebsiteAccount($website);
-            if(Auth::get('id') == $account->getId() || Auth::get('status')->level <= 2) {
+            if($auth->get('id') == $account->getId() || $auth->get('status')->level <= 2) {
                 foreach ($request->get('ids') as $id){
                     $post = Post::orm('pdo')->select('id','website_id')->where('id',$id)->get(true);
                     if($post['website_id'] != $website) {
