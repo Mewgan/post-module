@@ -68,7 +68,7 @@
         <template-editor :id="line" :templates="templates" :template="content.template" label="Template du contenu"></template-editor>
         <div>
             <h5 class="module-title">Configuration avancé :</h5>
-            <div class="form-group" v-if="page != null">
+            <div class="form-group" v-if="page != null && 'route' in page && 'url' in page.route">
                 <input type="text" class="form-control" id="page_url" :value="page.route.url" readonly><div class="form-control-line"></div>
                 <label for="page_url">Page url</label>
             </div>

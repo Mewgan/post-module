@@ -89,7 +89,7 @@
                                     <article class="style-default-bright">
                                         <h4>Contenu</h4>
                                         <div>
-                                            <tinymce-editor @updateContent="updateContent" :height="300" :id="post.slug" :launch="launch_tinymce" :dir="'/sites/' + website_id + '/'" :value="post.content"></tinymce-editor>
+                                            <tinymce-editor @updateContent="updateContent" :height="300" :id="'post-' + post_id" :launch="launch_tinymce" :dir="'/sites/' + website_id + '/'" :value="post.content"></tinymce-editor>
                                         </div>
                                     </article>
                                 </div><!--end .col -->
