@@ -25,11 +25,32 @@
     .post-read .right-bottom-bloc button{
         margin-left: 5px;
     }
+
+    .post-read .img-body {
+        padding: 0;
+        height: 200px !important;
+        width: 100% !important;
+        overflow: hidden;
+        position: relative;
+        background: #c2bfbf;
+    }
+
+    .post-read .img-body img {
+        max-height: 100%;
+        max-width: 100%;
+        width: auto;
+        height: auto;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+    }
 </style>
 
 <template>
     <div>
-        <loading :loading="loading"></loading>
         <section class="post-read" v-show="post.id">
             <div class="section-header">
                 <ol class="breadcrumb">
@@ -99,10 +120,12 @@
                                 <div class="col-md-3">
                                     <div class="card-body right-bottom-bloc">
                                         <h3 class="text-light">Image à la une
-                                            <button type="button" class="btn pull-right ink-reaction btn-floating-action btn-info"><i class="fa fa-pencil"></i></button>
+                                            <button @click="launchMedia" data-toggle="modal" data-target="#mediaLibrary0" type="button" class="btn pull-right ink-reaction btn-floating-action btn-info"><i class="fa fa-pencil"></i></button>
                                             <button type="button" class="btn pull-right ink-reaction btn-floating-action btn-danger"><i class="fa fa-trash"></i></button>
                                         </h3>
-                                        <img v-img="post.thumbnail.path" :alt="post.thumbnail.alt" width="100%">
+                                        <div class="img-body">
+                                            <img v-img="post.thumbnail.path" :alt="post.thumbnail.alt" width="100%">
+                                        </div>
                                         <h3 class="text-light">Catégories <button type="button" class="btn pull-right ink-reaction btn-floating-action btn-info"><i class="fa fa-plus"></i></button></h3>
                                         <ul class="nav nav-pills nav-stacked nav-transparent">
                                             <li v-for="category in categories">
@@ -125,7 +148,7 @@
 
             </div><!--end .section -->
 
-            <!--<media :launch_media="launch_media" :button="false" @updateTarget="targetUpdate" :dir="'/sites/' + website_id + '/'" :accepted_file_type="file_type" :max_options="max_media_options"></media>-->
+            <media :launch_media="launch_media" :button="false" @updateTarget="targetUpdate" :dir="'/sites/' + website_id + '/'" :accepted_file_type="file_type" :max_options="max_media_options"></media>
         </section>
     </div>
 </template>
@@ -133,8 +156,6 @@
 
 <script type="text/babel">
 
-    import Response from '../../../../../Blocks/AdminBlock/Front/components/Helper/Response.vue'
-    import Loading from '../../../../../Blocks/AdminBlock/Front/components/Helper/Loading.vue'
     import Pagination from '../../../../../Blocks/AdminBlock/Front/components/Helper/Pagination.vue'
     import TinymceEditor from '../../../../../Blocks/AdminBlock/Front/components/Helper/TinymceEditor.vue'
     import Media from '../../../../../Blocks/AdminBlock/Front/components/Helper/Media.vue'
@@ -143,7 +164,7 @@
 
     export default
     {
-        components: {Response, Loading, Pagination, TinymceEditor, Media},
+        components: {Pagination, TinymceEditor, Media},
         data () {
             return {
                 website_id: this.$route.params.website_id,
@@ -168,6 +189,7 @@
                 max_media_options: [24,48,96],
                 media_target_id: null,
                 loading: false,
+                launch_media: false,
                 launch_tinymce: false
             }
         },
@@ -178,9 +200,12 @@
             updateContent (content) {
                 this.post.content = content;
             },
-            maxUpdate (max) {
-                this.max_media = max;
-            }
+            targetUpdate(target){
+                this.post.thumbnail = target;
+            },
+            launchMedia () {
+                this.launch_media = true;
+            },
         },
         mounted () {
             this.$nextTick(function () {
