@@ -49,7 +49,6 @@
 
 <template>
     <section class="list-post">
-        <loading :loading="loading"></loading>
         <div class="section-header">
             <ol class="breadcrumb">
                 <li class="active">Articles</li>
@@ -207,7 +206,7 @@
                         <h4 class="modal-title" id="deletePostModalLabel">Suppression</h4>
                     </div>
                     <div class="modal-body">
-                        <p>Voulez-vous vraiment supprimer cet article ?</p>
+                        <p>Êtes-vous sûr de vouloir supprimer cet article ?</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Non</button>
@@ -277,20 +276,19 @@
 
 <script type="text/babel">
 
-    import Response from '../../../../../Blocks/AdminBlock/Front/components/Helper/Response.vue'
-    import Loading from '../../../../../Blocks/AdminBlock/Front/components/Helper/Loading.vue'
     import Pagination from '../../../../../Blocks/AdminBlock/Front/components/Helper/Pagination.vue'
 
     import {mapActions} from 'vuex'
+    import {post_api, post_category_api} from '../api'
 
     export default
     {
-        components: {Response, Loading, Pagination},
+        components: {Pagination},
         data () {
             return {
                 website_id: this.$route.params.website_id,
                 resource: {
-                    url: ADMIN_DOMAIN + '/module/post/all/' + this.$route.params.website_id,
+                    url: post_api.all + this.$route.params.website_id,
                     name: 'posts_' + this.$route.params.website_id,
                     data: [],
                     max: 10,
@@ -303,8 +301,7 @@
                 selected_items: [],
                 refresh_items: false,
                 icon_class: '',
-                max_options: [10, 20, 30],
-                loading: false
+                max_options: [10, 20, 30]
             }
         },
         methods: {
@@ -328,13 +325,12 @@
                 return (this.website_id == website) ? content + ' vient du site' : content + ' vient du thème parent';
             },
             selectPost (post){
-                this.selected_items = [post];
+                this.selected_items = [post.id];
             },
             updatePostState (state) {
                 if (this.selected_items.length > 0) {
-                    this.loading = true;
                     this.update({
-                        api: ADMIN_DOMAIN + '/module/post/change-state/' + this.website_id,
+                        api: post_api.change_state + this.website_id,
                         value: {
                             state: parseInt(state),
                             ids: this.selected_items
@@ -350,17 +346,15 @@
                                 });
                             });
                         this.selected_items = [];
-                        this.loading = false;
                         this.refresh_items = true;
                     });
                     this.refresh_items = false;
                 }
             },
             changeState (post) {
-                this.loading = true;
                 let state = (post.published == 0) ? 1 : 0;
                 this.update({
-                    api: ADMIN_DOMAIN + '/module/post/change-state/' + this.website_id,
+                    api: post_api.change_state + this.website_id,
                     value: {
                         state,
                         ids: [post.id]
@@ -373,21 +367,18 @@
                             key: 'published',
                             value: state
                         });
-                    this.loading = false;
                     this.refresh_items = true;
                 });
                 this.refresh_items = false;
             },
             deletePost () {
                 if (this.selected_items.length > 0) {
-                    this.loading = true;
                     this.deleteResources({
-                        api: ADMIN_DOMAIN + '/module/post/delete/' + this.website_id,
+                        api: post_api.destroy + this.website_id,
                         resource: this.resource.name,
                         ids: this.selected_items
                     }).then(() => {
                         this.selected_items = [];
-                        this.loading = false;
                     });
                 }
             },
@@ -396,42 +387,33 @@
             },
             createCategory () {
                 if(this.new_category != '') {
-                    this.loading = true;
                     this.create({
-                        api: ADMIN_DOMAIN + '/module/post-category/create/' + this.website_id,
+                        api: post_category_api.create + this.website_id,
                         value: {name: this.new_category}
                     }).then(() => {
-                        this.loading = false;
                         this.loadCategory();
                     });
                 }
             },
             updateCategory(){
                 if(this.category.name != '') {
-                    this.loading = true;
                     this.update({
-                        api: ADMIN_DOMAIN + '/module/post-category/update/' + this.category.id + '/' + this.website_id,
+                        api: post_category_api.update + this.category.id + '/' + this.website_id,
                         value: {name: this.category.name}
-                    }).then(() => {
-                        this.loading = false;
                     });
                 }
             },
             deleteCategory(){
-                this.loading = true;
                 this.destroy({
-                    api: ADMIN_DOMAIN + '/module/post-category/delete/' + this.website_id,
+                    api: post_category_api.destroy + this.website_id,
                     ids: [this.category.id]
                 }).then(() => {
-                    this.loading = false;
                     this.loadCategory();
                 });
             },
             loadCategory(){
-                this.loading = true;
-                this.read({api: ADMIN_DOMAIN + '/module/post-category/list-by-name/' + this.website_id}).then((response) => {
+                this.read({api: post_category_api.list_by_name + this.website_id}).then((response) => {
                     this.categories = response.data;
-                    this.loading = false;
                 })
             }
         },

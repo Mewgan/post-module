@@ -9,10 +9,19 @@ use Jet\Models\Website;
 use Jet\Modules\Post\Models\PostCategory;
 use JetFire\Framework\System\Request;
 
+/**
+ * Class AdminPostCategoryController
+ * @package Jet\Modules\Post\Controllers
+ */
 class AdminPostCategoryController extends AdminController
 {
 
-    public function all(Request $request,$website){
+    /**
+     * @param Request $request
+     * @param $website
+     * @return array
+     */
+    public function all(Request $request, $website){
         $max = ($request->exists('max')) ? (int)$request->query('max') : 10;
         $page = ($request->exists('page')) ? (int)$request->query('page') : 1;
 
@@ -40,13 +49,22 @@ class AdminPostCategoryController extends AdminController
         return ['status' => 'success', 'content' => $themes];
     }
 
+    /**
+     * @param $website
+     * @return mixed
+     */
     public function listByName($website){
         $this->websites[] = (int)$website;
         $website = Website::findOneById($website);
         $this->getThemeWebsites($website);
         return PostCategory::repo()->getNames($this->websites, $website->getData());
     }
-    
+
+    /**
+     * @param Request $request
+     * @param $website
+     * @return array
+     */
     public function create(Request $request, $website){
         if ($request->method() == 'POST') {
             $category = $request->request->get('name');
@@ -60,10 +78,19 @@ class AdminPostCategoryController extends AdminController
         return ['status' => 'error', 'message' => 'Requête non autorisée'];
     }
 
+    /**
+     * @param $id
+     */
     public function read($id){
 
     }
 
+    /**
+     * @param Request $request
+     * @param $id
+     * @param $website
+     * @return array
+     */
     public function update(Request $request, $id, $website){
         if ($request->method() == 'PUT') {
             $category = $request->request->get('name');
@@ -96,6 +123,12 @@ class AdminPostCategoryController extends AdminController
     }
 
 
+    /**
+     * @param Request $request
+     * @param Auth $auth
+     * @param $website
+     * @return array
+     */
     public function delete(Request $request, Auth $auth, $website)
     {
         if ($request->method() == 'DELETE' && $request->exists('ids')) {
@@ -121,12 +154,32 @@ class AdminPostCategoryController extends AdminController
         return ['status' => 'error', 'message' => 'Les catégories n\'ont pas pu être supprimées'];
     }
 
+    /**
+     *
+     */
     public function createContent(){
         
     }
 
+    /**
+     *
+     */
     public function updateContent(){
 
+    }
+
+
+    /**
+     * @param $website
+     * @return array
+     */
+    public function listRuleValue($website)
+    {
+        $this->websites[] = $website;
+        $website = Website::findOneById($website);
+        if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
+        $this->getThemeWebsites($website);
+        return PostCategory::repo()->getPostCategoryRules($this->websites, $website->getData());
     }
     
 }

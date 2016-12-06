@@ -47,6 +47,9 @@
         right: 0;
         margin: auto;
     }
+    .post-read .mar-top-10{
+        margin-top:10px;
+    }
 </style>
 
 <template>
@@ -55,7 +58,9 @@
             <div class="section-header">
                 <ol class="breadcrumb">
                     <li>
-                        <router-link :to="{name: 'module:post', params: {website_id: $route.params.website_id}}">Articles</router-link>
+                        <router-link :to="{name: 'module:post', params: {website_id: $route.params.website_id}}">
+                            Articles
+                        </router-link>
                     </li>
                     <li class="active">{{ post.title }}</li>
                 </ol>
@@ -71,14 +76,22 @@
                                 <div class="col-sm-9">
                                     <div class="card-body style-default-dark">
                                         <h2><input class="title-input" v-model="post.title" type="text"></h2>
-                                        <div class="text-default-light"><strong class="text-primary">Lien : </strong><a :href="post.website.domain + route" target="_blank" >{{post.website.domain}}{{route}}</a></div>
+                                        <div class="form-group">
+                                            <label class="post-slug-label" for="post-slug">Slug</label>
+                                            <input id="post-slug" class="title-input" v-model="post.slug" type="text">
+                                        </div>
+                                        <div class="text-default-light"><strong class="text-primary">Lien : </strong><a
+                                                :href="post.website.domain + route" target="_blank">{{post.website.domain}}{{route}}</a>
+                                        </div>
                                     </div>
                                 </div><!--end .col -->
                                 <div class="col-sm-3 style-primary">
                                     <div class="card-body">
                                         <div class="row right-bloc">
-                                            <strong><i class="fa fa-check-circle-o"></i> État : </strong><span v-if="post.published">Publié</span><span v-else>Brouillon</span><br />
-                                            <strong><i class="fa fa-calendar"></i> Publié le : </strong>{{post.updated_at.date | moment('DD/MM/YYYY')}}
+                                            <strong><i class="fa fa-check-circle-o"></i> État : </strong><span
+                                                v-if="post.published">Publié</span><span v-else>Brouillon</span><br/>
+                                            <strong><i class="fa fa-calendar"></i> Publié le : </strong>{{post.updated_at.date
+                                            | moment('DD/MM/YYYY')}}
                                             <div class="switch">
                                                 <label>
                                                     Brouillon
@@ -89,8 +102,15 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <button type="button" class="col-md-6 btn ink-reaction btn-raised btn-danger">Supprimer</button>
-                                            <button type="button" class="col-md-6 btn ink-reaction btn-raised btn-default">Mettre à jour</button>
+                                            <button data-toggle="modal" data-target="#deletePostModal" type="button"
+                                                    class="col-md-12 btn ink-reaction btn-raised btn-danger">Supprimer
+                                            </button>
+                                        </div>
+                                        <div class="row mar-top-10">
+                                            <button @click="updateOrCreatePost" type="button"
+                                                    class="col-md-12 btn ink-reaction btn-raised btn-default">Mettre à
+                                                jour
+                                            </button>
                                         </div>
                                     </div>
                                 </div><!--end .col -->
@@ -104,15 +124,33 @@
                                     <article class="style-default-bright">
                                         <h4>Description</h4>
                                         <div class="form-group">
-                                            <textarea class="form-control" id="post-description" v-model="post.description"></textarea>
+                                            <textarea class="form-control" id="post-description"
+                                                      v-model="post.description"></textarea>
                                         </div>
                                     </article>
                                     <article class="style-default-bright">
                                         <h4>Contenu</h4>
                                         <div>
-                                            <tinymce-editor @updateContent="updateContent" :height="300" :id="'post-' + post_id" :launch="launch_tinymce" :dir="'/sites/' + website_id + '/'" :value="post.content"></tinymce-editor>
+                                            <tinymce-editor @updateContent="updateContent" :height="300"
+                                                            :id="'post-' + post_id" :launch="launch_tinymce"
+                                                            :dir="'/sites/' + website_id + '/'"
+                                                            :value="post.content"></tinymce-editor>
                                         </div>
                                     </article>
+                                    <div>
+                                        <form class="form">
+                                            <div class="col-md-12 custom-field-render">
+                                                <div class="card-body no-padding">
+                                                    <div v-if="custom_fields.length > 0"
+                                                         v-for="custom_field in custom_fields">
+                                                        <h2>{{custom_field.title}}</h2>
+                                                        <custom-field-render :id="post_id" :type="'post'"
+                                                                             :fields="custom_field.fields"></custom-field-render>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div><!--end .col -->
                                 <!-- END BLOG POST TEXT -->
 
@@ -120,21 +158,34 @@
                                 <div class="col-md-3">
                                     <div class="card-body right-bottom-bloc">
                                         <h3 class="text-light">Image à la une
-                                            <button @click="launchMedia" data-toggle="modal" data-target="#mediaLibrary0" type="button" class="btn pull-right ink-reaction btn-floating-action btn-info"><i class="fa fa-pencil"></i></button>
-                                            <button type="button" class="btn pull-right ink-reaction btn-floating-action btn-danger"><i class="fa fa-trash"></i></button>
+                                            <button @click="launchMedia" data-toggle="modal"
+                                                    data-target="#mediaLibrary0" type="button"
+                                                    class="btn pull-right ink-reaction btn-floating-action btn-info"><i
+                                                    class="fa fa-pencil"></i></button>
+                                            <button @click="deleteThumbnail" type="button"
+                                                    class="btn pull-right ink-reaction btn-floating-action btn-danger">
+                                                <i class="fa fa-trash"></i></button>
                                         </h3>
-                                        <div class="img-body">
+                                        <div v-if="post.thumbnail != null" class="img-body">
                                             <img v-img="post.thumbnail.path" :alt="post.thumbnail.alt" width="100%">
                                         </div>
-                                        <h3 class="text-light">Catégories <button type="button" class="btn pull-right ink-reaction btn-floating-action btn-info"><i class="fa fa-plus"></i></button></h3>
+                                        <h3 class="text-light">Catégories
+                                            <button data-toggle="modal" data-target="#createPostCategoryModal"
+                                                    type="button"
+                                                    class="btn pull-right ink-reaction btn-floating-action btn-info"><i
+                                                    class="fa fa-plus"></i></button>
+                                        </h3>
                                         <ul class="nav nav-pills nav-stacked nav-transparent">
                                             <li v-for="category in categories">
-                                                <a href="#"><div class="pull-right checkbox checkbox-styled checkbox-primary">
-                                                    <label>
-                                                        <input type="checkbox" v-model="post_categories" :value="category.id">
-                                                        <span></span>
-                                                    </label>
-                                                </div>{{category.name}}</a>
+                                                <a>
+                                                    <div class="pull-right checkbox checkbox-styled checkbox-primary">
+                                                        <label>
+                                                            <input type="checkbox" v-model="post_categories"
+                                                                   :value="category.id">
+                                                            <span></span>
+                                                        </label>
+                                                    </div>
+                                                    {{category.name}}</a>
                                             </li>
                                         </ul>
                                     </div><!--end .card-body -->
@@ -147,8 +198,58 @@
                 </div><!--end .row -->
 
             </div><!--end .section -->
-
-            <media :launch_media="launch_media" :button="false" @updateTarget="targetUpdate" :dir="'/sites/' + website_id + '/'" :accepted_file_type="file_type" :max_options="max_media_options"></media>
+            <div class="modal fade" id="createPostCategoryModal" tabindex="-1" role="dialog"
+                 aria-labelledby="formModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="createFormModalLabel">Ajouter une catégorie</h4>
+                        </div>
+                        <form class="form" role="form">
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <input type="text" v-model="new_category" id="category"
+                                                   class="form-control">
+                                            <label for="category" class="control-label">Titre</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                                <button type="button" @click="createCategory" data-dismiss="modal"
+                                        class="btn btn-primary">Enregistrer
+                                </button>
+                            </div>
+                        </form>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+            <div class="modal fade" id="deletePostModal" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h4 class="modal-title" id="deletePostModalLabel">Suppression</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>Êtes-vous sûr de vouloir supprimer cet article ?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Non</button>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal" @click="deletePost()">Oui
+                            </button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div>
+            <media :launch_media="launch_media" :button="false" @updateTarget="targetUpdate"
+                   :dir="'/sites/' + website_id + '/'" :accepted_file_type="file_type"
+                   :max_options="max_media_options"></media>
         </section>
     </div>
 </template>
@@ -159,12 +260,16 @@
     import Pagination from '../../../../../Blocks/AdminBlock/Front/components/Helper/Pagination.vue'
     import TinymceEditor from '../../../../../Blocks/AdminBlock/Front/components/Helper/TinymceEditor.vue'
     import Media from '../../../../../Blocks/AdminBlock/Front/components/Helper/Media.vue'
+    import CustomFieldRender from '../../../../../Blocks/AdminBlock/Front/components/CustomFieldRender/Repeater/RepeaterRenderCustomField.vue'
 
-    import {mapActions} from 'vuex'
+    import {custom_field_api} from '../../../../../Blocks/AdminBlock/Front/api'
+    import {post_api, post_category_api} from '../api'
+
+    import {mapGetters, mapActions} from 'vuex'
 
     export default
     {
-        components: {Pagination, TinymceEditor, Media},
+        components: {Pagination, TinymceEditor, Media, CustomFieldRender},
         data () {
             return {
                 website_id: this.$route.params.website_id,
@@ -175,7 +280,7 @@
                     },
                     thumbnail: {
                         path: '/user/default-photo.png',
-                        alt:''
+                        alt: ''
                     },
                     website: {
                         domain: ''
@@ -183,19 +288,34 @@
                 },
                 post_categories: [],
                 categories: {},
+                new_category: '',
                 route: '',
-                file_type: ['image/jpg','image/png','image/gif'],
+                file_type: ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'],
                 max_media: 24,
-                max_media_options: [24,48,96],
+                max_media_options: [24, 48, 96],
                 media_target_id: null,
-                loading: false,
                 launch_media: false,
-                launch_tinymce: false
+                launch_tinymce: false,
+                custom_fields: []
+            }
+        },
+        computed: {
+            ...mapGetters([
+                'auth'
+            ]),
+            custom_fields_params () {
+                return {
+                    everywhere: '',
+                    publication_type: 'post',
+                    user_role: this.auth.status.id,
+                    post: this.post_id,
+                    post_category: this.post_categories
+                }
             }
         },
         methods: {
             ...mapActions([
-                'create', 'read', 'update', 'destroy', 'setParams', 'refresh', 'updateResourceValue', 'deleteResources'
+                'create', 'read', 'update', 'destroy', 'createResource', 'updateResource', 'updateResourceValue', 'removeResource', 'deleteResources'
             ]),
             updateContent (content) {
                 this.post.content = content;
@@ -206,37 +326,117 @@
             launchMedia () {
                 this.launch_media = true;
             },
-        },
-        mounted () {
-            this.$nextTick(function () {
-                let o = this;
-                this.loading = true;
-                this.read({api: ADMIN_DOMAIN + '/module/post/read/' + this.website_id + '/' + this.post_id}).then((response) => {
+            createCategory(){
+                if (this.new_category != '') {
+                    this.create({
+                        api: post_category_api.create + this.website_id,
+                        value: {name: this.new_category}
+                    }).then(() => {
+                        this.loadCategory();
+                    });
+                }
+            },
+            loadCategory(){
+                this.read({api: post_category_api.list_by_name + this.website_id}).then((response) => {
+                    this.categories = response.data;
+                })
+            },
+            deleteThumbnail(){
+                this.post.thumbnail = null;
+            },
+            updateOrCreatePost(){
+                this.post['new_categories'] = this.post_categories;
+                if (this.post_id == 'create') {
+                    this.createResource({
+                        api: post_api.update_or_create + this.website_id + '/' + this.post_id,
+                        resource: 'posts_' + this.website_id,
+                        value: this.post
+                    }).then((response) => {
+                        if (response.data.status == 'success')
+                            this.updateOthers(response);
+                    });
+                } else {
+                    this.updateResource({
+                        api: post_api.update_or_create + this.website_id + '/' + this.post.id,
+                        resource: 'posts_' + this.website_id,
+                        value: this.post
+                    }).then((response) => {
+                        if (response.data.status == 'success')
+                            this.updateOthers(response);
+                    });
+                }
+            },
+            updateOthers(response){
+                let post = response.data.resource.id;
+                this.update({
+                    api: custom_field_api.update_or_create_front + this.website_id + '/post/' + post,
+                    value: {
+                        custom_fields: this.custom_fields,
+                        old_content_key: 'post@' + this.post_id,
+                        old_row_key: 'rows@post@' + this.post_id
+                    }
+                }).then(() => {
+                    if (this.post_id != post) {
+                        if (this.post_id != 'create') {
+                            this.removeResource({
+                                resource: 'posts_' + this.website_id,
+                                id: this.post_id
+                            });
+                        }
+                        this.$router.replace({
+                            name: 'module:post:read',
+                            params: {
+                                website_id: this.website_id,
+                                post_id: post
+                            }
+                        });
+                    }
+                });
+            },
+            deletePost (){
+                this.deleteResources({
+                    api: post_api.destroy + this.website_id,
+                    resource: 'posts_' + this.website_id,
+                    ids: [this.post.id]
+                }).then((response) => {
                     if (response.data.status == 'success') {
-                        this.post = response.data.resource;
-                        this.launch_tinymce = true;
-                        if (response.data.route != '') {
-                            let regex = {':slug': this.post.slug, ':id': this.post.id};
-                            this.route = response.data.route.url;
-                            for (let index in regex) {
-                                if (regex.hasOwnProperty(index)) {
-                                    this.route = this.route.replace(index, regex[index]);
-                                }
+                        this.$router.push({name: 'module:post', params: {website_id: this.website_id}})
+                    }
+                });
+            }
+        },
+        created(){
+            this.read({api: post_api.read + this.website_id + '/' + this.post_id}).then((response) => {
+                if (response.data.status == 'success') {
+                    this.post = response.data.resource;
+                    this.launch_tinymce = true;
+                    if (response.data.route != '') {
+                        let regex = {':slug': this.post.slug, ':id': this.post.id};
+                        this.route = response.data.route.url;
+                        for (let index in regex) {
+                            if (regex.hasOwnProperty(index)) {
+                                this.route = this.route.replace(index, regex[index]);
                             }
                         }
                     }
-                    this.loading = false;
+                }
 
-                }).then(() => {
-                    this.loading = true;
-                    this.read({api: ADMIN_DOMAIN + '/module/post-category/list-by-name/' + this.website_id}).then((response) => {
-                        this.categories = response.data;
-                        this.loading = false;
-                    });
-                    for(let index in this.post.categories)
-                        if (this.post.categories.hasOwnProperty(index))
-                            this.post_categories.push(this.post.categories[index].id)
-                });
+            }).then(() => {
+                this.loadCategory();
+                for (let index in this.post.categories)
+                    if (this.post.categories.hasOwnProperty(index))
+                        this.post_categories.push(this.post.categories[index].id)
+                this.read({
+                    api: custom_field_api.admin_render + this.website_id,
+                    options: {params: {params: this.custom_fields_params}}
+                }).then((response) => {
+                    if ('resource' in response.data)
+                        this.custom_fields = response.data.resource;
+                })
+            });
+        },
+        mounted () {
+            this.$nextTick(function () {
             });
         }
     }

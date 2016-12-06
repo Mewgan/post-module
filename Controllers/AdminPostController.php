@@ -2,6 +2,8 @@
 
 namespace Jet\Modules\Post\Controllers;
 
+use Jet\Models\Media;
+use Jet\Modules\Post\Requests\PostRequest;
 use Jet\Services\Auth;
 use Jet\AdminBlock\Controllers\AdminController;
 use Jet\Models\Account;
@@ -9,7 +11,6 @@ use Jet\Models\Route;
 use Jet\Models\Website;
 use Jet\Modules\Post\Models\Post;
 use Jet\Modules\Post\Models\PostCategory;
-use JetFire\Framework\System\Request;
 
 /**
  * Class AdminPostController
@@ -19,11 +20,12 @@ class AdminPostController extends AdminController
 {
 
     /**
-     * @param Request $request
+     * @param PostRequest $request
      * @param $website
      * @return array
      */
-    public function all(Request $request, $website){
+    public function all(PostRequest $request, $website)
+    {
         $max = ($request->exists('max')) ? (int)$request->query('max') : 10;
         $page = ($request->exists('page')) ? (int)$request->query('page') : 1;
 
@@ -52,18 +54,12 @@ class AdminPostController extends AdminController
     }
 
     /**
-     *
-     */
-    public function create(){
-
-    }
-
-    /**
      * @param $website
      * @param $id
      * @return array
      */
-    public function read($website, $id){
+    public function read($website, $id)
+    {
         $this->websites[] = $website;
         $website = Website::findOneById($website);
         $this->getThemeWebsites($website);
@@ -71,63 +67,117 @@ class AdminPostController extends AdminController
         $post = Post::repo()->readAdmin($id);
 
         if (!is_null($post))
-            return ['status' => 'success', 'resource' => $post, 'route' => (isset($route[0]))?$route[0]:''];
+            return ['status' => 'success', 'resource' => $post, 'route' => (isset($route[0])) ? $route[0] : ''];
         return ['status' => 'error', 'message' => 'Article inexistant'];
     }
 
     /**
-     *
+     * @param PostRequest $request
+     * @param $website
+     * @param $id
+     * @return array|bool
      */
-    public function update(){
-        
+    public function updateOrCreate(PostRequest $request, $website, $id)
+    {
+        if ($request->method() == 'PUT' || $request->method() == 'POST') {
+            $response = $request->validate();
+            if ($response === true) {
+                $post = ($id == 'create') ? new Post() : Post::findOneById($id);
+                if (!is_null($post)) {
+                    $website = Website::findOneById($website);
+                    if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
+                    $value = $request->getPost();
+                    if ($id == 'create') {
+                        $post->setWebsite($website);
+                    } elseif ($post->getWebsite() != $website) {
+                        $data = $website->getData();
+                        $data['parent_exclude']['posts'] = (isset($data['parent_exclude']['posts']))
+                            ? $data['parent_exclude']['posts'] : [];
+                        if (!in_array($post->getId(), $data['parent_exclude']['posts']))
+                            $data['parent_exclude']['posts'][] = $post->getId();
+                        $website->setData($data);
+                        Website::watch($website);
+                        $post = new Post();
+                        $post->setWebsite($website);
+                    }
+                    $post->setTitle($value->get('title'));
+                    $post->setSlug($value->get('slug'));
+                    $post->setDescription($value->get('description'));
+                    $post->setContent($value->get('content'));
+                    ($value->get('published') == 'true') ? $post->setPublished(1) : $post->setPublished(0);
+
+                    if ($value->has('thumbnail')) {
+                        if (isset($value->get('thumbnail')['id']) && !empty($value->get('thumbnail')['id'])) {
+                            $thumbnail = Media::findOneById($value->get('thumbnail')['id']);
+                            if (!is_null($thumbnail)) $post->setThumbnail($thumbnail);
+                        } else
+                            $post->setThumbnail(null);
+                    }
+
+                    if ($value->has('new_categories') && !empty($value->get('new_categories'))) {
+                        $categories = PostCategory::findBy(['id' => $value->get('new_categories')]);
+                        if (!is_null($categories)) $post->setPostCategories($categories);
+                    }
+
+                    return (Post::watchAndSave($post))
+                        ? ['status' => 'success', 'message' => 'L\'article a bien été mis à jour', 'resource' => $post]
+                        : ['status' => 'error', 'message' => 'Erreur lors de la mise à jour'];
+                }
+                return ['status' => 'error', 'message' => 'Article non trouvé'];
+            }
+            return $response;
+        }
+        return ['status' => 'error', 'message' => 'Requête non autorisée'];
     }
 
     /**
-     * @param Request $request
-     * @param Auth $auth
+     * @param PostRequest $request
      * @param $website
      * @return array
      */
-    public function delete(Request $request, Auth $auth, $website)
+    public function delete(PostRequest $request, $website)
     {
         if ($request->method() == 'DELETE' && $request->exists('ids')) {
-            $post_website = Website::findOneById($website);
-            $data = $post_website->getData();
-            $posts_exclude = (isset($data['parent_exclude']['posts']))?$data['parent_exclude']['posts']:[];
-            $account = Account::repo()->getWebsiteAccount($website);
-            if($auth->get('id') == $account->getId() || $auth->get('status')->level <= 2) {
-                foreach ($request->get('ids') as $id){
-                    $post = Post::orm('pdo')->select('id','website_id')->where('id',$id)->get(true);
-                    if($post['website_id'] != $website) {
-                        if (!in_array($id,$posts_exclude)) $posts_exclude[] = $id;
-                    }else
-                        Post::delete($id);
-                }
-                $data['parent_exclude']['posts'] = $posts_exclude;
-                $post_website->setData($data);
-                Website::watchAndSave($post_website);
-                return ['status' => 'success', 'message' => 'Le(s) article(s) ont bien été supprimé(s)'];
+            $website = Website::findOneById($website);
+            if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
+            $data = $website->getData();
+            $data['parent_exclude']['posts'] = (isset($data['parent_exclude']['posts'])) ? $data['parent_exclude']['posts'] : [];
+
+            $posts = Post::repo()->findById($request->get('ids'));
+            $ids = [];
+
+            foreach ($posts as $post) {
+                if ($post->getWebsite() != $website) {
+                    if (!in_array($post->getId(), $data['parent_exclude']['posts'])) $data['parent_exclude']['posts'][] = $post->getId();
+                } else
+                    $ids[] = $post->getId();
             }
-            return ['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour supprimer ces articles'];
+
+            $website->setData($data);
+            Website::watchAndSave($website);
+
+            return (Post::destroy($ids))
+                ? ['status' => 'success', 'message' => 'Les articles ont bien été supprimées']
+                : ['status' => 'error', 'message' => 'Erreur lors de la suppression'];
         }
-        return ['status' => 'error', 'message' => 'Le(s) article(s) n\'ont pas pu être supprimé(s)'];
+        return ['status' => 'error', 'message' => 'Les articles n\'ont pas pu être supprimées'];
     }
 
     /**
-     * @param Request $request
+     * @param PostRequest $request
      * @param $website
      * @return array
      */
-    public function changeState(Request $request, $website)
+    public function changeState(PostRequest $request, $website)
     {
         if ($request->method() == 'PUT' && $request->exists(['ids', 'state'])) {
             $post_website = Website::findOneById($website);
             $data = $post_website->getData();
-            $posts_exclude = (isset($data['parent_exclude']['posts']))?$data['parent_exclude']['posts']:[];
-            $posts_replace = (isset($data['parent_replace']['posts']))?$data['parent_replace']['posts']:[];
+            $posts_exclude = (isset($data['parent_exclude']['posts'])) ? $data['parent_exclude']['posts'] : [];
+            $posts_replace = (isset($data['parent_replace']['posts'])) ? $data['parent_replace']['posts'] : [];
             foreach ($request->get('ids') as $id) {
                 $post = Post::findOneById($id);
-                if($post->getWebsite()->getId() != $website) {
+                if ($post->getWebsite()->getId() != $website) {
                     $new_post = new Post();
                     $new_post->setTitle($post->getTitle());
                     $new_post->setSlug($post->getSlug());
@@ -138,9 +188,9 @@ class AdminPostController extends AdminController
                     $new_post->setThumbnail($post->getThumbnail());
                     $new_post->setPostCategories($post->getPostCategories());
                     Post::watchAndSave($new_post);
-                    if(!in_array($post->getId(),$posts_exclude))$posts_exclude[] = $post->getId();
-                    if(!isset($posts_replace[$post->getId()]))$posts_replace[$post->getId()] = $new_post->getId();
-                }else
+                    if (!in_array($post->getId(), $posts_exclude)) $posts_exclude[] = $post->getId();
+                    if (!isset($posts_replace[$post->getId()])) $posts_replace[$post->getId()] = $new_post->getId();
+                } else
                     Post::where('id', $id)->set(['published' => $request->get('state')]);
             }
             $data['parent_exclude']['posts'] = $posts_exclude;
@@ -155,26 +205,47 @@ class AdminPostController extends AdminController
     /**
      *
      */
-    public function createContent(){
-        
+    public function createContent()
+    {
+
     }
 
     /**
      *
      */
-    public function updateContent(){
+    public function updateContent()
+    {
 
     }
 
-    public function listTableValues($website){
+    /**
+     * @param $website
+     * @return array
+     */
+    public function listTableValues($website)
+    {
         $this->websites[] = $website;
         $website = Website::findOneById($website);
+        if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
         $this->getThemeWebsites($website);
 
         return [
             'c' => PostCategory::repo()->listTableValues($this->websites, $website->getData()),
             'p' => Post::repo()->listTableValues($this->websites, $website->getData())
         ];
-        
+
+    }
+
+    /**
+     * @param $website
+     * @return array
+     */
+    public function listRuleValue($website)
+    {
+        $this->websites[] = $website;
+        $website = Website::findOneById($website);
+        if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
+        $this->getThemeWebsites($website);
+        return Post::repo()->getPostRules($this->websites, $website->getData());
     }
 }
