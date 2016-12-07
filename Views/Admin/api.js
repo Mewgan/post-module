@@ -3,7 +3,8 @@ export const post_api = {
     read: ADMIN_DOMAIN + '/module/post/read/',
     update_or_create: ADMIN_DOMAIN + '/module/post/update-or-create/',
     destroy: ADMIN_DOMAIN + '/module/post/delete/',
-    change_state: ADMIN_DOMAIN + '/module/post/change-state/'
+    change_state: ADMIN_DOMAIN + '/module/post/change-state/',
+    list_table_values: ADMIN_DOMAIN + '/module/post/list-table-values/'
 };
 
 export const post_category_api = {

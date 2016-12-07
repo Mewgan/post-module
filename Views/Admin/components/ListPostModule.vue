@@ -14,7 +14,6 @@
 </style>
 <template>
     <form class="form edit-list-post">
-        <loading :loading="loading"></loading>
         <h5 class="module-title">Information :</h5>
         <div class="row">
             <div class="col-md-6">
@@ -201,16 +200,17 @@
     import '../../../../../Blocks/AdminBlock/Resources/public/js/libs/select2/select2.min'
 
     /* JS*/
-    import Loading from '../../../../../Blocks/AdminBlock/Front/components/Helper/Loading.vue'
     import RouteEditor from '../../../../../Blocks/AdminBlock/Front/components/Helper/RouteEditor.vue'
     import TemplateEditor from '../../../../../Blocks/AdminBlock/Front/components/Helper/TemplateEditor.vue'
 
     import {AppVendor} from '../../../../../Blocks/AdminBlock/Resources/public/js/app'
     import {mapActions} from 'vuex'
+    import {route_api, template_api} from '../../../../../Blocks/AdminBlock/Front/api'
+    import {post_api} from '../api'
 
     export default{
         name: 'list-post',
-        components: {Loading, RouteEditor, TemplateEditor},
+        components: {RouteEditor, TemplateEditor},
         props: {
             line: {
                 default: '0'
@@ -247,7 +247,6 @@
                 selectDbValues: {},
                 route: {},
                 templates: [],
-                loading: false
             }
         },
         watch: {
@@ -353,16 +352,14 @@
             }
         },
         created () {
-            this.loading = true;
-            this.read({api: ADMIN_DOMAIN + '/route/find-by/name/' + this.content_data.route_name}).then((response) => {
-                this.route = response.data;
+            this.read({api: route_api.find_by_name + this.content_data.route_name}).then((response) => {
+                this.route = response.data.resource;
             });
-            this.read({api: ADMIN_DOMAIN + '/template/get-website-content-layouts/' + this.website}).then((response) => {
+            this.read({api: template_api.get_website_content_layouts + this.website}).then((response) => {
                 this.templates = response.data;
             });
-            this.read({api: ADMIN_DOMAIN + '/module/post/list-table-values/' + this.website}).then((response) => {
+            this.read({api: post_api.list_table_values + this.website}).then((response) => {
                 this.values = response.data;
-                this.loading = false;
             }).then(() => {
                 this.content_data.db.forEach((el, index) => {
                     this.selectDbValues[this.line + '@' + index] = $("#db_value_" + this.line + '_' + index).select2({

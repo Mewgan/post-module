@@ -163,12 +163,14 @@
                                                 <a @click="selectPost(post)" data-toggle="modal" data-target="#deletePostModal"
                                                    class="btn ink-reaction btn-floating-action btn-danger"><i
                                                         class="fa fa-trash"></i></a>
-                                                <a @click="changeState(post)" title="Cet article est publié" v-show="post.published"
-                                                   class="btn ink-reaction btn-floating-action btn-success"><i
-                                                        class="fa fa-check"></i></a>
-                                                <a @click="changeState(post)" title="Cet article n'est pas publié" v-show="!post.published"
-                                                   class="btn ink-reaction btn-floating-action btn-warning"><i
-                                                        class="fa fa-times"></i></a>
+                                                <span v-if="post.website.id == website_id">
+                                                    <a @click="changeState(post)" title="Cet article est publié" v-show="post.published"
+                                                       class="btn ink-reaction btn-floating-action btn-success"><i
+                                                            class="fa fa-check"></i></a>
+                                                    <a @click="changeState(post)" title="Cet article n'est pas publié" v-show="!post.published"
+                                                       class="btn ink-reaction btn-floating-action btn-warning"><i
+                                                            class="fa fa-times"></i></a>
+                                                </span>
                                                 <span class="post-icon"><i :title="getIconTitle('Cet article',post.website.id)"
                                                                            :class="getIconClass(post.website.id)"></i> </span>
                                             </div>

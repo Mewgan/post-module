@@ -7,122 +7,142 @@
         margin-top: -20px;
         margin-right: 8px;
     }
+
 </style>
 
 <template>
-    <form class="form edit-post">
-        <loading :loading="loading"></loading>
-        <h5 class="module-title">Information :</h5>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <input type="text" class="form-control" v-model="content.name" id="content_name">
-                    <label for="content_name">Nom *</label>
+    <div class="edit-post">
+        <form class="form" >
+            <h5 class="module-title">Information :</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <input type="text" class="form-control" v-model="content.name" id="content_name">
+                        <label for="content_name">Nom *</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <input type="text" class="form-control" v-model="content.block" id="content_block">
+                        <label for="content_block">Bloc *</label>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <input type="text" class="form-control" v-model="content.block" id="content_block">
-                    <label for="content_block">Bloc *</label>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <input type="text" class="form-control" :value="content.module.category.title" readonly id="content_module">
-                    <label for="content_module">Module</label>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <input type="text" class="form-control" :value="content.module.name" readonly id="content_extension">
-                    <label for="content_extension">Extension</label>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <input type="text" class="form-control" v-model="content_data.class" id="content_class">
-            <label for="content_class">Class</label>
-        </div>
-        <h5 class="module-title">Choix du template :</h5>
-        <div class="form-group">
-            <select id="content_template" v-model="content.template.id" class="form-control">
-                <option v-for="template in templates" :value="template.id">{{template.title}}</option>
-            </select>
-            <label for="content_template">Template du contenu</label>
-        </div>
-        <div>
-            <h5 class="module-title">Configuration avancé :</h5>
-            <div class="form-group" v-if="page != null && 'route' in page && 'url' in page.route">
-                <input type="text" class="form-control" id="page_url" :value="page.route.url" readonly><div class="form-control-line"></div>
-                <label for="page_url">Page url</label>
-            </div>
-            <br>
-            <table class="table table-bordered no-margin">
-                <tbody>
-                <tr v-for="(db,i) in content_data.db">
-                    <td style="width: 5%">{{i}}</td>
-                    <td style="width: 30%">
+            <div v-show="auth.status.level < 4">
+                <div class="row">
+                    <div class="col-md-6">
                         <div class="form-group">
-                            <select :id="'db_table_'+i" v-model="db.alias" class="form-control">
-                                <option v-for="(table,alias) in tables" :value="alias">{{table}}</option>
-                            </select>
-                            <label :for="'db_table_'+i">Table</label>
+                            <input type="text" class="form-control" :value="content.module.category.title" readonly
+                                   id="content_module">
+                            <label for="content_module">Module</label>
                         </div>
-                    </td>
-                    <td style="width: 30%">
+                    </div>
+                    <div class="col-md-6">
                         <div class="form-group">
-                            <select :id="'db_column_'+i" v-model="db.column" class="form-control">
-                                <option v-for="column in columns" :value="column">{{column}}</option>
-                            </select>
-                            <label :for="'db_column_'+i">Colonne</label>
+                            <input type="text" class="form-control" :value="content.module.name" readonly
+                                   id="content_extension">
+                            <label for="content_extension">Extension</label>
                         </div>
-                    </td>
-                    <td style="width: 30%">
-                        <div>
-                            <ul class="nav nav-tabs nav-justified" data-toggle="tabs">
-                                <li :class="classStatic(i)"><a @click="changeType(i, 'static')" href="#content_static">Statique</a></li>
-                                <li :class="classDynamic(i)"><a @click="changeType(i, 'dynamic')" href="#content_dynamic">Dynamique</a></li>
-                            </ul>
-                        </div><!--end .card-head -->
-                        <div class="card-body tab-content">
-                            <div :class="[classStatic(i), 'tab-pane']" id="content_static">
-                                <div class="form-group">
-                                    <select :id="'db_value_'+i" @change="setValueId(i,db.alias,db.column,db.value)" v-model="db.value" class="form-control">
-                                        <option v-for="value in getValues(db.alias)" :value="value[db.column]">{{value.name}}</option>
-                                    </select>
-                                    <label :for="'db_value_'+i">Valeur</label>
+                    </div>
+                </div>
+                <div class="form-group" >
+                    <input type="text" class="form-control" v-model="content_data.class" id="content_class">
+                    <label for="content_class">Class</label>
+                </div>
+                <h5 class="module-title">Choix du template :</h5>
+                <div class="form-group">
+                    <select id="content_template" v-model="content.template.id" class="form-control">
+                        <option v-for="template in templates" :value="template.id">{{template.title}}</option>
+                    </select>
+                    <label for="content_template">Template du contenu</label>
+                </div>
+            </div>
+            <div>
+                <div v-show="auth.status.level < 4">
+                    <h5 class="module-title">Configuration avancé :</h5>
+                    <div class="form-group" v-if="page != null && 'route' in page && 'url' in page.route">
+                        <input type="text" class="form-control" id="page_url" :value="page.route.url" readonly>
+                        <div class="form-control-line"></div>
+                        <label for="page_url">Page url</label>
+                    </div>
+                    <br>
+                </div>
+                <table class="table table-bordered no-margin">
+                    <tbody>
+                    <tr v-for="(db,i) in content_data.db">
+                        <td v-show="auth.status.level < 4" style="width: 5%">{{i}}</td>
+                        <td v-show="auth.status.level < 4" style="width: 30%">
+                            <div class="form-group">
+                                <select :id="'db_table_'+i" v-model="db.alias" class="form-control">
+                                    <option v-for="(table,alias) in tables" :value="alias">{{table}}</option>
+                                </select>
+                                <label :for="'db_table_'+i">Table</label>
+                            </div>
+                        </td>
+                        <td v-show="auth.status.level < 4" style="width: 30%">
+                            <div class="form-group">
+                                <select :id="'db_column_'+i" v-model="db.column" class="form-control">
+                                    <option v-for="column in columns" :value="column">{{column}}</option>
+                                </select>
+                                <label :for="'db_column_'+i">Colonne</label>
+                            </div>
+                        </td>
+                        <td>
+                            <div v-show="auth.status.level < 4">
+                                <ul class="nav nav-tabs nav-justified" data-toggle="tabs">
+                                    <li :class="classStatic(i)"><a @click="changeType(i, 'static')" href="#content_static">Statique</a>
+                                    </li>
+                                    <li :class="classDynamic(i)"><a @click="changeType(i, 'dynamic')"
+                                                                    href="#content_dynamic">Dynamique</a></li>
+                                </ul>
+                            </div><!--end .card-head -->
+                            <div class="card-body tab-content">
+                                <div :class="[classStatic(i), 'tab-pane']" id="content_static">
+                                    <p v-show="auth.status.level > 3">Choisissez l'article à afficher sur cette page :</p>
+                                    <div class="form-group">
+                                        <select :id="'db_value_'+i" @change="setValueId(i,db.alias,db.column,db.value)"
+                                                v-model="db.value" class="form-control">
+                                            <option v-for="value in getValues(db.alias)" :value="value[db.column]">
+                                                {{value.name}}
+                                            </option>
+                                        </select>
+                                        <label :for="'db_value_'+i">Valeur</label>
+                                    </div>
+                                </div>
+                                <div :class="[classDynamic(i), 'tab-pane']" id="content_dynamic">
+                                    <div class="form-group">
+                                        <input type="text" v-model="db.route" class="form-control" :id="'db_route_'+i">
+                                        <label :for="'db_route_'+i">Route</label>
+                                    </div>
                                 </div>
                             </div>
-                            <div :class="[classDynamic(i), 'tab-pane']" id="content_dynamic">
-                                <div class="form-group">
-                                    <input type="text" v-model="db.route" class="form-control" :id="'db_route_'+i">
-                                    <label :for="'db_route_'+i">Route</label>
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                    <td style="width: 5%">
-                        <button type="button" @click="removeDbField(i)" class="btn ink-reaction btn-floating-action btn-danger"><i class="fa fa-times"></i></button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            <button type="button" @click="addDbField()" class="btn ink-reaction pull-right btn-floating-action btn-info add-field"><i class="fa fa-plus"></i></button>
-        </div>
-    </form>
+                        </td>
+                        <td v-show="auth.status.level < 4" style="width: 5%">
+                            <button type="button" @click="removeDbField(i)"
+                                    class="btn ink-reaction btn-floating-action btn-danger"><i class="fa fa-times"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <button v-show="auth.status.level < 4" type="button" @click="addDbField()"
+                        class="btn ink-reaction pull-right btn-floating-action btn-info add-field"><i
+                        class="fa fa-plus"></i></button>
+            </div>
+        </form>
+    </div>
 </template>
 
 <script type="text/babel">
 
     import {AppVendor} from '../../../../../Blocks/AdminBlock/Resources/public/js/app'
-    import Loading from '../../../../../Blocks/AdminBlock/Front/components/Helper/Loading.vue'
-    import {mapActions} from 'vuex'
+    import {mapGetters, mapActions} from 'vuex'
+
+    import {template_api} from '../../../../../Blocks/AdminBlock/Front/api'
+    import {post_api} from '../api'
 
     export default{
         name: 'single-post',
-        components: {Loading},
         props: {
             line: {
                 default: '0'
@@ -153,8 +173,7 @@
                     c: null,
                     p: null
                 },
-                templates: [],
-                loading: false
+                templates: []
             }
         },
         watch: {
@@ -165,11 +184,16 @@
                 deep: true
             }
         },
+        computed: {
+            ...mapGetters([
+                'auth'
+            ])
+        },
         methods: {
             ...mapActions([
                 'read'
             ]),
-            setValueId(key,table, col, val){
+            setValueId(key, table, col, val){
                 if (table in this.values && this.values[table] != null) {
                     let index = this.values[table].findIndex((i) => i[col] == val);
                     this.content_data.db[key].value_id = this.values[table][index].id
@@ -209,13 +233,11 @@
             }
         },
         created () {
-            this.loading = true;
-            this.read({api: ADMIN_DOMAIN + '/template/get-website-content-layouts/' + this.website}).then((response) => {
+            this.read({api: template_api.get_website_content_layouts + this.website}).then((response) => {
                 this.templates = response.data;
             });
-            this.read({api: ADMIN_DOMAIN + '/module/post/list-table-values/' + this.website}).then((response) => {
+            this.read({api: post_api.list_table_values + this.website}).then((response) => {
                 this.values = response.data;
-                this.loading = false;
             });
         },
         mounted () {
