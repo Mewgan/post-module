@@ -1,6 +1,6 @@
 <?php
 
-namespace Jet\DataFixtures;
+namespace Jet\Modules\Post\Fixtures;
 
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
