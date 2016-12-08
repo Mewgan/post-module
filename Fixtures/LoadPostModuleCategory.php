@@ -13,6 +13,7 @@ class LoadPostModuleCategory extends AbstractFixture implements OrderedFixtureIn
         'name' => 'Post',
         'title' => 'Article',
         'slug' => 'post',
+        'nav' => true,
         'description' => 'Module pour afficher des articles',
         'icon' => 'fa fa-newspaper-o',
         'author' => 'S.Sumugan',
@@ -29,6 +30,7 @@ class LoadPostModuleCategory extends AbstractFixture implements OrderedFixtureIn
         $cat->setName($this->data['name']);
         $cat->setTitle($this->data['title']);
         $cat->setSlug($this->data['slug']);
+        $cat->setNav($this->data['nav']);
         $cat->setIcon($this->data['icon']);
         $cat->setAuthor($this->data['author']);
         $cat->setVersion($this->data['version']);

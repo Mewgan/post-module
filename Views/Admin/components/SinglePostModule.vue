@@ -116,7 +116,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </td>
+                        </td>01016
                         <td v-show="auth.status.level < 4" style="width: 5%">
                             <button type="button" @click="removeDbField(i)"
                                     class="btn ink-reaction btn-floating-action btn-danger"><i class="fa fa-times"></i>
@@ -130,6 +130,11 @@
                         class="fa fa-plus"></i></button>
             </div>
         </form>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+            <button type="button" @click="updateContent" class="btn btn-primary" data-dismiss="modal">Enregistrer</button>
+        </div>
     </div>
 </template>
 
@@ -230,6 +235,9 @@
             },
             changeType(i, type){
                 this.content_data.db[i].type = type;
+            },
+            updateContent(){
+                this.$emit('updateContent',this.content);
             }
         },
         created () {

@@ -13,184 +13,191 @@
     }
 </style>
 <template>
-    <form class="form edit-list-post">
-        <h5 class="module-title">Information :</h5>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <input type="text" class="form-control" v-model="content.name" id="content_name">
-                    <label for="content_name">Nom *</label>
+    <div class="edit-list-post">
+        <form class="form">
+            <h5 class="module-title">Information :</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <input type="text" class="form-control" v-model="content.name" id="content_name">
+                        <label for="content_name">Nom *</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <input type="text" class="form-control" v-model="content.block" id="content_block">
+                        <label for="content_block">Bloc *</label>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <input type="text" class="form-control" v-model="content.block" id="content_block">
-                    <label for="content_block">Bloc *</label>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <input type="text" class="form-control" :value="content.module.category.title" readonly id="content_module">
+                        <label for="content_module">Module</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <input type="text" class="form-control" :value="content.module.name" readonly id="content_extension">
+                        <label for="content_extension">Extension</label>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <input type="text" class="form-control" :value="content.module.category.title" readonly id="content_module">
-                    <label for="content_module">Module</label>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <input type="number" class="form-control" v-model="content.data.total_row" id="content_total_row">
+                        <label for="content_total_row">Nombre max d'articles à afficher</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <input type="text" class="form-control" v-model="content_data.class" id="content_class">
+                        <label for="content_class">Class</label>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <input type="text" class="form-control" :value="content.module.name" readonly id="content_extension">
-                    <label for="content_extension">Extension</label>
+            <h5 class="module-title">Choix du template :</h5>
+           <!-- <div class="form-group">
+                <select id="content_template" v-model="content.template.id" class="form-control">
+                    <option v-for="template in templates" :value="template.id">{{template.title}}</option>
+                </select>
+                <label for="content_template">Template du contenu</label>
+            </div>-->
+            <template-editor :id="line" :templates="templates" :template="content.template" label="Template du contenu"></template-editor>
+            <div>
+                <h5 class="module-title">Configuration avancé :</h5>
+                <div class="form-group" v-if="page != null && 'route' in page && 'url' in page.route">
+                    <input type="text" class="form-control" id="page_url" :value="page.route.url" readonly><div class="form-control-line"></div>
+                    <label for="page_url">Page url</label>
                 </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <input type="number" class="form-control" v-model="content.data.total_row" id="content_total_row">
-                    <label for="content_total_row">Nombre max d'articles à afficher</label>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <input type="text" class="form-control" v-model="content_data.class" id="content_class">
-                    <label for="content_class">Class</label>
-                </div>
-            </div>
-        </div>
-        <h5 class="module-title">Choix du template :</h5>
-       <!-- <div class="form-group">
-            <select id="content_template" v-model="content.template.id" class="form-control">
-                <option v-for="template in templates" :value="template.id">{{template.title}}</option>
-            </select>
-            <label for="content_template">Template du contenu</label>
-        </div>-->
-        <template-editor :id="line" :templates="templates" :template="content.template" label="Template du contenu"></template-editor>
-        <div>
-            <h5 class="module-title">Configuration avancé :</h5>
-            <div class="form-group" v-if="page != null && 'route' in page && 'url' in page.route">
-                <input type="text" class="form-control" id="page_url" :value="page.route.url" readonly><div class="form-control-line"></div>
-                <label for="page_url">Page url</label>
-            </div>
-            <br>
-            <table class="table table-bordered no-margin">
-                <tbody>
-                <tr v-for="(db,i) in content_data.db">
-                    <td style="width: 5%">{{i}}</td>
-                    <td style="width: 30%">
-                        <div class="form-group">
-                            <select :id="'db_table_'+i" v-model="db.alias" class="form-control">
-                                <option v-for="(table,alias) in tables" :value="alias">{{table}}</option>
-                            </select>
-                            <label :for="'db_table_'+i">Table</label>
-                        </div>
-                    </td>
-                    <td style="width: 30%">
-                        <div class="form-group">
-                            <select :id="'db_column_'+i" v-model="db.column" class="form-control">
-                                <option v-for="column in columns" :value="column">{{column}}</option>
-                            </select>
-                            <label :for="'db_column_'+i">Colonne</label>
-                        </div>
-                    </td>
-                    <td style="width: 30%">
-                        <div>
-                            <ul class="nav nav-tabs nav-justified" data-toggle="tabs">
-                                <li :class="classDbStatic(i)"><a @click="changeDbType(i,'static')" :href="'#db_static'+i">Statique</a></li>
-                                <li :class="classDbDynamic(i)"><a @click="changeDbType(i,'dynamic')" :href="'#db_dynamic'+i">Dynamique</a></li>
-                            </ul>
-                        </div><!--end .card-head -->
-                        <div class="card-body tab-content">
-                            <div :class="[classDbStatic(i), 'tab-pane']" :id="'db_static'+i">
-                                <div class="form-group">
-                                    <select :id="'db_value_' + line + '_' + i" class="values-select form-control select2-list" :data-index="i" multiple>
-                                        <option v-for="value in getValues(db.alias)" :value="value[db.column]">{{value.name}}</option>
-                                    </select>
-                                    <label :for="'db_value_' + line + '_' + i">Valeur</label>
+                <br>
+                <table class="table table-bordered no-margin">
+                    <tbody>
+                    <tr v-for="(db,i) in content_data.db">
+                        <td style="width: 5%">{{i}}</td>
+                        <td style="width: 30%">
+                            <div class="form-group">
+                                <select :id="'db_table_'+i" v-model="db.alias" class="form-control">
+                                    <option v-for="(table,alias) in tables" :value="alias">{{table}}</option>
+                                </select>
+                                <label :for="'db_table_'+i">Table</label>
+                            </div>
+                        </td>
+                        <td style="width: 30%">
+                            <div class="form-group">
+                                <select :id="'db_column_'+i" v-model="db.column" class="form-control">
+                                    <option v-for="column in columns" :value="column">{{column}}</option>
+                                </select>
+                                <label :for="'db_column_'+i">Colonne</label>
+                            </div>
+                        </td>
+                        <td style="width: 30%">
+                            <div>
+                                <ul class="nav nav-tabs nav-justified" data-toggle="tabs">
+                                    <li :class="classDbStatic(i)"><a @click="changeDbType(i,'static')" :href="'#db_static'+i">Statique</a></li>
+                                    <li :class="classDbDynamic(i)"><a @click="changeDbType(i,'dynamic')" :href="'#db_dynamic'+i">Dynamique</a></li>
+                                </ul>
+                            </div><!--end .card-head -->
+                            <div class="card-body tab-content">
+                                <div :class="[classDbStatic(i), 'tab-pane']" :id="'db_static'+i">
+                                    <div class="form-group">
+                                        <select :id="'db_value_' + line + '_' + i" class="values-select form-control select2-list" :data-index="i" multiple>
+                                            <option v-for="value in getValues(db.alias)" :value="value[db.column]">{{value.name}}</option>
+                                        </select>
+                                        <label :for="'db_value_' + line + '_' + i">Valeur</label>
+                                    </div>
+                                </div>
+                                <div :class="[classDbDynamic(i), 'tab-pane']" :id="'db_dynamic'+i">
+                                    <div class="form-group">
+                                        <input type="text" v-model="db.route" class="form-control" :id="'db_route_'+i">
+                                        <label :for="'db_route_'+i">Route</label>
+                                    </div>
                                 </div>
                             </div>
-                            <div :class="[classDbDynamic(i), 'tab-pane']" :id="'db_dynamic'+i">
-                                <div class="form-group">
-                                    <input type="text" v-model="db.route" class="form-control" :id="'db_route_'+i">
-                                    <label :for="'db_route_'+i">Route</label>
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                    <td style="width: 5%">
-                        <button type="button" @click="removeDbField(i)" class="btn ink-reaction btn-floating-action btn-danger"><i class="fa fa-times"></i></button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            <button type="button" @click="addDbField(content_data.db.length)" class="btn ink-reaction pull-right btn-floating-action btn-info add-field"><i class="fa fa-plus"></i></button>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <h5 class="module-title">Url d'un article :</h5>
-                <route-editor :line="line" :website_id="website" :route="route" @updateRoute="updateRoute"></route-editor>
+                        </td>
+                        <td style="width: 5%">
+                            <button type="button" @click="removeDbField(i)" class="btn ink-reaction btn-floating-action btn-danger"><i class="fa fa-times"></i></button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <button type="button" @click="addDbField(content_data.db.length)" class="btn ink-reaction pull-right btn-floating-action btn-info add-field"><i class="fa fa-plus"></i></button>
             </div>
-        </div>
-        <div>
-            <h5 class="module-title">Configuration des liens d'articles :</h5>
-            <table class="table table-bordered no-margin">
-                <tbody>
-                <tr v-for="(link,i) in content_data.link">
-                    <td style="width: 5%">{{i}}</td>
-                    <td style="width: 30%">
-                        <div class="form-group">
-                            <input type="text" v-model="link.route" class="form-control" :id="'link_route_'+i">
-                            <label :for="'link_route_'+i">Route</label>
-                        </div>
-                    </td>
-                    <td style="width: 30%">
-                        <div class="form-group">
-                            <select :id="'link_table_'+i" v-model="link.alias" class="form-control">
-                                <option v-for="(table,alias) in tables" :value="alias">{{table}}</option>
-                            </select>
-                            <label :for="'link_table_'+i">Table</label>
-                        </div>
-                    </td>
-                    <td style="width: 30%">
-                        <div>
-                            <ul class="nav nav-tabs nav-justified" data-toggle="tabs">
-                                <li :class="classLinkStatic(i)"><a @click="changeLinkType(i,'static')" :href="'#link_static'+i">Statique</a></li>
-                                <li :class="classLinkDynamic(i)"><a @click="changeLinkType(i,'dynamic')" :href="'#link_dynamic'+i">Dynamique</a></li>
-                            </ul>
-                        </div><!--end .card-head -->
-                        <div class="card-body tab-content">
-                            <div :class="[classLinkStatic(i), 'tab-pane']" :id="'link_static'+i">
-                                <div class="form-group">
-                                    <select :id="'link_column_'+i" v-model="link.column" class="form-control">
-                                        <option v-for="column in columns" :value="column">{{column}}</option>
-                                    </select>
-                                    <label :for="'link_column_'+i">Colonne</label>
+            <div class="row">
+                <div class="col-md-12">
+                    <h5 class="module-title">Url d'un article :</h5>
+                    <route-editor :line="line" :website_id="website" :route="route" @updateRoute="updateRoute"></route-editor>
+                </div>
+            </div>
+            <div>
+                <h5 class="module-title">Configuration des liens d'articles :</h5>
+                <table class="table table-bordered no-margin">
+                    <tbody>
+                    <tr v-for="(link,i) in content_data.link">
+                        <td style="width: 5%">{{i}}</td>
+                        <td style="width: 30%">
+                            <div class="form-group">
+                                <input type="text" v-model="link.route" class="form-control" :id="'link_route_'+i">
+                                <label :for="'link_route_'+i">Route</label>
+                            </div>
+                        </td>
+                        <td style="width: 30%">
+                            <div class="form-group">
+                                <select :id="'link_table_'+i" v-model="link.alias" class="form-control">
+                                    <option v-for="(table,alias) in tables" :value="alias">{{table}}</option>
+                                </select>
+                                <label :for="'link_table_'+i">Table</label>
+                            </div>
+                        </td>
+                        <td style="width: 30%">
+                            <div>
+                                <ul class="nav nav-tabs nav-justified" data-toggle="tabs">
+                                    <li :class="classLinkStatic(i)"><a @click="changeLinkType(i,'static')" :href="'#link_static'+i">Statique</a></li>
+                                    <li :class="classLinkDynamic(i)"><a @click="changeLinkType(i,'dynamic')" :href="'#link_dynamic'+i">Dynamique</a></li>
+                                </ul>
+                            </div><!--end .card-head -->
+                            <div class="card-body tab-content">
+                                <div :class="[classLinkStatic(i), 'tab-pane']" :id="'link_static'+i">
+                                    <div class="form-group">
+                                        <select :id="'link_column_'+i" v-model="link.column" class="form-control">
+                                            <option v-for="column in columns" :value="column">{{column}}</option>
+                                        </select>
+                                        <label :for="'link_column_'+i">Colonne</label>
+                                    </div>
+                                    <div class="form-group">
+                                        <select :id="'link_value_'+i" @change="setValueId(i,link.alias,link.column,link.value)" v-model="link.value" class="form-control">
+                                            <option v-for="value in getValues(link.alias)" :value="value[link.column]">{{value.name}}</option>
+                                        </select>
+                                        <label :for="'link_value_'+i">Valeur</label>
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <select :id="'link_value_'+i" @change="setValueId(i,link.alias,link.column,link.value)" v-model="link.value" class="form-control">
-                                        <option v-for="value in getValues(link.alias)" :value="value[link.column]">{{value.name}}</option>
-                                    </select>
-                                    <label :for="'link_value_'+i">Valeur</label>
+                                <div :class="[classLinkDynamic(i), 'tab-pane']" :id="'link_dynamic'+i">
+                                    <div class="form-group">
+                                        <select :id="'link_column_'+i" v-model="link.column" class="form-control">
+                                            <option v-for="column in columns" :value="column">{{column}}</option>
+                                        </select>
+                                        <label :for="'link_column_'+i">Colonne</label>
+                                    </div>
                                 </div>
                             </div>
-                            <div :class="[classLinkDynamic(i), 'tab-pane']" :id="'link_dynamic'+i">
-                                <div class="form-group">
-                                    <select :id="'link_column_'+i" v-model="link.column" class="form-control">
-                                        <option v-for="column in columns" :value="column">{{column}}</option>
-                                    </select>
-                                    <label :for="'link_column_'+i">Colonne</label>
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                    <td style="width: 5%">
-                        <button type="button" @click="removeLinkField(i)" class="btn ink-reaction btn-floating-action btn-danger"><i class="fa fa-times"></i></button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            <button type="button" @click="addLinkField(content_data.link.length)" class="btn ink-reaction pull-right btn-floating-action btn-info add-field"><i class="fa fa-plus"></i></button>
+                        </td>
+                        <td style="width: 5%">
+                            <button type="button" @click="removeLinkField(i)" class="btn ink-reaction btn-floating-action btn-danger"><i class="fa fa-times"></i></button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <button type="button" @click="addLinkField(content_data.link.length)" class="btn ink-reaction pull-right btn-floating-action btn-info add-field"><i class="fa fa-plus"></i></button>
+            </div>
+        </form>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+            <button type="button" @click="updateContent" class="btn btn-primary" data-dismiss="modal">Enregistrer</button>
         </div>
-    </form>
+    </div>
 </template>
 
 <script type="text/babel">
@@ -349,6 +356,9 @@
             },
             changeLinkType(i, type){
                 this.content_data.link[i].type = type;
+            },
+            updateContent(){
+                this.$emit('updateContent',this.content);
             }
         },
         created () {
