@@ -253,7 +253,7 @@
                 },
                 selectDbValues: {},
                 route: {},
-                templates: [],
+                templates: []
             }
         },
         watch: {

@@ -42,15 +42,15 @@ class AdminPostController extends AdminController
         ];
 
         $response = Post::repo()->listAll($page, $max, $params);
-        $pages_count = ceil($response['total'] / $max);
+        $post_count = ceil($response['total'] / $max);
 
-        $themes = [
+        $posts = [
             'current_page' => $page,
-            'count_pages' => $pages_count,
+            'count_pages' => $post_count,
             'count_all' => $response['total'],
             'data' => $response['data']
         ];
-        return ['status' => 'success', 'content' => $themes];
+        return ['status' => 'success', 'content' => $posts];
     }
 
     /**
@@ -104,14 +104,13 @@ class AdminPostController extends AdminController
                     $post->setSlug($value->get('slug'));
                     $post->setDescription($value->get('description'));
                     $post->setContent($value->get('content'));
-                    ($value->get('published') == 'true') ? $post->setPublished(1) : $post->setPublished(0);
+                    ($value->has('published') && $value->get('published') == 'true') ? $post->setPublished(1) : $post->setPublished(0);
 
                     if ($value->has('thumbnail')) {
                         if (isset($value->get('thumbnail')['id']) && !empty($value->get('thumbnail')['id'])) {
                             $thumbnail = Media::findOneById($value->get('thumbnail')['id']);
                             if (!is_null($thumbnail)) $post->setThumbnail($thumbnail);
-                        } else
-                            $post->setThumbnail(null);
+                        }
                     }
 
                     if ($value->has('new_categories') && !empty($value->get('new_categories'))) {
@@ -200,22 +199,6 @@ class AdminPostController extends AdminController
             return ['status' => 'success', 'message' => 'Le(s) article(s) ont bien été mis à jour'];
         }
         return ['status' => 'error', 'message' => 'Le(s) article(s) n\'ont pas pu être mis à jour'];
-    }
-
-    /**
-     *
-     */
-    public function createContent()
-    {
-
-    }
-
-    /**
-     *
-     */
-    public function updateContent()
-    {
-
     }
 
     /**

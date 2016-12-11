@@ -15,7 +15,7 @@ class PostRequest extends Request
      * @var array
      */
     public static $messages = [
-        'required' => 'Tout les champs doivent être remplis',
+        'required' => 'Le champ ":field" doit être rempli',
         'noWhitespace' => 'Le slug ne doit pas contenir d\'espace',
         'lowercase' => 'Le slug ne peut contenir que des lettres en miniscules',
     ];
@@ -27,7 +27,7 @@ class PostRequest extends Request
     public function rules()
     {
         return [
-            'title|description|content|published|thumbnail|new_categories' => 'required',
+            'title|published|thumbnail' => 'required',
             'slug' => 'required|noWhitespace|lowercase',
         ];
     }

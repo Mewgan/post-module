@@ -6,24 +6,9 @@ export var routes = [
         component:  resolve => require(['./components/PostList.vue'],resolve)
     },
     {
-        path: 'post/create',
-        name: 'module:post:create',
-        component:  resolve => require(['./components/PostCreate.vue'],resolve)
-    },
-    {
         path: 'post/:post_id',
-        name: 'module:post:read',
-        component:  resolve => require(['./components/PostRead.vue'],resolve)
-    },
-    {
-        path: 'module/content/list-post',
-        name: 'module:content:list_post',
-        component:  resolve => require(['./components/ListPostModule.vue'],resolve)
-    },
-    {
-        path: 'module/content/single-post',
-        name: 'module:content:single_post',
-        component:  resolve => require(['./components/SinglePostModule.vue'],resolve)
+        name: 'module:post:action',
+        component:  resolve => require(['./components/PostAction.vue'],resolve)
     }
 ];
 

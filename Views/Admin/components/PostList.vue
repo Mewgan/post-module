@@ -53,9 +53,9 @@
             <ol class="breadcrumb">
                 <li class="active">Articles</li>
             </ol>
-            <button class="btn ink-reaction btn-raised btn-lg btn-info pull-right">
+            <router-link :to="{name: 'module:post:action', params: {website_id: website_id, post_id: 'create'}}"  class="btn ink-reaction btn-raised btn-lg btn-info pull-right">
                 <i class="fa fa-plus" aria-hidden="true"></i> Ajouter un article
-            </button>
+            </router-link>
             <button data-toggle="modal" data-target="#createPostCategoryModal" class="btn ink-reaction btn-raised btn-lg btn-info pull-right">
                 <i class="fa fa-plus" aria-hidden="true"></i>
                 Ajouter une catégorie
@@ -153,12 +153,12 @@
                                                 <span></span>
                                             </label>
                                         </div>
-                                        <img class="pull-left width-3" v-img="post.thumbnail.path"
+                                        <img v-if="post.thumbnail != null" class="pull-left width-3" v-img="post.thumbnail.path"
                                              :alt="post.thumbnail.alt"/>
                                         <div>
-                                            <router-link :to="{name: 'module:post:read', params:{website_id: website_id, post_id: post.id}}" class="text-medium text-lg text-primary">{{post.title}}</router-link>
+                                            <router-link :to="{name: 'module:post:action', params:{website_id: website_id, post_id: post.id}}" class="text-medium text-lg text-primary">{{post.title}}</router-link>
                                             <div class="pull-right">
-                                                <router-link :to="{name: 'module:post:read', params:{website_id: website_id, post_id: post.id}}" class="btn ink-reaction btn-floating-action btn-info"><i
+                                                <router-link :to="{name: 'module:post:action', params:{website_id: website_id, post_id: post.id}}" class="btn ink-reaction btn-floating-action btn-info"><i
                                                         class="fa fa-pencil"></i></router-link>
                                                 <a @click="selectPost(post)" data-toggle="modal" data-target="#deletePostModal"
                                                    class="btn ink-reaction btn-floating-action btn-danger"><i

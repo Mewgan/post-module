@@ -6,7 +6,6 @@ use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Jet\Models\ModuleCategory;
 
-
 class LoadPostModuleCategory extends AbstractFixture implements OrderedFixtureInterface
 {
     private $data = [

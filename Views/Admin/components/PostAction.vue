@@ -2,31 +2,31 @@
     #mediaLibrary0{
         z-index: 999999 !important;
     }
-    .post-read .title-input{
+    .post-action .title-input{
         color: #20252b;
         font-size: 1em;
         width: 100%;
         padding: 5px;
     }
-    .post-read .right-bloc{
+    .post-action .right-bloc{
         font-size:1.3em;
         margin-bottom:10px;
     }
-    .post-read i{
+    .post-action i{
         margin-right: 5px;
     }
-    .post-read article{
+    .post-action article{
         padding: 10px;
     }
-    .post-read .right-bottom-bloc h3{
+    .post-action .right-bottom-bloc h3{
         overflow: auto;
         padding: 15px 10px;
     }
-    .post-read .right-bottom-bloc button{
+    .post-action .right-bottom-bloc button{
         margin-left: 5px;
     }
 
-    .post-read .img-body {
+    .post-action .img-body {
         padding: 0;
         height: 200px !important;
         width: 100% !important;
@@ -35,7 +35,7 @@
         background: #c2bfbf;
     }
 
-    .post-read .img-body img {
+    .post-action .img-body img {
         max-height: 100%;
         max-width: 100%;
         width: auto;
@@ -47,14 +47,14 @@
         right: 0;
         margin: auto;
     }
-    .post-read .mar-top-10{
+    .post-action .mar-top-10{
         margin-top:10px;
     }
 </style>
 
 <template>
     <div>
-        <section class="post-read" v-show="post.id">
+        <section class="post-action">
             <div class="section-header">
                 <ol class="breadcrumb">
                     <li>
@@ -275,6 +275,11 @@
                 website_id: this.$route.params.website_id,
                 post_id: this.$route.params.post_id,
                 post: {
+                    title: '',
+                    slug: '',
+                    content: '',
+                    description: '',
+                    published: false,
                     updated_at: {
                         date: ''
                     },
@@ -284,7 +289,8 @@
                     },
                     website: {
                         domain: ''
-                    }
+                    },
+                    new_categories: []
                 },
                 post_categories: [],
                 categories: {},
@@ -384,7 +390,7 @@
                             });
                         }
                         this.$router.replace({
-                            name: 'module:post:read',
+                            name: 'module:post:action',
                             params: {
                                 website_id: this.website_id,
                                 post_id: post
@@ -405,27 +411,10 @@
                 });
             }
         },
-        created(){
-            this.read({api: post_api.read + this.website_id + '/' + this.post_id}).then((response) => {
-                if (response.data.status == 'success') {
-                    this.post = response.data.resource;
-                    this.launch_tinymce = true;
-                    if (response.data.route != '') {
-                        let regex = {':slug': this.post.slug, ':id': this.post.id};
-                        this.route = response.data.route.url;
-                        for (let index in regex) {
-                            if (regex.hasOwnProperty(index)) {
-                                this.route = this.route.replace(index, regex[index]);
-                            }
-                        }
-                    }
-                }
-
-            }).then(() => {
+        mounted(){
+            if(this.post_id == 'create'){
+                this.launch_tinymce = true;
                 this.loadCategory();
-                for (let index in this.post.categories)
-                    if (this.post.categories.hasOwnProperty(index))
-                        this.post_categories.push(this.post.categories[index].id)
                 this.read({
                     api: custom_field_api.admin_render + this.website_id,
                     options: {params: {params: this.custom_fields_params}}
@@ -433,11 +422,36 @@
                     if ('resource' in response.data)
                         this.custom_fields = response.data.resource;
                 })
-            });
-        },
-        mounted () {
-            this.$nextTick(function () {
-            });
+            }else{
+                this.read({api: post_api.read + this.website_id + '/' + this.post_id}).then((response) => {
+                    if (response.data.status == 'success') {
+                        this.post = response.data.resource;
+                        this.launch_tinymce = true;
+                        if (response.data.route != '') {
+                            let regex = {':slug': this.post.slug, ':id': this.post.id};
+                            this.route = response.data.route.url;
+                            for (let index in regex) {
+                                if (regex.hasOwnProperty(index)) {
+                                    this.route = this.route.replace(index, regex[index]);
+                                }
+                            }
+                        }
+                    }
+
+                }).then(() => {
+                    this.loadCategory();
+                    for (let index in this.post.categories)
+                        if (this.post.categories.hasOwnProperty(index))
+                            this.post_categories.push(this.post.categories[index].id);
+                    this.read({
+                        api: custom_field_api.admin_render + this.website_id,
+                        options: {params: {params: this.custom_fields_params}}
+                    }).then((response) => {
+                        if ('resource' in response.data)
+                            this.custom_fields = response.data.resource;
+                    })
+                });
+            }
         }
     }
 </script>
