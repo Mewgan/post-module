@@ -29,13 +29,11 @@ class AdminPostController extends AdminController
         $max = ($request->exists('max')) ? (int)$request->query('max') : 10;
         $page = ($request->exists('page')) ? (int)$request->query('page') : 1;
 
-        $this->websites[] = $website;
-        $website = Website::findOneById($website);
-        $this->getThemeWebsites($website);
+        if(!$this->getWebsite($website)) return ['status' => 'error', 'Site non trouvé'];
 
         $params = [
             'websites' => $this->websites,
-            'website_options' => $website->getData(),
+            'website_options' => $this->website->getData(),
             'search' => ($request->has('params') && isset($request->query('params')['search'])) ? $request->query('params')['search'] : '',
             'order' => ($request->has('params') && isset($request->query('params')['order'])) ? $request->query('params')['order'] : [],
             'filter' => ($request->has('params') && isset($request->query('params')['filter'])) ? $request->query('params')['filter'] : [],
@@ -60,10 +58,10 @@ class AdminPostController extends AdminController
      */
     public function read($website, $id)
     {
-        $this->websites[] = $website;
-        $website = Website::findOneById($website);
-        $this->getThemeWebsites($website);
-        $route = Route::repo()->getRouteByName('module:post.type:dynamic.action:read', $this->websites, $website->getData());
+
+        if(!$this->getWebsite($website)) return ['status' => 'error', 'Site non trouvé'];
+
+        $route = Route::repo()->getRouteByName('module:post.type:dynamic.action:read', $this->websites, $this->website->getData());
         $post = Post::repo()->readAdmin($id);
 
         if (!is_null($post))
@@ -207,14 +205,10 @@ class AdminPostController extends AdminController
      */
     public function listTableValues($website)
     {
-        $this->websites[] = $website;
-        $website = Website::findOneById($website);
-        if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
-        $this->getThemeWebsites($website);
-
+        if(!$this->getWebsite($website)) return ['status' => 'error', 'Impossible de trouver le site web'];
         return [
-            'c' => PostCategory::repo()->listTableValues($this->websites, $website->getData()),
-            'p' => Post::repo()->listTableValues($this->websites, $website->getData())
+            'c' => PostCategory::repo()->listTableValues($this->websites, $this->website->getData()),
+            'p' => Post::repo()->listTableValues($this->websites, $this->website->getData())
         ];
 
     }
@@ -225,10 +219,7 @@ class AdminPostController extends AdminController
      */
     public function listRuleValue($website)
     {
-        $this->websites[] = $website;
-        $website = Website::findOneById($website);
-        if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
-        $this->getThemeWebsites($website);
-        return Post::repo()->getPostRules($this->websites, $website->getData());
+        if(!$this->getWebsite($website)) return ['status' => 'error', 'Impossible de trouver le site web'];
+        return Post::repo()->getPostRules($this->websites, $this->website->getData());
     }
 }
