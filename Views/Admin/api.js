@@ -12,6 +12,6 @@ export const post_category_api = {
     list_by_name: ADMIN_DOMAIN + '/module/post-category/list-by-name/',
     create: ADMIN_DOMAIN + '/module/post-category/create/',
     update: ADMIN_DOMAIN + '/module/post-category/update/',
-    destroy: ADMIN_DOMAIN + '/module/post-category/delete/',
+    destroy: ADMIN_DOMAIN + '/module/post-category/delete/'
 };
 

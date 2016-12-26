@@ -199,12 +199,13 @@ class PostRepository extends EntityRepository
     /**
      * @param $websites
      * @param $exclude
+     * @param array $select
      * @return array
      */
-    public function getPostRules($websites, $exclude)
+    public function getPostRules($websites, $exclude, $select = ['p.id as id', 'p.title as name'])
     {
         $query = Post::queryBuilder()
-            ->select(['p.id as id', 'p.title as name'])
+            ->select($select)
             ->from('Jet\Modules\Post\Models\Post', 'p')
             ->leftJoin('p.website', 'w');
 
