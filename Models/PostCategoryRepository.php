@@ -150,11 +150,12 @@ class PostCategoryRepository extends EntityRepository{
     /**
      * @param $websites
      * @param $exclude
+     * @param string $select
      * @return array
      */
-    public function getPostCategoryRules($websites, $exclude){
+    public function getPostCategoryRules($websites, $exclude, $select = 'partial c.{id,name}'){
         $query = PostCategory::queryBuilder()
-            ->select('partial c.{id,name}')
+            ->select($select)
             ->from('Jet\Modules\Post\Models\PostCategory','c')
             ->leftJoin('c.website','w');
 

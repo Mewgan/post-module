@@ -232,4 +232,19 @@ class AdminPostController extends AdminController
         if(!$this->getWebsite($website)) return ['status' => 'error', 'Impossible de trouver le site web'];
         return ['resource' => Post::repo()->getPostRules($this->websites, $this->website->getData(), 'partial p.{id,title}')];
     }
+
+    /**
+     * @param $url
+     * @param $post
+     * @return array|mixed
+     */
+    public function getUrl($url, $post)
+    {
+        $post = Post::find($post);
+        if (is_null($post)) return ['status' => 'error', 'message' => 'Impossible de trouver l\'article'];
+        $replaces = ['id', 'slug'];
+        foreach ($replaces as $replace)
+            $url = str_replace(':' . $replace, $post[$replace], $url);
+        return $url;
+    }
 }

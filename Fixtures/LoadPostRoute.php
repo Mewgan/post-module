@@ -20,10 +20,10 @@ class LoadPostRoute extends AbstractFixture implements OrderedFixtureInterface
             'subdomain' => null,
         ],
         [
-            'url' => '/articles/:id-:category',
+            'url' => '/articles/:slug',
             'name' => 'module:post.type:dynamic.action:all',
             'method' => ['GET'],
-            'argument' => ['id' => '([0-9_]+)','category' => '([a-z-_]+)'],
+            'argument' => ['slug' => '([a-z-_]+)'],
             'middleware' => null,
             'subdomain' => null,
         ],

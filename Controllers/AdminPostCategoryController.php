@@ -155,31 +155,37 @@ class AdminPostCategoryController extends AdminController
     }
 
     /**
-     *
-     */
-    public function createContent(){
-        
-    }
-
-    /**
-     *
-     */
-    public function updateContent(){
-
-    }
-
-
-    /**
      * @param $website
      * @return array
      */
     public function listRuleValue($website)
     {
-        $this->websites[] = $website;
-        $website = Website::findOneById($website);
-        if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
-        $this->getThemeWebsites($website);
-        return PostCategory::repo()->getPostCategoryRules($this->websites, $website->getData());
+        if(!$this->getWebsite($website)) return ['status' => 'error', 'Impossible de trouver le site web'];
+        return PostCategory::repo()->getPostCategoryRules($this->websites, $this->website->getData());
     }
-    
+
+    /**
+     * @param $website
+     * @return array
+     */
+    public function listNames($website)
+    {
+        if(!$this->getWebsite($website)) return ['status' => 'error', 'Impossible de trouver le site web'];
+        return ['resource' => PostCategory::repo()->getPostCategoryRules($this->websites, $this->website->getData(), ['c.id as id','c.name as title'])];
+    }
+
+    /**
+     * @param $url
+     * @param $cat
+     * @return array|mixed
+     */
+    public function getUrl($url, $cat)
+    {
+        $cat = PostCategory::find($cat);
+        if (is_null($cat)) return ['status' => 'error', 'message' => 'Impossible de trouver la catégorie'];
+        $replaces = ['id', 'slug'];
+        foreach ($replaces as $replace)
+            $url = str_replace(':' . $replace, $cat[$replace], $url);
+        return $url;
+    }
 }
