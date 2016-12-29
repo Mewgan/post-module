@@ -19,52 +19,50 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <input type="text" class="form-control" v-model="content.name" id="content_name">
-                        <label for="content_name">Nom *</label>
+                        <input type="text" class="form-control" v-model="content.name" :id="'content-name-' + line">
+                        <label :for="'content-name-' + line">Nom *</label>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <input type="text" class="form-control" v-model="content.block" id="content_block">
-                        <label for="content_block">Bloc *</label>
+                        <input type="text" class="form-control" v-model="content.block" :id="'content-block-' + line">
+                        <label :for="'content-block-' + line">Bloc *</label>
+                    </div>
+                </div>
+            </div>
+            <div v-show="auth.status.level < 4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <input type="text" class="form-control" :value="content.module.category.title" readonly
+                                   :id="'content-module-' + line">
+                            <label :for="'content-module-' + line">Module</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <input type="text" class="form-control" :value="content.module.name" readonly
+                                   :id="'content-extension-' + line">
+                            <label :for="'content-extension-' + line">Extension</label>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <input type="text" class="form-control" :value="content.module.category.title" readonly id="content_module">
-                        <label for="content_module">Module</label>
+                        <input type="number" class="form-control" v-model="content.data.total_row" :id="'content-total-row-' + line">
+                        <label :for="'content-total-row-' + line">Nombre max d'articles à afficher</label>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="form-group">
-                        <input type="text" class="form-control" :value="content.module.name" readonly id="content_extension">
-                        <label for="content_extension">Extension</label>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <input type="number" class="form-control" v-model="content.data.total_row" id="content_total_row">
-                        <label for="content_total_row">Nombre max d'articles à afficher</label>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <input type="text" class="form-control" v-model="content_data.class" id="content_class">
-                        <label for="content_class">Class</label>
+                    <div class="form-group" >
+                        <input type="text" class="form-control" v-model="content_data.class" :id="'content-class-' + line">
+                        <label :for="'content-class-' + line">Class</label>
                     </div>
                 </div>
             </div>
             <h5 class="module-title">Choix du template :</h5>
-           <!-- <div class="form-group">
-                <select id="content_template" v-model="content.template.id" class="form-control">
-                    <option v-for="template in templates" :value="template.id">{{template.title}}</option>
-                </select>
-                <label for="content_template">Template du contenu</label>
-            </div>-->
             <template-editor :id="line" :templates="templates" :template="content.template" label="Template du contenu"></template-editor>
             <div>
                 <h5 class="module-title">Configuration avancé :</h5>
