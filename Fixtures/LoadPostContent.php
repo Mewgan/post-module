@@ -319,7 +319,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             if (!is_null($data['section']))
                 $content->setSection(Section::findOneById($data['section']));
             $content->setData($data['data']);
-            $this->addReference($key, $content);
+            $this->setReference($key, $content);
             $manager->persist($content);
         }
 
@@ -333,6 +333,6 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
      */
     public function getOrder()
     {
-        return 8;
+        return 108;
     }
 }

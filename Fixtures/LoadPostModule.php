@@ -52,7 +52,7 @@ class LoadPostModule extends AbstractFixture implements OrderedFixtureInterface
             foreach ($data['templates'] as $template)
                 $templates[] = $this->getReference($template);
             $module->setTemplates($templates);
-            $this->addReference($key, $module);
+            $this->setReference($key, $module);
             $manager->persist($module);
         }
         $manager->flush();
@@ -65,6 +65,6 @@ class LoadPostModule extends AbstractFixture implements OrderedFixtureInterface
      */
     public function getOrder()
     {
-        return 3;
+        return 103;
     }
 }

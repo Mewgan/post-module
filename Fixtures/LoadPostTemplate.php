@@ -58,7 +58,7 @@ class LoadPostTemplate extends AbstractFixture implements OrderedFixtureInterfac
             $template->setCategory($data['category']);
             $template->setScope($data['scope']);
             $template->setType($data['type']);
-            $this->addReference($key, $template);
+            $this->setReference($key, $template);
             $manager->persist($template);
 
         }
@@ -72,6 +72,6 @@ class LoadPostTemplate extends AbstractFixture implements OrderedFixtureInterfac
      */
     public function getOrder()
     {
-        return 1;
+        return 101;
     }
 }

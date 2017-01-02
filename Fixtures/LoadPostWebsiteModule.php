@@ -103,6 +103,6 @@ class LoadPostWebsiteModule extends AbstractFixture implements OrderedFixtureInt
      */
     public function getOrder()
     {
-        return 7;
+        return 107;
     }
 }

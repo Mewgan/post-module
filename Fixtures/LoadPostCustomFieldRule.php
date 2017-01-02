@@ -50,6 +50,6 @@ class LoadCustomFieldRule extends AbstractFixture implements OrderedFixtureInter
      */
     public function getOrder()
     {
-        return 10;
+        return 110;
     }
 }

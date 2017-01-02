@@ -48,7 +48,7 @@ class LoadPostRoute extends AbstractFixture implements OrderedFixtureInterface
             $route->setArgument($data['argument']);
             $route->setMiddleware($data['middleware']);
             $route->setSubdomain($data['subdomain']);
-            $this->addReference($data['name'], $route);
+            $this->setReference($data['name'], $route);
             $manager->persist($route);
         }
         $manager->flush();
@@ -61,6 +61,6 @@ class LoadPostRoute extends AbstractFixture implements OrderedFixtureInterface
      */
     public function getOrder()
     {
-        return 10;
+        return 110;
     }
 }

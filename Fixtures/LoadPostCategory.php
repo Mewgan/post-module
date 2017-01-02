@@ -34,7 +34,7 @@ class LoadPostCategory extends AbstractFixture implements OrderedFixtureInterfac
             $postCategory->setName($data['name']);
             $postCategory->setSlug($data['slug']);
             $postCategory->setWebsite($website);
-            $this->addReference($data['slug'], $postCategory);
+            $this->setReference($data['slug'], $postCategory);
             $manager->persist($postCategory);
         }
         $manager->flush();
@@ -47,6 +47,6 @@ class LoadPostCategory extends AbstractFixture implements OrderedFixtureInterfac
      */
     public function getOrder()
     {
-        return 5;
+        return 105;
     }
 }
