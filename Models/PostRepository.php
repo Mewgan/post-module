@@ -91,7 +91,7 @@ class PostRepository extends EntityRepository
      */
     public function read($params = [])
     {
-        $query = Post::em()->createQueryBuilder()
+        $query = Post::queryBuilder()
             ->select('p')
             ->from('Jet\Modules\Post\Models\Post', 'p')
             ->innerJoin('p.categories', 'c')
@@ -99,7 +99,22 @@ class PostRepository extends EntityRepository
 
         $query = $this->getQueryWithParams($query, $params);
 
-        return $query->getQuery()->getSingleResult();
+        return $query->getQuery()->getOneOrNullResult();
+    }
+
+    /**
+     * @param $ids
+     * @return array
+     */
+    public function findById($ids){
+        $query = Post::queryBuilder()
+            ->select('partial p.{id}')
+            ->addSelect('partial w.{id}')
+            ->from('Jet\Modules\Post\Models\Post','p')
+            ->leftJoin('p.website','w');
+        return $query->where($query->expr()->in('p.id', ':ids'))
+            ->setParameter('ids',$ids)
+            ->getQuery()->getArrayResult();
     }
 
     /**
@@ -108,7 +123,7 @@ class PostRepository extends EntityRepository
      */
     public function readAdmin($id)
     {
-        $query = Post::em()->createQueryBuilder()
+        $query = Post::queryBuilder()
             ->select('p')
             ->from('Jet\Modules\Post\Models\Post', 'p')
             ->leftJoin('p.categories', 'c')
@@ -116,7 +131,7 @@ class PostRepository extends EntityRepository
             ->where('p.id = :id')
             ->setParameter('id', $id);
 
-        return $query->getQuery()->getSingleResult();
+        return $query->getQuery()->getOneOrNullResult();
     }
 
     /**
@@ -125,7 +140,7 @@ class PostRepository extends EntityRepository
      */
     public function getCategories($id)
     {
-        $query = Post::em()->createQueryBuilder()
+        $query = Post::queryBuilder()
             ->select('partial p.{id}')
             ->addSelect('c')
             ->from('Jet\Modules\Post\Models\Post', 'p')
@@ -159,10 +174,10 @@ class PostRepository extends EntityRepository
                     ->setParameter('exclude_post_ids', $params['website_options']['parent_exclude']['posts']);
             }
 
-            /*if(isset($params['website_options']['parent_exclude']['post_categories']) && !empty($params['website_options']['parent_exclude']['post_categories'])){
+            if(isset($params['website_options']['parent_exclude']['post_categories']) && !empty($params['website_options']['parent_exclude']['post_categories'])){
                 $query->andWhere($query->expr()->notIn('c.id',':exclude_category_ids'))
                     ->setParameter('exclude_category_ids',$params['website_options']['parent_exclude']['post_categories']);
-            }*/
+            }
         }
 
         if (isset($params['db']) && !empty($params['db'])) {

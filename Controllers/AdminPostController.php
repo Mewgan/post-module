@@ -79,6 +79,7 @@ class AdminPostController extends AdminController
     {
         if ($request->method() == 'PUT' || $request->method() == 'POST') {
             $response = $request->validate();
+            $replace = false;
             if ($response === true) {
                 $post = ($id == 'create') ? new Post() : Post::findOneById($id);
                 if (!is_null($post)) {
@@ -88,15 +89,12 @@ class AdminPostController extends AdminController
                     if ($id == 'create') {
                         $post->setWebsite($website);
                     } elseif ($post->getWebsite() != $website) {
-                        $data = $website->getData();
-                        $data['parent_exclude']['posts'] = (isset($data['parent_exclude']['posts']))
-                            ? $data['parent_exclude']['posts'] : [];
-                        if (!in_array($post->getId(), $data['parent_exclude']['posts']))
-                            $data['parent_exclude']['posts'][] = $post->getId();
+                        $data = $this->excludeData($website->getData(), 'posts', $post->getId());
                         $website->setData($data);
                         Website::watch($website);
                         $post = new Post();
                         $post->setWebsite($website);
+                        $replace = true;
                     }
                     $post->setTitle($value->get('title'));
                     $post->setSlug($value->get('slug'));
@@ -116,9 +114,17 @@ class AdminPostController extends AdminController
                         if (!is_null($categories)) $post->setPostCategories($categories);
                     }
 
-                    return (Post::watchAndSave($post))
-                        ? ['status' => 'success', 'message' => 'L\'article a bien été mis à jour', 'resource' => $post]
-                        : ['status' => 'error', 'message' => 'Erreur lors de la mise à jour'];
+                    if (Post::watchAndSave($post)){
+                        $this->app->emit('updatePost', ['post' => $post->getId()]);
+                        if($replace){
+                            $website = $post->getWebsite();
+                            $data = $this->replaceData($website->getData(), 'posts', $id, $post->getId());
+                            $website->setData($data);
+                            Website::watchAndSave($website);
+                        }
+                        return ['status' => 'success', 'message' => 'L\'article a bien été mis à jour', 'resource' => $post];
+                    } else
+                        return ['status' => 'error', 'message' => 'Erreur lors de la mise à jour'];
                 }
                 return ['status' => 'error', 'message' => 'Article non trouvé'];
             }
@@ -129,25 +135,30 @@ class AdminPostController extends AdminController
 
     /**
      * @param PostRequest $request
+     * @param Auth $auth
      * @param $website
      * @return array
      */
-    public function delete(PostRequest $request, $website)
+    public function delete(PostRequest $request, Auth $auth, $website)
     {
         if ($request->method() == 'DELETE' && $request->exists('ids')) {
+
             $website = Website::findOneById($website);
             if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
+
             $data = $website->getData();
-            $data['parent_exclude']['posts'] = (isset($data['parent_exclude']['posts'])) ? $data['parent_exclude']['posts'] : [];
+
+            if(!$this->isWebsiteOwner($auth, $website->getId()))
+                return ['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour supprimer ces catégories'];
 
             $posts = Post::repo()->findById($request->get('ids'));
             $ids = [];
 
             foreach ($posts as $post) {
-                if ($post->getWebsite() != $website) {
-                    if (!in_array($post->getId(), $data['parent_exclude']['posts'])) $data['parent_exclude']['posts'][] = $post->getId();
-                } else
-                    $ids[] = $post->getId();
+                if ($post['website']['id'] != $website->getId())
+                    $this->excludeData($data, 'posts', $post['id']);
+                else
+                    $ids[] = $post['id'];
             }
 
             $website->setData($data);
@@ -170,8 +181,6 @@ class AdminPostController extends AdminController
         if ($request->method() == 'PUT' && $request->exists(['ids', 'state'])) {
             $post_website = Website::findOneById($website);
             $data = $post_website->getData();
-            $posts_exclude = (isset($data['parent_exclude']['posts'])) ? $data['parent_exclude']['posts'] : [];
-            $posts_replace = (isset($data['parent_replace']['posts'])) ? $data['parent_replace']['posts'] : [];
             foreach ($request->get('ids') as $id) {
                 $post = Post::findOneById($id);
                 if ($post->getWebsite()->getId() != $website) {
@@ -185,13 +194,11 @@ class AdminPostController extends AdminController
                     $new_post->setThumbnail($post->getThumbnail());
                     $new_post->setPostCategories($post->getPostCategories());
                     Post::watchAndSave($new_post);
-                    if (!in_array($post->getId(), $posts_exclude)) $posts_exclude[] = $post->getId();
-                    if (!isset($posts_replace[$post->getId()])) $posts_replace[$post->getId()] = $new_post->getId();
+                    $data = $this->excludeData($data, 'posts', $post->getId());
+                    $data = $this->replaceData($data, 'posts', $post->getId(), $new_post->getId());
                 } else
                     Post::where('id', $id)->set(['published' => $request->get('state')]);
             }
-            $data['parent_exclude']['posts'] = $posts_exclude;
-            $data['parent_replace']['posts'] = $posts_replace;
             $post_website->setData($data);
             Website::watchAndSave($post_website);
             return ['status' => 'success', 'message' => 'Le(s) article(s) ont bien été mis à jour'];

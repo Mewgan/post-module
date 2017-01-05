@@ -19,7 +19,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             'block' => 'home_content',
             'website' => 'aster-society',
             'module' => 'module_single_post',
-            'template' => 'post_whole_content',
+            'template' => 'aster_single_post_partial',
             'section' => 1,
             'page' => '1',
             'data' => [
@@ -37,11 +37,11 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             ]
         ],
         'aster_list_static_home_post_content' => [
-            'name' => 'Liste de services statique',
-            'block' => 'list_post',
+            'name' => 'Services',
+            'block' => 'list_home_post',
             'website' => 'aster-society',
             'module' => 'module_post_list',
-            'template' => 'post_basic_list',
+            'template' => 'aster_post_list_partial',
             'section' => null,
             'page' => '1',
             'data' => [
@@ -71,11 +71,11 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             ]
         ],
         'aster_list_static_post_content' => [
-            'name' => 'Liste de services statique',
+            'name' => 'Articles statique',
             'block' => 'list_post',
             'website' => 'aster-society',
             'module' => 'module_post_list',
-            'template' => 'post_basic_list',
+            'template' => 'aster_post_list_partial',
             'section' => null,
             'page' => '2',
             'data' => [
@@ -95,30 +95,30 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             ]
         ],
         'aster_list_dynamic_post_content' => [
-            'name' => 'Liste d\'article',
+            'name' => 'Articles',
             'block' => 'list_post',
             'website' => 'aster-society',
             'module' => 'module_post_list',
-            'template' => 'post_basic_list',
+            'template' => 'aster_post_list_partial',
             'section' => 1,
             'page' => '3',
             'data' => [
                 'class' => 'col-md-12',
                 'route_name' => 'module:post.type:dynamic.action:read',
                 'db' => [
-                    [
+                 /*   [
                         'alias' => 'c',
                         'type' => 'dynamic',
                         'column' => 'id',
                         'route' => 'id',
                         'value' => [],
                         'value_id' => []
-                    ],
+                    ],*/
                     [
                         'alias' => 'c',
                         'type' => 'dynamic',
                         'column' => 'slug',
-                        'route' => 'category',
+                        'route' => 'slug',
                         'value' => [],
                         'value_id' => []
                     ],
@@ -140,7 +140,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             'block' => 'single_post',
             'website' => 'aster-society',
             'module' => 'module_single_post',
-            'template' => 'post_whole_content',
+            'template' => 'aster_single_post_partial',
             'section' => 1,
             'page' => '4',
             'data' => [
@@ -181,8 +181,8 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             ]
         ],
         'balsamine_list_static_home_post_content' => [
-            'name' => 'Liste de services statique',
-            'block' => 'list_post',
+            'name' => 'Services',
+            'block' => 'list_home_post',
             'website' => 'balsamine-society',
             'module' => 'module_post_list',
             'template' => 'post_basic_list_js',
@@ -215,7 +215,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             ]
         ],
         'balsamine_list_static_post_content' => [
-            'name' => 'Liste de services statique',
+            'name' => 'Articles statique',
             'block' => 'list_post',
             'website' => 'balsamine-society',
             'module' => 'module_post_list',
@@ -239,7 +239,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             ]
         ],
         'balsamine_list_dynamic_post_content' => [
-            'name' => 'Liste d\'article',
+            'name' => 'Articles',
             'block' => 'list_post',
             'website' => 'balsamine-society',
             'module' => 'module_post_list',
@@ -249,19 +249,19 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             'data' => [
                 'class' => 'col-md-12',
                 'db' => [
-                    [
+                   /* [
                         'alias' => 'c',
                         'type' => 'dynamic',
                         'column' => 'id',
                         'route' => 'id',
                         'value' => [],
                         'value_id' => []
-                    ],
+                    ],*/
                     [
                         'alias' => 'c',
                         'type' => 'dynamic',
                         'column' => 'slug',
-                        'route' => 'category',
+                        'route' => 'slug',
                         'value' => [],
                         'value_id' => []
                     ],

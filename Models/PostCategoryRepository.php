@@ -56,7 +56,7 @@ class PostCategoryRepository extends EntityRepository{
 
         $pg = new Paginator($query);
         $data = $pg->getQuery()->getResult();
-        return ['data' => $data, 'total' => ($countSearch)?count($data):$this->countPost($params)];
+        return ['data' => $data, 'total' => ($countSearch)?count($data):$this->countPostCategory($params)];
     }
 
     /**
@@ -71,7 +71,6 @@ class PostCategoryRepository extends EntityRepository{
 
         $query = $this->getQueryWithParams($query,$params);
 
-
         return $query->getQuery()->getArrayResult();
     }
 
@@ -79,8 +78,8 @@ class PostCategoryRepository extends EntityRepository{
      * @param array $params
      * @return int
      */
-    public function countPost($params = []){
-        $query = Post::queryBuilder();
+    public function countPostCategory($params = []){
+        $query = PostCategory::queryBuilder();
 
         $query->select('COUNT(c)')
             ->from('Jet\Modules\Post\Models\PostCategory','c')
@@ -103,7 +102,22 @@ class PostCategoryRepository extends EntityRepository{
 
         $query = $this->getQueryWithParams($query,$params,'c');
         
-        return $query->getQuery()->getSingleResult();
+        return $query->getQuery()->getOneOrNullResult();
+    }
+
+    /**
+     * @param $ids
+     * @return array
+     */
+    public function findById($ids){
+        $query = PostCategory::queryBuilder()
+            ->select('partial c.{id}')
+            ->addSelect('partial w.{id}')
+            ->from('Jet\Modules\Post\Models\PostCategory','c')
+            ->leftJoin('c.website','w');
+        return $query->where($query->expr()->in('c.id', ':ids'))
+            ->setParameter('ids',$ids)
+            ->getQuery()->getArrayResult();
     }
 
     /**
@@ -118,7 +132,7 @@ class PostCategoryRepository extends EntityRepository{
                 ->setParameter('websites',$params['websites']);
         }
 
-        if(isset($params['website_options']['parent_exclude']) && isset($params['website_options']['parent_exclude']['post_categories'])){
+        if(isset($params['website_options']['parent_exclude']) && isset($params['website_options']['parent_exclude']['post_categories']) && !empty($params['website_options']['parent_exclude']['post_categories'])){
             $query->andWhere($query->expr()->notIn('c.id',':exclude_ids'))
                 ->setParameter('exclude_ids',$params['website_options']['parent_exclude']['post_categories']);
         }

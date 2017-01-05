@@ -11,23 +11,51 @@ use Jet\Models\Website;
 class LoadPostMedia extends AbstractFixture implements OrderedFixtureInterface
 {
     private $data = [
+        /* Aster theme media */
         [
-            'title' => 'Drapeau de la France',
-            'path' => '/france.png',
-            'type' => 'image/png',
-            'size' => 522,
+            'title' => 'Article 1',
+            'path' => '/article-1.jpg',
+            'type' => 'image/jpg',
+            'size' => 10.86,
             'access_level' => 4,
             'scope' => 'global',
-            'alt' => 'Drapeau de la France'
+            'alt' => 'Article 1'
         ],
         [
-            'title' => 'Drapeau de l\'Angleterre',
-            'path' => '/en.gif',
-            'type' => 'image/gif',
+            'title' => 'Article 2',
+            'path' => '/article-2.jpg',
+            'type' => 'image/jpg',
             'size' => 2577,
             'access_level' => 4,
             'scope' => 'global',
-            'alt' => 'Drapeau de l\'Angleterre'
+            'alt' => 'Article 2'
+        ],
+        [
+            'title' => 'Article 3',
+            'path' => '/article-3.jpg',
+            'type' => 'image/jpg',
+            'size' => 2577,
+            'access_level' => 4,
+            'scope' => 'global',
+            'alt' => 'Article 3'
+        ],
+        [
+            'title' => 'Article 4',
+            'path' => '/article-4.jpg',
+            'type' => 'image/jpg',
+            'size' => 2577,
+            'access_level' => 4,
+            'scope' => 'global',
+            'alt' => 'Article 4'
+        ],
+        [
+            'title' => 'Article 5',
+            'path' => '/article-5.jpg',
+            'type' => 'image/jpg',
+            'size' => 2577,
+            'access_level' => 4,
+            'scope' => 'global',
+            'alt' => 'Article 5'
         ],
     ];
 

@@ -14,44 +14,67 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
     private $data = [
         /* Aster website posts */
         [
-            'title' => 'Bienvenue',
-            'slug' => 'bienvenue',
-            'short_description' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.',
-            'content' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
-            'thumbnail' => '/france.png',
-            'categories' => [
-                'actualite'
-            ],
-            'website' => 'aster-society'
-        ],
-        [
-            'title' => 'Service 1',
-            'slug' => 'service-1',
-            'short_description' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.',
-            'content' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
-            'thumbnail' => '/en.gif',
+            'title' => 'Mariage',
+            'slug' => 'mariage',
+            'short_description' => 'Parce que le mariage est un moment unique, Aster Society propose de nombreux services pour satisfaire toutes les envies des mariés.',
+            'content' => 'Parce que le mariage est un moment unique, Aster Society propose de nombreux services pour satisfaire toutes les envies des mariés.
+
+En plus des coiffures traditionnelles, nos spécialistes vous conseillent (à l\'aide de photos modèles) afin de réaliser la coiffure dont vous rêvez. N\'hésitez pas à venir en discuter avec notre équipe.',
+            'thumbnail' => '/article-1.jpg',
             'categories' => [
                 'service'
             ],
             'website' => 'aster-society'
         ],
         [
-            'title' => 'Service 2',
-            'slug' => 'service-2',
-            'short_description' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.',
-            'content' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
-            'thumbnail' => '/en.gif',
+            'title' => 'Intervention en entreprise',
+            'slug' => 'intervention-en-entreprise',
+            'short_description' => 'De plus en plus d\'entreprises organisent des journées ou demi-journées sur le thème de la coiffure pour leurs employés. Conviviaux et fédérateurs, ces moments sont des plus agréables. D\'autant que les employés sont coiffés sans frais !',
+            'content' => 'De plus en plus d\'entreprises organisent des journées ou demi-journées sur le thème de la coiffure pour leurs employés. Conviviaux et fédérateurs, ces moments sont des plus agréables. D\'autant que les employés sont coiffés sans frais !
+
+Aster Society propose d\'intervenir dans ce cadre. Contactez-nous pour plus d\'informations. ',
+            'thumbnail' => '/article-2.jpg',
             'categories' => [
                 'service'
             ],
             'website' => 'aster-society'
         ],
         [
-            'title' => 'Service 3',
-            'slug' => 'service-3',
-            'short_description' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.',
-            'content' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
-            'thumbnail' => '/france.png',
+            'title' => 'Couleur',
+            'slug' => 'couleur',
+            'short_description' => 'Esthétique Coiffure Manuela bénéficie d\'une large gamme de produits qui permet aux coiffeurs de proposer de nombreuses teintes sous trois formes principales : les colorations intégrales, les mèches et les balayages.',
+            'content' => 'Esthétique Coiffure Manuela bénéficie d\'une large gamme de produits qui permet aux coiffeurs de proposer de nombreuses teintes sous trois formes principales : les colorations intégrales, les mèches et les balayages.
+
+Nos coiffeurs sont à votre écoute pour comprendre vos envies et trouver la couleur dont vous rêvez.',
+            'thumbnail' => '/article-3.jpg',
+            'categories' => [
+                'service'
+            ],
+            'website' => 'aster-society'
+        ],
+        [
+            'title' => 'Offrir des cadeaux',
+            'slug' => 'offrir-des-cadeaux',
+            'short_description' => 'Aster Society vous propose un large panel de cadeaux à offrir aux personnes de votre choix',
+            'content' => 'Aster Society vous propose un large panel de cadeaux à offrir aux personnes de votre choix :
+
+- Offre anniversaire : sous forme d\'un chèque cadeau au montant que vous définissez. 
+
+- Offre découverte : permet de faire découvrir les coupes et services originaux que nous proposons. 
+
+- Offre parrainage : faites découvrir notre salon à vos amis et réalisez des économies à chaque coupe.',
+            'thumbnail' => '/article-4.jpg',
+            'categories' => [
+                'service'
+            ],
+            'website' => 'aster-society'
+        ],
+        [
+            'title' => 'Prestations coiffure',
+            'slug' => 'prestations-coiffure',
+            'short_description' => 'Aster Society propose les services "classiques" de la coiffure',
+            'content' => 'Aster Society propose les services "classiques" de la coiffure, pour hommes, femmes et enfants : shampoing, coupe, brushing, ... Vous trouverez un résumé plus détaillé de nos prestations dans la partie Tarifs de notre site.',
+            'thumbnail' => '/article-5.jpg',
             'categories' => [
                 'service'
             ],
@@ -63,7 +86,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'slug' => 'service-1',
             'short_description' => 'Service 1 de Aster',
             'content' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
-            'thumbnail' => '/en.gif',
+            'thumbnail' => '/article-1.jpg',
             'categories' => [
                 'service'
             ],
@@ -74,7 +97,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'slug' => 'service-2',
             'short_description' => 'Service 2 de Aster',
             'content' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
-            'thumbnail' => '/en.gif',
+            'thumbnail' => '/article-2.jpg',
             'categories' => [
                 'service'
             ],
@@ -85,7 +108,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'slug' => 'service-3',
             'short_description' => 'Service 3 de Aster',
             'content' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
-            'thumbnail' => '/france.png',
+            'thumbnail' => '/article-3.jpg',
             'categories' => [
                 'service'
             ],
@@ -97,7 +120,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'slug' => 'luffy-service-1',
             'short_description' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.',
             'content' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
-            'thumbnail' => '/france.png',
+            'thumbnail' => '/article-1.jpg',
             'categories' => [
                 'service'
             ],

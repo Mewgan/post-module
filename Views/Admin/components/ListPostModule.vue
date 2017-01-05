@@ -209,7 +209,7 @@
     import TemplateEditor from '../../../../../Blocks/AdminBlock/Front/components/Helper/TemplateEditor.vue'
 
     import {AppVendor} from '../../../../../Blocks/AdminBlock/Resources/public/js/app'
-    import {mapActions} from 'vuex'
+    import {mapActions, mapGetters} from 'vuex'
     import {route_api, template_api} from '../../../../../Blocks/AdminBlock/Front/api'
     import {post_api} from '../api'
 
@@ -276,6 +276,11 @@
                 },
                 deep: true
             }
+        },
+        computed: {
+            ...mapGetters([
+                'auth'
+            ])
         },
         methods: {
             ...mapActions([

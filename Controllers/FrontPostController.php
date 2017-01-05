@@ -22,14 +22,15 @@ class FrontPostController extends MainController
      * @param Content $content
      * @return mixed
      */
-    public function all(Request $request, Website $website, $content){
+    public function all(Request $request, Website $website, $content)
+    {
 
         $data = $content->getData();
         $max = (isset($data['total_row']) && !empty($data['total_row'])) ? (int)$data['total_row'] : 10;
         $page = ($request->exists('page')) ? (int)$request->query('page') : 1;
-        
-        if(!empty($data)) {
-            $response = Post::repo()->listAll($page, $max, $this->getParams($website,$data));
+
+        if (!empty($data)) {
+            $response = Post::repo()->listAll($page, $max, $this->getParams($website, $data));
             $pages_count = ceil($response['total'] / $max);
             $posts = $response['data'];
             $pagination = [
@@ -39,13 +40,13 @@ class FrontPostController extends MainController
             ];
             $args = (isset($data['link']) && !empty($data['link'])) ? $data['link'] : [];
             $route = isset($data['route_name']) ? $data['route_name'] : '';
-            $categories = PostCategory::repo()->frontListAll($this->getParams($website,$data));
+            $categories = PostCategory::repo()->frontListAll($this->getParams($website, $data));
 
             return (empty($posts))
                 ? null
-                : $this->_renderContent($content->getTemplate(), 'src/Modules/Post/Views/', compact('categories','posts','pagination','args','route'));
+                : $this->_renderContent($content->getTemplate(), 'src/Modules/Post/Views/', compact('categories', 'posts', 'pagination', 'args', 'route'));
         }
-        return null;
+        return $this->redirect()->url('/404', 404);
     }
 
     /**
@@ -53,15 +54,16 @@ class FrontPostController extends MainController
      * @param Content $content
      * @return mixed|null
      */
-    public function read(Website $website, $content){
+    public function read(Website $website, $content)
+    {
         $data = $content->getData();
-        if(!empty($data)) {
-            $post = Post::repo()->read($this->getParams($website,$data));
-            return (empty($post))
-                ? null
+        if (!empty($data)) {
+            $post = Post::repo()->read($this->getParams($website, $data));
+            return (is_null($post))
+                ? $this->redirect()->url('/404', 404)
                 : $this->_renderContent($content->getTemplate(), 'src/Modules/Post/Views/', compact('post'));
         }
-        return null;
+        return $this->redirect()->url('/404', 404);
     }
 
     /**
@@ -69,11 +71,12 @@ class FrontPostController extends MainController
      * @param $data
      * @return array
      */
-    private function getParams(Website $website, $data){
+    private function getParams(Website $website, $data)
+    {
         $data['website_options'] = $website->getData();
         $data['params'] = (View::hasData('data') && isset(View::getData('data')['route_params'])) ? View::getData('data')['route_params'] : [];
         $data['published'] = true;
-        if(empty($this->websites)) {
+        if (empty($this->websites)) {
             $this->websites[] = $website;
             $this->getThemeWebsites($website);
         }

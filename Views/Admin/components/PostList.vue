@@ -6,7 +6,9 @@
     .list-post button {
         margin-left: 10px;
     }
-
+    .list-post .section-header .btn{
+        margin-left: 10px;
+    }
     .list-post .section-body {
         margin-top: 10px;;
     }

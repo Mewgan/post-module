@@ -400,19 +400,21 @@
                 });
             },
             deletePost (){
-                this.deleteResources({
-                    api: post_api.destroy + this.website_id,
-                    resource: 'posts_' + this.website_id,
-                    ids: [this.post.id]
-                }).then((response) => {
-                    if (response.data.status == 'success') {
-                        this.$router.push({name: 'module:post', params: {website_id: this.website_id}})
-                    }
-                });
+                if ('id' in this.post) {
+                    this.deleteResources({
+                        api: post_api.destroy + this.website_id,
+                        resource: 'posts_' + this.website_id,
+                        ids: [this.post.id]
+                    }).then((response) => {
+                        if (response.data.status == 'success') {
+                            this.$router.push({name: 'module:post', params: {website_id: this.website_id}})
+                        }
+                    });
+                }
             }
         },
         mounted(){
-            if(this.post_id == 'create'){
+            if (this.post_id == 'create') {
                 this.launch_tinymce = true;
                 this.loadCategory();
                 this.read({
@@ -422,7 +424,7 @@
                     if ('resource' in response.data)
                         this.custom_fields = response.data.resource;
                 })
-            }else{
+            } else {
                 this.read({api: post_api.read + this.website_id + '/' + this.post_id}).then((response) => {
                     if (response.data.status == 'success') {
                         this.post = response.data.resource;

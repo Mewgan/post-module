@@ -6,6 +6,7 @@ use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Jet\Models\Template;
+use Jet\Models\Website;
 
 class LoadPostTemplate extends AbstractFixture implements OrderedFixtureInterface
 {
@@ -44,6 +45,25 @@ class LoadPostTemplate extends AbstractFixture implements OrderedFixtureInterfac
             'scope' => 'global',
             'type' => 'file'
         ],
+        /* Aster template */
+        'aster_post_list_partial' => [
+            'name' => 'ThemeAsterPostListFilePartial',
+            'title' => 'Theme Aster Post List Template',
+            'content' => 'Themes/Aster/post_list',
+            'website' => 'aster-society',
+            'category' => 'partial',
+            'scope' => 'specified',
+            'type' => 'file'
+        ],
+        'aster_single_post_partial' => [
+            'name' => 'ThemeAsterPostFilePartial',
+            'title' => 'Theme Aster Post Template',
+            'content' => 'Themes/Aster/post',
+            'website' => 'aster-society',
+            'category' => 'partial',
+            'scope' => 'specified',
+            'type' => 'file'
+        ],
     ];
 
     public function load(ObjectManager $manager)
@@ -58,6 +78,10 @@ class LoadPostTemplate extends AbstractFixture implements OrderedFixtureInterfac
             $template->setCategory($data['category']);
             $template->setScope($data['scope']);
             $template->setType($data['type']);
+            if(isset($data['website'])){
+                $website = Website::findOneByDomain($data['website']);
+                if(!is_null($website)) $template->setWebsite($website);
+            }
             $this->setReference($key, $template);
             $manager->persist($template);
 
