@@ -139,37 +139,17 @@ class PostCategoryRepository extends EntityRepository{
 
         return $query;
     }
-
-    /**
-     * @param $websites
-     * @param $params
-     * @return array
-     */
-    public function getNames($websites, $params){
-        $query = PostCategory::queryBuilder()
-            ->select('partial c.{id,name,slug}')
-            ->addSelect('partial w.{id}')
-            ->from('Jet\Modules\Post\Models\PostCategory','c')
-            ->leftJoin('c.website','w')
-            ->where('c.website IN (:websites)')
-            ->setParameter('websites',$websites);
-
-        if(isset($params['parent_exclude']) && isset($params['parent_exclude']['post_categories']) && !empty($params['parent_exclude']['post_categories']))
-            $query->andWhere($query->expr()->notIn('c.id',':exclude_categories_ids'))
-                ->setParameter('exclude_categories_ids',$params['parent_exclude']['post_categories']);
-
-        return $query->getQuery()->getArrayResult();
-    }
-
+    
     /**
      * @param $websites
      * @param $exclude
      * @param string $select
      * @return array
      */
-    public function getPostCategoryRules($websites, $exclude, $select = 'partial c.{id,name}'){
+    public function getPostCategoryRules($websites, $exclude, $select = 'partial c.{id,name,slug}'){
         $query = PostCategory::queryBuilder()
             ->select($select)
+            ->addSelect('partial w.{id}')
             ->from('Jet\Modules\Post\Models\PostCategory','c')
             ->leftJoin('c.website','w');
 

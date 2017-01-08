@@ -14,7 +14,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
 {
     private $data = [
         /* Aster website post module content */
-        'aster_welcome_content' => [
+       /* 'aster_welcome_content' => [
             'name' => 'Bienvenue',
             'block' => 'home_content',
             'website' => 'aster-society',
@@ -69,7 +69,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
                     ]
                 ],
             ]
-        ],
+        ],*/
         'aster_list_static_post_content' => [
             'name' => 'Articles statique',
             'block' => 'list_post',

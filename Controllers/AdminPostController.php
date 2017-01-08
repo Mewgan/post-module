@@ -237,7 +237,7 @@ class AdminPostController extends AdminController
     public function listNames($website)
     {
         if(!$this->getWebsite($website)) return ['status' => 'error', 'Impossible de trouver le site web'];
-        return ['resource' => Post::repo()->getPostRules($this->websites, $this->website->getData(), 'partial p.{id,title}')];
+        return ['resource' => Post::repo()->getPostRules($this->websites, $this->website->getData())];
     }
 
     /**

@@ -4,6 +4,7 @@ namespace Jet\Modules\Post\Controllers;
 
 use Jet\FrontBlock\Controllers\MainController;
 use Jet\Models\Content;
+use Jet\Models\CustomField;
 use Jet\Models\Website;
 use Jet\Modules\Post\Models\Post;
 use Jet\Modules\Post\Models\PostCategory;
@@ -16,6 +17,7 @@ use JetFire\Framework\System\Request;
  */
 class FrontPostController extends MainController
 {
+    
     /**
      * @param Request $request
      * @param Website $website
@@ -82,5 +84,38 @@ class FrontPostController extends MainController
         }
         $data['websites'] = $this->websites;
         return $data;
+    }
+
+    /**
+     * @param Website $website
+     * @param $websites
+     * @param $key
+     * @return
+     */
+    public function listCustomFields(Website $website, $websites, $key){
+        /** @var Post $post */
+        $post = null;
+        $key = explode('@', $key);
+        if(isset($key[1]) && $key[0] == 'post' && is_numeric($key[1])) $post = Post::findOneBydId($key[1]);
+        if(!is_null($post)) {
+            $rules = [
+                'publication_type' => 'post',
+                'post' => $post->getId(),
+                'post_category' => $post->getPostCategories()
+            ];
+            return CustomField::repo()->frontRender($websites, $website->getData(), $rules);
+        }
+        return null;
+    }
+
+    /**
+     * @param $field
+     * @param $key
+     * @return null
+     */
+    public function renderField($field, $key){
+        return (isset($field['content'][$key]) && is_numeric($field['content'][$key]))
+            ? Post::findOneById($field['content'][$key])
+            : null;
     }
 }

@@ -416,8 +416,9 @@
                 });
             },
             loadCategory(){
-                this.read({api: post_category_api.list_by_name + this.website_id}).then((response) => {
-                    this.categories = response.data;
+                this.read({api: post_category_api.list_names + this.website_id}).then((response) => {
+                    if('resource' in response.data)
+                        this.categories = response.data.resource;
                 })
             }
         },

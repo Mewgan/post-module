@@ -113,19 +113,7 @@ Nos coiffeurs sont à votre écoute pour comprendre vos envies et trouver la cou
                 'service'
             ],
             'website' => 'balsamine-society'
-        ],
-        /* Luffy website posts */
-        [
-            'title' => 'Luffy Service 1',
-            'slug' => 'luffy-service-1',
-            'short_description' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.',
-            'content' => 'Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
-            'thumbnail' => '/article-1.jpg',
-            'categories' => [
-                'service'
-            ],
-            'website' => 'luffy-society'
-        ],
+        ]
     ];
 
     public function load(ObjectManager $manager)

@@ -261,4 +261,18 @@ class PostRepository extends EntityRepository
             ->getArrayResult();
     }
 
+    /**
+     * @param $id
+     * @param $keys
+     * @return mixed
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function retrieveData($id, $keys){
+        $query = Post::queryBuilder()
+            ->select($keys)
+            ->from('Jet\Modules\Post\Models\Post','p')
+            ->where('p.id = :id')
+            ->setParameter('id', $id);
+        return $query->getQuery()->getOneOrNullResult();
+    }
 } 

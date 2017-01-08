@@ -37,14 +37,6 @@ class LoadPostTemplate extends AbstractFixture implements OrderedFixtureInterfac
             'scope' => 'global',
             'type' => 'file'
         ],
-        'post_basic_list_js' => [
-            'name' => 'ModulePostPartialBasicListJs',
-            'title' => 'Liste basique Js',
-            'content' => 'post_basic_list_js',
-            'category' => 'partial',
-            'scope' => 'global',
-            'type' => 'file'
-        ],
         /* Aster template */
         'aster_post_list_partial' => [
             'name' => 'ThemeAsterPostListFilePartial',

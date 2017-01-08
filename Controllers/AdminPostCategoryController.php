@@ -51,18 +51,6 @@ class AdminPostCategoryController extends AdminController
     }
 
     /**
-     * @param $website
-     * @return mixed
-     */
-    public function listByName($website)
-    {
-        $this->websites[] = (int)$website;
-        $website = Website::findOneById($website);
-        $this->getThemeWebsites($website);
-        return PostCategory::repo()->getNames($this->websites, $website->getData());
-    }
-
-    /**
      * @param Request $request
      * @param $website
      * @return array
@@ -180,7 +168,7 @@ class AdminPostCategoryController extends AdminController
     public function listNames($website)
     {
         if (!$this->getWebsite($website)) return ['status' => 'error', 'Impossible de trouver le site web'];
-        return ['resource' => PostCategory::repo()->getPostCategoryRules($this->websites, $this->website->getData(), ['c.id as id', 'c.name as title'])];
+        return ['resource' => PostCategory::repo()->getPostCategoryRules($this->websites, $this->website->getData(), 'partial c.{id,name}')];
     }
 
     /**
