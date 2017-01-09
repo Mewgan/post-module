@@ -173,12 +173,12 @@ class AdminPostCategoryController extends AdminController
 
     /**
      * @param $url
-     * @param $cat
+     * @param $id
      * @return array|mixed
      */
-    public function getUrl($url, $cat)
+    public function getUrl($url, $id)
     {
-        $cat = PostCategory::find($cat);
+        $cat = PostCategory::find($id);
         if (is_null($cat)) return ['status' => 'error', 'message' => 'Impossible de trouver la catégorie'];
         $replaces = ['id', 'slug'];
         foreach ($replaces as $replace)

@@ -11,7 +11,7 @@ use Jet\Models\Website;
 class LoadPostMedia extends AbstractFixture implements OrderedFixtureInterface
 {
     private $data = [
-        /* Aster theme media */
+        /* Global theme media */
         [
             'title' => 'Article 1',
             'path' => '/article-1.jpg',
@@ -56,6 +56,16 @@ class LoadPostMedia extends AbstractFixture implements OrderedFixtureInterface
             'access_level' => 4,
             'scope' => 'global',
             'alt' => 'Article 5'
+        ],
+        /* Theme aster */
+        [
+            'title' => 'Theme aster home page actualite image',
+            'path' => '/sites/1/master.jpg',
+            'type' => 'image/jpg',
+            'size' => 404299,
+            'access_level' => 2,
+            'scope' => 'specified',
+            'alt' => 'Theme aster home page actualite image'
         ],
     ];
 

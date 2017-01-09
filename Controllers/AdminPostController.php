@@ -231,23 +231,26 @@ class AdminPostController extends AdminController
     }
 
     /**
+     * @param PostRequest $request
      * @param $website
      * @return array
      */
-    public function listNames($website)
+    public function listNames(PostRequest $request, $website)
     {
         if(!$this->getWebsite($website)) return ['status' => 'error', 'Impossible de trouver le site web'];
+        if($request->exists('categories'))
+            return ['resource' => Post::repo()->getPostByCategories($this->websites, $this->website->getData(), $request->get('categories'))];
         return ['resource' => Post::repo()->getPostRules($this->websites, $this->website->getData())];
     }
 
     /**
      * @param $url
-     * @param $post
+     * @param $id
      * @return array|mixed
      */
-    public function getUrl($url, $post)
+    public function getUrl($url, $id)
     {
-        $post = Post::find($post);
+        $post = Post::find($id);
         if (is_null($post)) return ['status' => 'error', 'message' => 'Impossible de trouver l\'article'];
         $replaces = ['id', 'slug'];
         foreach ($replaces as $replace)

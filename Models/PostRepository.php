@@ -224,13 +224,34 @@ class PostRepository extends EntityRepository
             ->from('Jet\Modules\Post\Models\Post', 'p')
             ->leftJoin('p.website', 'w');
 
-        $query->where($query->expr()->in('w.id', ':websites'))
-            ->setParameter('websites', $websites);
+        $query = $this->getRequiredParams($query, ['websites' => $websites, 'website_options' => $exclude]);
 
-        if (isset($exclude['parent_exclude']) && isset($exclude['parent_exclude']['posts']) && !empty($exclude['parent_exclude']['posts'])) {
-            $query->andWhere($query->expr()->notIn('p.id', ':exclude_ids'))
-                ->setParameter('exclude_ids', $exclude['parent_exclude']['posts']);
+        return $query->getQuery()
+            ->getArrayResult();
+    }
+
+    /**
+     * @param $websites
+     * @param $exclude
+     * @param $categories
+     * @return array
+     */
+    public function getPostByCategories($websites, $exclude, $categories = [])
+    {
+
+        $query = Post::queryBuilder()
+            ->select(['p.id as id', 'p.title as name'])
+            ->from('Jet\Modules\Post\Models\Post', 'p')
+            ->leftJoin('p.website', 'w')
+            ->leftJoin('p.categories', 'c');
+
+        if(is_array($categories) && !empty($categories)) {
+            $query->where($query->expr()->in('c.id', ':categories'))
+                ->setParameter('categories', $categories);
         }
+
+        $query = $this->getRequiredParams($query, ['websites' => $websites, 'website_options' => $exclude]);
+
         return $query->getQuery()
             ->getArrayResult();
     }
@@ -249,13 +270,7 @@ class PostRepository extends EntityRepository
             ->where('p.published = :published')
             ->setParameter('published', true);
 
-        $query->andWhere($query->expr()->in('w.id', ':websites'))
-            ->setParameter('websites', $websites);
-
-        if (isset($exclude['parent_exclude']) && isset($exclude['parent_exclude']['posts']) && !empty($exclude['parent_exclude']['posts'])) {
-            $query->andWhere($query->expr()->notIn('p.id', ':exclude_ids'))
-                ->setParameter('exclude_ids', $exclude['parent_exclude']['posts']);
-        }
+        $query = $this->getRequiredParams($query, ['websites' => $websites, 'website_options' => $exclude]);
 
         return $query->getQuery()
             ->getArrayResult();
@@ -274,5 +289,25 @@ class PostRepository extends EntityRepository
             ->where('p.id = :id')
             ->setParameter('id', $id);
         return $query->getQuery()->getOneOrNullResult();
+    }
+
+    /**
+     * @param $query
+     * @param $params
+     * @return mixed
+     */
+    private function getRequiredParams($query, $params){
+        if (isset($params['websites']) && !empty($params['websites'])) {
+            $query->andWhere($query->expr()->in('w.id', ':websites'))
+                ->setParameter('websites', $params['websites']);
+        }
+
+        if (isset($params['website_options']['parent_exclude'])) {
+            if (isset($params['website_options']['parent_exclude']['posts']) && !empty($params['website_options']['parent_exclude']['posts'])) {
+                $query->andWhere($query->expr()->notIn('p.id', ':exclude_post_ids'))
+                    ->setParameter('exclude_post_ids', $params['website_options']['parent_exclude']['posts']);
+            }
+        }
+        return $query;
     }
 } 

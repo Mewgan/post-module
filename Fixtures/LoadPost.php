@@ -14,6 +14,21 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
     private $data = [
         /* Aster website posts */
         [
+            'title' => 'The master vision',
+            'slug' => 'the-master-vision',
+            'short_description' => 'Aenean lacinia bibendum nulla sed consectetur. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+            'content' => '<p>Aenean lacinia bibendum nulla sed consectetur. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur blandit tempus porttitor. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas faucibus mollis interdum. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Aenean lacinia bibendum nulla sed consectetur.</p>
+                <p>Aenean lacinia bibendum nulla sed consectetur. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur blandit tempus porttitor. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    <span class="signature">Jacques Aux Mains D’Argent</span>
+                </p>',
+            'thumbnail' => '/sites/1/master.jpg',
+            'categories' => [
+                'actualite'
+            ],
+            'website' => 'aster-society'
+        ],
+        [
             'title' => 'Mariage',
             'slug' => 'mariage',
             'short_description' => 'Parce que le mariage est un moment unique, Aster Society propose de nombreux services pour satisfaire toutes les envies des mariés.',

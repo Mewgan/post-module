@@ -12,12 +12,13 @@
                 <span>Choisir une catégorie d'article à afficher ou laisser vide pour tout afficher</span>
             </div>
             <div class="col-md-9">
-                <select2 :launch="true"
+                <select2 v-if="categories.length > 0"
                          :val="field.data.categories"
                          @updateValue="updateValue" :emptyDefault="false"
                          :contents="categories"
                          :id="'post-category-select-' + line" index="name"
                          label="Catégorie"></select2>
+                <span v-else>Aucuns contenus</span>
             </div><!--end .col -->
         </div>
     </div>
@@ -49,7 +50,7 @@
         },
         methods: {
             ...mapActions([
-               'read'
+                'read'
             ]),
             updateValue(value){
                 this.$set(this.field.data, 'categories', value);
@@ -57,7 +58,7 @@
         },
         created(){
             this.read({api: post_category_api.list_names + this.website_id}).then((response) => {
-                if('resource' in response.data)
+                if ('resource' in response.data)
                     this.categories = response.data.resource;
             })
         },

@@ -15,6 +15,9 @@ class LoadPostWebsiteModule extends AbstractFixture implements OrderedFixtureInt
                 'module_post_list',
                 'module_single_post',
             ],
+            'medias' => [
+                '/sites/1/master.jpg',
+            ]
         ],
         'balsamine-society' => [
             'modules' => [
@@ -82,6 +85,13 @@ class LoadPostWebsiteModule extends AbstractFixture implements OrderedFixtureInt
                 $modules = is_null($website->getModules())?[]:$website->getModules();
                 if(!in_array($mod->getId(),$modules)) 
                     $website->addModule($mod->getId());
+            }
+            if(isset($data['medias'])) {
+                foreach ($data['medias'] as $media) {
+                    $md = $this->getReference($media);
+                    $md->setWebsite($website);
+                    $manager->persist($md);
+                }
             }
             if(isset($data['exclude'])){
                 $d = $website->getData();

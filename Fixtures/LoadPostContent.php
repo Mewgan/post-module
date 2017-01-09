@@ -185,7 +185,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             'block' => 'list_home_post',
             'website' => 'balsamine-society',
             'module' => 'module_post_list',
-            'template' => 'post_basic_list_js',
+            'template' => 'post_basic_list',
             'section' => null,
             'page' => '5',
             'data' => [
@@ -219,7 +219,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             'block' => 'list_post',
             'website' => 'balsamine-society',
             'module' => 'module_post_list',
-            'template' => 'post_basic_list_js',
+            'template' => 'post_basic_list',
             'section' => null,
             'page' => '6',
             'data' => [
@@ -243,7 +243,7 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             'block' => 'list_post',
             'website' => 'balsamine-society',
             'module' => 'module_post_list',
-            'template' => 'post_basic_list_js',
+            'template' => 'post_basic_list',
             'section' => 1,
             'page' => '7',
             'data' => [
