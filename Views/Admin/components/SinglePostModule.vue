@@ -254,7 +254,7 @@
             });
         },
         mounted () {
-            if ('db' in this.content.data)this.content_data = this.content.data;
+            if (this.content.data != null && 'db' in this.content.data)this.content_data = this.content.data;
 
             this.$nextTick(function () {
                 AppVendor()._initTabs();

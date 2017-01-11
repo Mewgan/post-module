@@ -35,9 +35,9 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
                     ]
                 ]
             ]
-        ],
-        'aster_list_static_home_post_content' => [
-            'name' => 'Services',
+        ], */
+        'aster_list_home_post_content' => [
+            'name' => 'Articles',
             'block' => 'list_home_post',
             'website' => 'aster-society',
             'module' => 'module_post_list',
@@ -45,19 +45,10 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
             'section' => null,
             'page' => '1',
             'data' => [
-                'class' => 'col-md-6',
+                'class' => '',
                 'route_name' => 'module:post.type:dynamic.action:read',
-                'total_row' => 3,
-                'db' => [
-                    [
-                        'alias' => 'c',
-                        'type' => 'static',
-                        'column' => 'slug',
-                        'value' => ['service'],
-                        'route' => '',
-                        'value_id' => ['1']
-                    ]
-                ],
+                'total_row' => 100,
+                'db' => [],
                 'link' => [
                     [
                         'alias' => 'p',
@@ -69,8 +60,8 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
                     ]
                 ],
             ]
-        ],*/
-        'aster_list_static_post_content' => [
+        ],
+       /* 'aster_list_static_post_content' => [
             'name' => 'Articles statique',
             'block' => 'list_post',
             'website' => 'aster-society',
@@ -106,14 +97,6 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
                 'class' => 'col-md-12',
                 'route_name' => 'module:post.type:dynamic.action:read',
                 'db' => [
-                 /*   [
-                        'alias' => 'c',
-                        'type' => 'dynamic',
-                        'column' => 'id',
-                        'route' => 'id',
-                        'value' => [],
-                        'value_id' => []
-                    ],*/
                     [
                         'alias' => 'c',
                         'type' => 'dynamic',
@@ -134,17 +117,17 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
                     ]
                 ]
             ]
-        ],
+        ],*/
         'aster_single_post_content' => [
             'name' => 'Article',
             'block' => 'single_post',
             'website' => 'aster-society',
             'module' => 'module_single_post',
             'template' => 'aster_single_post_partial',
-            'section' => 1,
-            'page' => '4',
+            'section' => null,
+            'page' => '2',
             'data' => [
-                'class' => 'col-md-12',
+                'class' => '',
                 'db' => [
                     [
                         'alias' => 'p',

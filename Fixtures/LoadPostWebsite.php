@@ -7,7 +7,7 @@ use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Jet\Models\Website;
 
-class LoadPostWebsiteModule extends AbstractFixture implements OrderedFixtureInterface
+class LoadPostWebsite extends AbstractFixture implements OrderedFixtureInterface
 {
     private $data = [
         'aster-society' => [

@@ -193,7 +193,7 @@
 
         <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-            <button type="button" @click="updateContent" class="btn btn-primary" data-dismiss="modal">Enregistrer</button>
+            <button type="button" @click="updateContent" class="btn btn-primary">Enregistrer</button>
         </div>
     </div>
 </template>
@@ -361,7 +361,14 @@
                 this.content_data.link[i].type = type;
             },
             updateContent(){
-                this.$emit('updateContent',this.content);
+                if ('id' in this.content.template && this.content.template.id != '') {
+                    this.$emit('updateContent', this.content);
+                    this.closeModal();
+                } else
+                    this.setResponse({status: 'error', message: 'Veuillez choisir le template'});
+            },
+            closeModal(){
+                $("#editContentModal" + this.line).modal("hide")
             }
         },
         created () {
