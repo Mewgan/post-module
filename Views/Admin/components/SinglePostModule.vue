@@ -12,7 +12,7 @@
 
 <template>
     <div class="edit-post">
-        <form class="form" >
+        <form class="form">
             <h5 class="module-title">Information :</h5>
             <div class="row">
                 <div class="col-md-6">
@@ -128,7 +128,7 @@
 
         <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-            <button type="button" @click="updateContent" class="btn btn-primary" data-dismiss="modal">Enregistrer</button>
+            <button type="button" @click="updateContent" class="btn btn-primary">Enregistrer</button>
         </div>
     </div>
 </template>
@@ -194,7 +194,7 @@
         },
         methods: {
             ...mapActions([
-                'read'
+                'read', 'setResponse'
             ]),
             setValueId(key, table, col, val){
                 if (table in this.values && this.values[table] != null) {
@@ -235,7 +235,14 @@
                 this.content_data.db[i].type = type;
             },
             updateContent(){
-                this.$emit('updateContent',this.content);
+                if ('id' in this.content.template && this.content.template.id != '') {
+                    this.$emit('updateContent', this.content);
+                    this.closeModal();
+                } else
+                    this.setResponse({status: 'error', message: 'Veuillez choisir le template'});
+            },
+            closeModal(){
+                $("#editContentModal" + this.line).modal("hide")
             }
         },
         created () {
