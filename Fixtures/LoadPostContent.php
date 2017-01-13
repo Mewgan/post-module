@@ -14,28 +14,6 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
 {
     private $data = [
         /* Aster website post module content */
-       /* 'aster_welcome_content' => [
-            'name' => 'Bienvenue',
-            'block' => 'home_content',
-            'website' => 'aster-society',
-            'module' => 'module_single_post',
-            'template' => 'aster_single_post_partial',
-            'section' => 1,
-            'page' => '1',
-            'data' => [
-                'class' => 'col-md-6',
-                'db' => [
-                    [
-                        'alias' => 'p',
-                        'type' => 'static',
-                        'column' => 'id',
-                        'value' => '1',
-                        'route' => '',
-                        'value_id' => '1'
-                    ]
-                ]
-            ]
-        ], */
         'aster_list_home_post_content' => [
             'name' => 'Articles',
             'block' => 'list_home_post',
@@ -61,63 +39,6 @@ class LoadPostContent extends AbstractFixture implements OrderedFixtureInterface
                 ],
             ]
         ],
-       /* 'aster_list_static_post_content' => [
-            'name' => 'Articles statique',
-            'block' => 'list_post',
-            'website' => 'aster-society',
-            'module' => 'module_post_list',
-            'template' => 'aster_post_list_partial',
-            'section' => null,
-            'page' => '2',
-            'data' => [
-                'class' => 'col-md-12',
-                'route_name' => 'module:post.type:dynamic.action:read',
-                'db' => [],
-                'link' => [
-                    [
-                        'alias' => 'p',
-                        'type' => 'static',
-                        'column' => 'slug',
-                        'route' => 'slug',
-                        'value' => '',
-                        'value_id' => ''
-                    ]
-                ],
-            ]
-        ],
-        'aster_list_dynamic_post_content' => [
-            'name' => 'Articles',
-            'block' => 'list_post',
-            'website' => 'aster-society',
-            'module' => 'module_post_list',
-            'template' => 'aster_post_list_partial',
-            'section' => 1,
-            'page' => '3',
-            'data' => [
-                'class' => 'col-md-12',
-                'route_name' => 'module:post.type:dynamic.action:read',
-                'db' => [
-                    [
-                        'alias' => 'c',
-                        'type' => 'dynamic',
-                        'column' => 'slug',
-                        'route' => 'slug',
-                        'value' => [],
-                        'value_id' => []
-                    ],
-                ],
-                'link' => [
-                    [
-                        'alias' => 'p',
-                        'type' => 'dynamic',
-                        'route' => 'slug',
-                        'column' => 'slug',
-                        'value' => '',
-                        'value_id' => ''
-                    ]
-                ]
-            ]
-        ],*/
         'aster_single_post_content' => [
             'name' => 'Article',
             'block' => 'single_post',

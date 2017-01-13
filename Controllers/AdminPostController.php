@@ -83,19 +83,20 @@ class AdminPostController extends AdminController
             if ($response === true) {
                 $post = ($id == 'create') ? new Post() : Post::findOneById($id);
                 if (!is_null($post)) {
+
                     $website = Website::findOneById($website);
                     if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
+
                     $value = $request->getPost();
-                    if ($id == 'create') {
-                        $post->setWebsite($website);
-                    } elseif ($post->getWebsite() != $website) {
+                    if ($post->getWebsite() != $website) {
                         $data = $this->excludeData($website->getData(), 'posts', $post->getId());
                         $website->setData($data);
                         Website::watch($website);
                         $post = new Post();
-                        $post->setWebsite($website);
                         $replace = true;
                     }
+
+                    $post->setWebsite($website);
                     $post->setTitle($value->get('title'));
                     $post->setSlug($value->get('slug'));
                     $post->setDescription($value->get('description'));
@@ -115,7 +116,7 @@ class AdminPostController extends AdminController
                     }
 
                     if (Post::watchAndSave($post)){
-                        $this->app->emit('updatePost', ['post' => $post->getId()]);
+                        $this->app->emit('updatePost', [$post->getId()]);
                         if($replace){
                             $website = $post->getWebsite();
                             $data = $this->replaceData($website->getData(), 'posts', $id, $post->getId());
@@ -123,8 +124,8 @@ class AdminPostController extends AdminController
                             Website::watchAndSave($website);
                         }
                         return ['status' => 'success', 'message' => 'L\'article a bien été mis à jour', 'resource' => $post];
-                    } else
-                        return ['status' => 'error', 'message' => 'Erreur lors de la mise à jour'];
+                    }
+                    return ['status' => 'error', 'message' => 'Erreur lors de la mise à jour'];
                 }
                 return ['status' => 'error', 'message' => 'Article non trouvé'];
             }
