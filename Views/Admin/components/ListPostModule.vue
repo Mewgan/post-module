@@ -201,8 +201,8 @@
 <script type="text/babel">
 
     /* CSS */
-    import '../../../../../Blocks/AdminBlock/Resources/public/css/libs/select2/select2.css'
-    import '../../../../../Blocks/AdminBlock/Resources/public/js/libs/select2/select2.min'
+    import '../../../../../Blocks/AdminBlock/Resources/public/libs/select2/select2.css'
+    import '../../../../../Blocks/AdminBlock/Resources/public/libs/select2/select2.min'
 
     /* JS*/
     import RouteEditor from '../../../../../Blocks/AdminBlock/Front/components/Helper/RouteEditor.vue'

@@ -14,7 +14,7 @@ class LoadPostMedia extends AbstractFixture implements OrderedFixtureInterface
         /* Global theme media */
         [
             'title' => 'Article 1',
-            'path' => '/article-1.jpg',
+            'path' => '/media/article-1.jpg',
             'type' => 'image/jpg',
             'size' => 10.86,
             'access_level' => 4,
@@ -23,7 +23,7 @@ class LoadPostMedia extends AbstractFixture implements OrderedFixtureInterface
         ],
         [
             'title' => 'Article 2',
-            'path' => '/article-2.jpg',
+            'path' => '/media/article-2.jpg',
             'type' => 'image/jpg',
             'size' => 2577,
             'access_level' => 4,
@@ -32,7 +32,7 @@ class LoadPostMedia extends AbstractFixture implements OrderedFixtureInterface
         ],
         [
             'title' => 'Article 3',
-            'path' => '/article-3.jpg',
+            'path' => '/media/article-3.jpg',
             'type' => 'image/jpg',
             'size' => 2577,
             'access_level' => 4,
@@ -41,7 +41,7 @@ class LoadPostMedia extends AbstractFixture implements OrderedFixtureInterface
         ],
         [
             'title' => 'Article 4',
-            'path' => '/article-4.jpg',
+            'path' => '/media/article-4.jpg',
             'type' => 'image/jpg',
             'size' => 2577,
             'access_level' => 4,
@@ -50,7 +50,7 @@ class LoadPostMedia extends AbstractFixture implements OrderedFixtureInterface
         ],
         [
             'title' => 'Article 5',
-            'path' => '/article-5.jpg',
+            'path' => '/media/article-5.jpg',
             'type' => 'image/jpg',
             'size' => 2577,
             'access_level' => 4,
@@ -60,7 +60,7 @@ class LoadPostMedia extends AbstractFixture implements OrderedFixtureInterface
         /* Theme aster */
         [
             'title' => 'Theme aster home page actualite image',
-            'path' => '/sites/1/master.jpg',
+            'path' => '/themes/aster/img/master.jpg',
             'type' => 'image/jpg',
             'size' => 404299,
             'access_level' => 2,

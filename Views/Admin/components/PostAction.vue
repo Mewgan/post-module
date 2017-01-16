@@ -284,7 +284,7 @@
                         date: ''
                     },
                     thumbnail: {
-                        path: '/user/default-photo.png',
+                        path: '/media/user/default-photo.png',
                         alt: ''
                     },
                     website: {

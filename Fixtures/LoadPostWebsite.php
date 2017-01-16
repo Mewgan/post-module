@@ -16,7 +16,7 @@ class LoadPostWebsite extends AbstractFixture implements OrderedFixtureInterface
                 'module_single_post',
             ],
             'medias' => [
-                '/sites/1/master.jpg',
+                '/themes/aster/img/master.jpg',
             ]
         ],
         'balsamine-society' => [
