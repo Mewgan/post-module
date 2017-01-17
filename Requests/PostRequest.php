@@ -28,7 +28,7 @@ class PostRequest extends Request
     {
         return [
             'title|published|thumbnail' => 'required',
-            'slug' => 'required|noWhitespace|lowercase',
+            'slug' => 'optional|noWhitespace|lowercase',
         ];
     }
 

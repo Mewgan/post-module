@@ -88,7 +88,7 @@ class AdminPostController extends AdminController
                     if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
 
                     $value = $request->getPost();
-                    if ($post->getWebsite() != $website) {
+                    if ($post->getWebsite() != $website && $id != 'create') {
                         $data = $this->excludeData($website->getData(), 'posts', $post->getId());
                         $website->setData($data);
                         Website::watch($website);
@@ -98,7 +98,7 @@ class AdminPostController extends AdminController
 
                     $post->setWebsite($website);
                     $post->setTitle($value->get('title'));
-                    $post->setSlug($value->get('slug'));
+                    ($value->has('slug') && !empty($value->get('slug'))) ? $post->setSlug($value->get('slug')) : $post->setSlug(slugify($value->get('title')));
                     $post->setDescription($value->get('description'));
                     $post->setContent($value->get('content'));
                     ($value->has('published') && $value->get('published') == 'true') ? $post->setPublished(1) : $post->setPublished(0);
@@ -117,7 +117,7 @@ class AdminPostController extends AdminController
 
                     if (Post::watchAndSave($post)){
                         $this->app->emit('updatePost', [$post->getId()]);
-                        if($replace){
+                        if($replace && $id != 'create'){
                             $website = $post->getWebsite();
                             $data = $this->replaceData($website->getData(), 'posts', $id, $post->getId());
                             $website->setData($data);
