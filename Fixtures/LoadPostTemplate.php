@@ -41,7 +41,7 @@ class LoadPostTemplate extends AbstractFixture implements OrderedFixtureInterfac
         'aster_post_list_partial' => [
             'name' => 'ThemeAsterPostListFilePartial',
             'title' => 'Theme Aster Post List Template',
-            'content' => 'Themes/Aster/post_list',
+            'content' => 'Aster/Views/post_list',
             'website' => 'aster-society',
             'category' => 'partial',
             'scope' => 'specified',
@@ -50,7 +50,7 @@ class LoadPostTemplate extends AbstractFixture implements OrderedFixtureInterfac
         'aster_single_post_partial' => [
             'name' => 'ThemeAsterPostFilePartial',
             'title' => 'Theme Aster Post Template',
-            'content' => 'Themes/Aster/post',
+            'content' => 'Aster/Views/post',
             'website' => 'aster-society',
             'category' => 'partial',
             'scope' => 'specified',

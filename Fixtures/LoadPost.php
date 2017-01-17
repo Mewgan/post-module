@@ -22,7 +22,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
                 <p>Aenean lacinia bibendum nulla sed consectetur. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur blandit tempus porttitor. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                     <span class="signature">Jacques Aux Mains D’Argent</span>
                 </p>',
-            'thumbnail' => '/themes/aster/img/master.jpg',
+            'thumbnail' => '/src/Themes/Aster/Resources/public/img/master.jpg',
             'categories' => [
                 'actualite'
             ],
@@ -35,7 +35,7 @@ class LoadPost extends AbstractFixture implements OrderedFixtureInterface
             'content' => 'Parce que le mariage est un moment unique, Aster Society propose de nombreux services pour satisfaire toutes les envies des mariés.
 
 En plus des coiffures traditionnelles, nos spécialistes vous conseillent (à l\'aide de photos modèles) afin de réaliser la coiffure dont vous rêvez. N\'hésitez pas à venir en discuter avec notre équipe.',
-            'thumbnail' => '/media/article-1.jpg',
+            'thumbnail' => '/public/media/article-1.jpg',
             'categories' => [
                 'service'
             ],
@@ -48,7 +48,7 @@ En plus des coiffures traditionnelles, nos spécialistes vous conseillent (à l\
             'content' => 'De plus en plus d\'entreprises organisent des journées ou demi-journées sur le thème de la coiffure pour leurs employés. Conviviaux et fédérateurs, ces moments sont des plus agréables. D\'autant que les employés sont coiffés sans frais !
 
 Aster Society propose d\'intervenir dans ce cadre. Contactez-nous pour plus d\'informations. ',
-            'thumbnail' => '/media/article-2.jpg',
+            'thumbnail' => '/public/media/article-2.jpg',
             'categories' => [
                 'service'
             ],
@@ -61,7 +61,7 @@ Aster Society propose d\'intervenir dans ce cadre. Contactez-nous pour plus d\'i
             'content' => 'Esthétique Coiffure Manuela bénéficie d\'une large gamme de produits qui permet aux coiffeurs de proposer de nombreuses teintes sous trois formes principales : les colorations intégrales, les mèches et les balayages.
 
 Nos coiffeurs sont à votre écoute pour comprendre vos envies et trouver la couleur dont vous rêvez.',
-            'thumbnail' => '/media/article-3.jpg',
+            'thumbnail' => '/public/media/article-3.jpg',
             'categories' => [
                 'service'
             ],
@@ -78,7 +78,7 @@ Nos coiffeurs sont à votre écoute pour comprendre vos envies et trouver la cou
 - Offre découverte : permet de faire découvrir les coupes et services originaux que nous proposons. 
 
 - Offre parrainage : faites découvrir notre salon à vos amis et réalisez des économies à chaque coupe.',
-            'thumbnail' => '/media/article-4.jpg',
+            'thumbnail' => '/public/media/article-4.jpg',
             'categories' => [
                 'service'
             ],
@@ -89,7 +89,7 @@ Nos coiffeurs sont à votre écoute pour comprendre vos envies et trouver la cou
             'slug' => 'prestations-coiffure',
             'short_description' => 'Aster Society propose les services "classiques" de la coiffure',
             'content' => 'Aster Society propose les services "classiques" de la coiffure, pour hommes, femmes et enfants : shampoing, coupe, brushing, ... Vous trouverez un résumé plus détaillé de nos prestations dans la partie Tarifs de notre site.',
-            'thumbnail' => '/media/article-5.jpg',
+            'thumbnail' => '/public/media/article-5.jpg',
             'categories' => [
                 'service'
             ],
@@ -101,7 +101,7 @@ Nos coiffeurs sont à votre écoute pour comprendre vos envies et trouver la cou
             'slug' => 'service-1',
             'short_description' => 'Service 1 de Aster',
             'content' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
-            'thumbnail' => '/media/article-1.jpg',
+            'thumbnail' => '/public/media/article-1.jpg',
             'categories' => [
                 'service'
             ],
@@ -112,7 +112,7 @@ Nos coiffeurs sont à votre écoute pour comprendre vos envies et trouver la cou
             'slug' => 'service-2',
             'short_description' => 'Service 2 de Aster',
             'content' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
-            'thumbnail' => '/media/article-2.jpg',
+            'thumbnail' => '/public/media/article-2.jpg',
             'categories' => [
                 'service'
             ],
@@ -123,7 +123,7 @@ Nos coiffeurs sont à votre écoute pour comprendre vos envies et trouver la cou
             'slug' => 'service-3',
             'short_description' => 'Service 3 de Aster',
             'content' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui, cupiditate, at! Minus rem aut, culpa aspernatur cumque enim blanditiis sunt!',
-            'thumbnail' => '/media/article-3.jpg',
+            'thumbnail' => '/public/media/article-3.jpg',
             'categories' => [
                 'service'
             ],

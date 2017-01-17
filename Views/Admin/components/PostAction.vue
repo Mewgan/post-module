@@ -1,7 +1,4 @@
 <style>
-    #mediaLibrary0{
-        z-index: 999999 !important;
-    }
     .post-action .title-input{
         color: #20252b;
         font-size: 1em;
@@ -133,7 +130,7 @@
                                         <div>
                                             <tinymce-editor @updateContent="updateContent" :height="300"
                                                             :id="'post-' + post_id" :launch="launch_tinymce"
-                                                            :dir="'/sites/' + website_id + '/'"
+                                                            :dir="'/public/media/sites/' + website_id + '/'"
                                                             :value="post.content"></tinymce-editor>
                                         </div>
                                     </article>
@@ -248,7 +245,7 @@
                 </div><!-- /.modal-dialog -->
             </div>
             <media :launch_media="launch_media" :button="false" @updateTarget="targetUpdate"
-                   :dir="'/sites/' + website_id + '/'" :accepted_file_type="file_type"
+                   :dir="'/public/media/sites/' + website_id + '/'" :accepted_file_type="file_type"
                    :max_options="max_media_options"></media>
         </section>
     </div>
@@ -284,7 +281,7 @@
                         date: ''
                     },
                     thumbnail: {
-                        path: '/media/user/default-photo.png',
+                        path: '/public/media/user/default-photo.png',
                         alt: ''
                     },
                     website: {
@@ -330,7 +327,7 @@
                 this.post.thumbnail = target;
             },
             launchMedia () {
-                this.launch_media = true;
+                this.launch_media = !this.launch_media;
             },
             createCategory(){
                 if (this.new_category != '') {
