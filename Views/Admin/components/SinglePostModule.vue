@@ -28,7 +28,7 @@
                     </div>
                 </div>
             </div>
-            <div v-show="auth.status.level < 4">
+            <div>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -53,7 +53,7 @@
                 <template-editor :id="line" :templates="templates" :template="content.template" label="Template du contenu"></template-editor>
             </div>
             <div>
-                <div v-show="auth.status.level < 4">
+                <div>
                     <h5 class="module-title">Configuration avancé :</h5>
                     <div class="form-group" v-if="page != null && 'route' in page && 'url' in page.route">
                         <input type="text" class="form-control" id="page_url" :value="page.route.url" readonly>
@@ -65,8 +65,8 @@
                 <table class="table table-bordered no-margin">
                     <tbody>
                     <tr v-for="(db,i) in content_data.db">
-                        <td v-show="auth.status.level < 4" style="width: 5%">{{i}}</td>
-                        <td v-show="auth.status.level < 4" style="width: 30%">
+                        <td style="width: 5%">{{i}}</td>
+                        <td style="width: 30%">
                             <div class="form-group">
                                 <select :id="'db_table_'+i" v-model="db.alias" class="form-control">
                                     <option v-for="(table,alias) in tables" :value="alias">{{table}}</option>
@@ -74,7 +74,7 @@
                                 <label :for="'db_table_'+i">Table</label>
                             </div>
                         </td>
-                        <td v-show="auth.status.level < 4" style="width: 30%">
+                        <td style="width: 30%">
                             <div class="form-group">
                                 <select :id="'db_column_'+i" v-model="db.column" class="form-control">
                                     <option v-for="column in columns" :value="column">{{column}}</option>
@@ -83,7 +83,7 @@
                             </div>
                         </td>
                         <td>
-                            <div v-show="auth.status.level < 4">
+                            <div>
                                 <ul class="nav nav-tabs nav-justified" data-toggle="tabs">
                                     <li :class="classStatic(i)"><a @click="changeType(i, 'static')" href="#content_static">Statique</a>
                                     </li>
@@ -93,7 +93,6 @@
                             </div><!--end .card-head -->
                             <div class="card-body tab-content">
                                 <div :class="[classStatic(i), 'tab-pane']" id="content_static">
-                                    <p v-show="auth.status.level > 3">Choisissez l'article à afficher sur cette page :</p>
                                     <div class="form-group">
                                         <select :id="'db_value_'+i" @change="setValueId(i,db.alias,db.column,db.value)"
                                                 v-model="db.value" class="form-control">
@@ -111,8 +110,8 @@
                                     </div>
                                 </div>
                             </div>
-                        </td>01016
-                        <td v-show="auth.status.level < 4" style="width: 5%">
+                        </td>
+                        <td style="width: 5%">
                             <button type="button" @click="removeDbField(i)"
                                     class="btn ink-reaction btn-floating-action btn-danger"><i class="fa fa-times"></i>
                             </button>
@@ -120,7 +119,7 @@
                     </tr>
                     </tbody>
                 </table>
-                <button v-show="auth.status.level < 4" type="button" @click="addDbField()"
+                <button type="button" @click="addDbField()"
                         class="btn ink-reaction pull-right btn-floating-action btn-info add-field"><i
                         class="fa fa-plus"></i></button>
             </div>
@@ -138,7 +137,7 @@
     import TemplateEditor from '../../../../../Blocks/AdminBlock/Front/components/Helper/TemplateEditor.vue'
 
     import {AppVendor} from '../../../../../Blocks/AdminBlock/Resources/public/js/app'
-    import {mapGetters, mapActions} from 'vuex'
+    import {mapActions} from 'vuex'
 
     import {template_api} from '../../../../../Blocks/AdminBlock/Front/api'
     import {post_api} from '../api'
@@ -186,11 +185,6 @@
                 },
                 deep: true
             }
-        },
-        computed: {
-            ...mapGetters([
-                'auth'
-            ])
         },
         methods: {
             ...mapActions([

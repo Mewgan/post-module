@@ -73,7 +73,7 @@
                                 <div class="col-sm-9">
                                     <div class="card-body style-default-dark">
                                         <h2><input class="title-input" v-model="post.title" type="text"></h2>
-                                        <div v-if="auth.status.leve < 4" class="form-group">
+                                        <div class="form-group">
                                             <label class="post-slug-label" for="post-slug">Slug</label>
                                             <input id="post-slug" class="title-input" v-model="post.slug" type="text">
                                         </div>
@@ -100,22 +100,13 @@
                                         </div>
                                         <div class="row">
                                             <button data-toggle="modal" data-target="#deletePostModal" type="button"
-                                                    class="col-md-12 btn ink-reaction btn-raised btn-danger">
-                                                <i class="fa fa-trash"></i> Supprimer
-                                            </button>
-                                        </div>
-                                        <div class="row mar-top-10">
-                                            <button type="button" @click="preview = true" data-toggle="modal"
-                                                    data-target="#previewPageModal"
-                                                    class="col-md-12 btn ink-reaction btn-raised btn-info">
-                                                <i class="fa fa-eye"></i>
-                                                Prévisualisation
+                                                    class="col-md-12 btn ink-reaction btn-raised btn-danger">Supprimer
                                             </button>
                                         </div>
                                         <div class="row mar-top-10">
                                             <button @click="updateOrCreatePost" type="button"
-                                                    class="col-md-12 btn ink-reaction btn-raised btn-default">
-                                                <i class="fa fa-save"></i> Mettre à jour
+                                                    class="col-md-12 btn ink-reaction btn-raised btn-default">Mettre à
+                                                jour
                                             </button>
                                         </div>
                                     </div>
@@ -257,25 +248,6 @@
                    :dir="'/public/media/sites/' + website_id + '/'" :accepted_file_type="file_type"
                    :max_options="max_media_options"></media>
         </section>
-
-        <div class="modal fade" id="previewPageModal" tabindex="-1" role="dialog"
-             aria-labelledby="simpleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-xlg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                        <h4 class="modal-title" id="previewPageModalLabel">Prévisualisation</h4>
-                    </div>
-                    <div class="modal-body">
-                        <iframe v-if="preview" width="100%" height="500" :src="post_url"></iframe>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-                    </div>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </div>
-
     </div>
 </template>
 
@@ -327,20 +299,13 @@
                 media_target_id: null,
                 launch_media: false,
                 launch_tinymce: false,
-                custom_fields: [],
-                preview: false
+                custom_fields: []
             }
         },
         computed: {
             ...mapGetters([
-                'website','auth', 'system'
+                'auth'
             ]),
-            post_url(){
-                if (this.preview == true && this.post_id != 'create' && 'domain' in this.website) {
-                    return (this.website.domain.substring(0, 4) == 'http') ? this.website.domain + this.route : this.system.domain + '/site/' + this.website.domain + this.route;
-                }
-                return '';
-            },
             custom_fields_params () {
                 return {
                     everywhere: '',

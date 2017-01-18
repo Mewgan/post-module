@@ -155,7 +155,7 @@
                                                 <span></span>
                                             </label>
                                         </div>
-                                        <img v-if="post.thumbnail != null" class="pull-left width-3" v-img="post.thumbnail.path"
+                                        <img v-if="post.thumbnail != null" class="pull-left width-3" v-lazy="system.public_path + post.thumbnail.path"
                                              :alt="post.thumbnail.alt"/>
                                         <div>
                                             <router-link :to="{name: 'module:post:action', params:{website_id: website_id, post_id: post.id}}" class="text-medium text-lg text-primary">{{post.title}}</router-link>
@@ -282,7 +282,7 @@
 
     import Pagination from '../../../../../Blocks/AdminBlock/Front/components/Helper/Pagination.vue'
 
-    import {mapActions} from 'vuex'
+    import {mapGetters, mapActions} from 'vuex'
     import {post_api, post_category_api} from '../api'
 
     export default
@@ -307,6 +307,9 @@
                 icon_class: '',
                 max_options: [10, 20, 30]
             }
+        },
+        computed: {
+            ...mapGetters(['system'])
         },
         methods: {
             ...mapActions([
