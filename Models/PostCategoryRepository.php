@@ -100,7 +100,7 @@ class PostCategoryRepository extends EntityRepository{
             ->from('Jet\Modules\Post\Models\PostCategory','c')
             ->leftJoin('c.website','w');
 
-        $query = $this->getQueryWithParams($query,$params,'c');
+        $query = $this->getQueryWithParams($query,$params);
         
         return $query->getQuery()->getOneOrNullResult();
     }
@@ -128,8 +128,14 @@ class PostCategoryRepository extends EntityRepository{
     private function getQueryWithParams($query, $params){
 
         if(isset($params['websites'])){
-            $query->where($query->expr()->in('w.id',':websites'))
-                ->setParameter('websites',$params['websites']);
+            $query->where(
+                $query->expr()->orX(
+                    $query->expr()->in('w.id',':websites'),
+                    $query->expr()->isNull('w.id')
+                )
+            )->setParameter('websites',$params['websites']);
+        }else{
+            $query->where($query->expr()->isNull('w.id'));
         }
 
         if(isset($params['website_options']['parent_exclude']) && isset($params['website_options']['parent_exclude']['post_categories']) && !empty($params['website_options']['parent_exclude']['post_categories'])){
@@ -153,8 +159,12 @@ class PostCategoryRepository extends EntityRepository{
             ->from('Jet\Modules\Post\Models\PostCategory','c')
             ->leftJoin('c.website','w');
 
-        $query->where($query->expr()->in('w.id',':websites'))
-            ->setParameter('websites',$websites);
+        $query->where(
+            $query->expr()->orX(
+                $query->expr()->in('w.id',':websites'),
+                $query->expr()->isNull('w.id')
+            )
+        )->setParameter('websites',$websites);
 
         if(isset($exclude['parent_exclude']) && isset($exclude['parent_exclude']['post_categories']) && !empty($exclude['parent_exclude']['post_categories'])){
             $query->andWhere($query->expr()->notIn('c.id',':exclude_ids'))
@@ -176,8 +186,12 @@ class PostCategoryRepository extends EntityRepository{
             ->from('Jet\Modules\Post\Models\PostCategory','c')
             ->leftJoin('c.website','w');
 
-        $query->where($query->expr()->in('w.id',':websites'))
-            ->setParameter('websites',$websites);
+        $query->where(
+            $query->expr()->orX(
+                $query->expr()->in('w.id',':websites'),
+                $query->expr()->isNull('w.id')
+            )
+        )->setParameter('websites',$websites);
 
         if(isset($exclude['parent_exclude']) && isset($exclude['parent_exclude']['post_categories']) && !empty($exclude['parent_exclude']['post_categories'])){
             $query->andWhere($query->expr()->notIn('c.id',':exclude_ids'))

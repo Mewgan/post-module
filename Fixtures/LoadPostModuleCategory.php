@@ -4,11 +4,13 @@ namespace Jet\Modules\Post\Fixtures;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
-use Jet\Models\ModuleCategory;
+use Jet\Services\LoadFixture;
 
 class LoadPostModuleCategory extends AbstractFixture implements OrderedFixtureInterface
 {
-    private $data = [
+    use LoadFixture;
+
+    protected $data = [
         'name' => 'Post',
         'title' => 'Article',
         'slug' => 'post',
@@ -23,22 +25,7 @@ class LoadPostModuleCategory extends AbstractFixture implements OrderedFixtureIn
 
     public function load(ObjectManager $manager)
     {
-        $cat = (ModuleCategory::where('name',$this->data['name'])->count() == 0)
-            ? new ModuleCategory()
-            : ModuleCategory::findOneByName($this->data['name']);
-        $cat->setName($this->data['name']);
-        $cat->setTitle($this->data['title']);
-        $cat->setSlug($this->data['slug']);
-        $cat->setNav($this->data['nav']);
-        $cat->setIcon($this->data['icon']);
-        $cat->setAuthor($this->data['author']);
-        $cat->setVersion($this->data['version']);
-        $cat->setUpdateAvailable($this->data['update_available']);
-        $cat->setAccessLevel($this->data['access_level']);
-        $cat->setDescription($this->data['description']);
-        $manager->persist($cat);
-        $this->addReference($this->data['slug'], $cat);
-        $manager->flush();
+        $this->loadModuleCategory($manager);
     }
 
 

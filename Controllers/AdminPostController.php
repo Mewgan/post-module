@@ -65,7 +65,7 @@ class AdminPostController extends AdminController
         $post = Post::repo()->readAdmin($id);
 
         if (!is_null($post))
-            return ['status' => 'success', 'resource' => $post, 'route' => (isset($route[0])) ? $route[0] : ''];
+            return ['status' => 'success', 'resource' => $post, 'route' => is_null($route) ? '' : $route];
         return ['status' => 'error', 'message' => 'Article inexistant'];
     }
 

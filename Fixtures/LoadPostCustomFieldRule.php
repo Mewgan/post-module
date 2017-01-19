@@ -9,7 +9,7 @@ use Jet\Models\CustomFieldRule;
 
 class LoadCustomFieldRule extends AbstractFixture implements OrderedFixtureInterface
 {
-    private $data = [
+    protected $data = [
         'post_rule' => [
             'title' => 'Article',
             'name' => 'post',
@@ -50,6 +50,6 @@ class LoadCustomFieldRule extends AbstractFixture implements OrderedFixtureInter
      */
     public function getOrder()
     {
-        return 110;
+        return 106;
     }
 }

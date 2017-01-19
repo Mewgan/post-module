@@ -5,11 +5,13 @@ namespace Jet\Modules\Post\Fixtures;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
-use Jet\Models\Route;
+use Jet\Services\LoadFixture;
 
 class LoadPostRoute extends AbstractFixture implements OrderedFixtureInterface
 {
-    private $data = [
+    use LoadFixture;
+
+    protected $data = [
         /* Post Module */
         [
             'url' => '/articles',
@@ -31,7 +33,7 @@ class LoadPostRoute extends AbstractFixture implements OrderedFixtureInterface
             'url' => '/article/:slug',
             'name' => 'module:post.type:dynamic.action:read',
             'method' => ['GET'],
-            'argument' => null,
+            'argument' => ['slug' => '([a-z-_]+)'],
             'middleware' => null,
             'subdomain' => null,
         ]
@@ -39,19 +41,7 @@ class LoadPostRoute extends AbstractFixture implements OrderedFixtureInterface
 
     public function load(ObjectManager $manager)
     {
-        foreach($this->data as $key => $data) {
-            $route = (Route::where('name',$data['name'])->count() == 0)
-                ? new Route()
-                : Route::findOneByName($data['name']);
-            $route->setUrl($data['url']);
-            $route->setName($data['name']);
-            $route->setArgument($data['argument']);
-            $route->setMiddleware($data['middleware']);
-            $route->setSubdomain($data['subdomain']);
-            $this->setReference($data['name'], $route);
-            $manager->persist($route);
-        }
-        $manager->flush();
+        $this->loadRoute($manager);
     }
 
     /**
@@ -61,6 +51,6 @@ class LoadPostRoute extends AbstractFixture implements OrderedFixtureInterface
      */
     public function getOrder()
     {
-        return 110;
+        return 105;
     }
 }

@@ -11,29 +11,25 @@ use Jet\Modules\Post\Models\PostCategory;
 
 class LoadPostCategory extends AbstractFixture implements OrderedFixtureInterface
 {
-    private $data = [
+    protected $data = [
         [
             'name' => 'Service',
-            'slug' => 'service',
-            'website' => 'aster-society',
+            'slug' => 'service'
         ],
         [
             'name' => 'Actualité',
-            'slug' => 'actualite',
-            'website' => 'aster-society',
+            'slug' => 'actualite'
         ],
     ];
 
     public function load(ObjectManager $manager)
     {
         foreach($this->data as $key => $data) {
-            $website = Website::findOneByDomain($data['website']);
-            $postCategory = (PostCategory::where('name',$data['name'])->where('website',$website)->count() == 0)
+            $postCategory = (PostCategory::where('name',$data['name'])->count() == 0)
                 ? new PostCategory()
-                : PostCategory::findOneBy(['name' => $data['name'], 'website' => $website]);
+                : PostCategory::findOneByName($data['name']);
             $postCategory->setName($data['name']);
             $postCategory->setSlug($data['slug']);
-            $postCategory->setWebsite($website);
             $this->setReference($data['slug'], $postCategory);
             $manager->persist($postCategory);
         }
@@ -47,6 +43,6 @@ class LoadPostCategory extends AbstractFixture implements OrderedFixtureInterfac
      */
     public function getOrder()
     {
-        return 105;
+        return 104;
     }
 }

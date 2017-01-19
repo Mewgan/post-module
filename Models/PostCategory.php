@@ -31,7 +31,7 @@ class PostCategory extends Model implements \JsonSerializable
     protected $slug;
     /**
      * @ManyToOne(targetEntity="Jet\Models\Website")
-     * @JoinColumn(name="website_id", referencedColumnName="id", onDelete="CASCADE")
+     * @JoinColumn(name="website_id", referencedColumnName="id", nullable=true, onDelete="CASCADE")
      */
     protected $website;
     /**
@@ -95,7 +95,7 @@ class PostCategory extends Model implements \JsonSerializable
     }
 
     /**
-     * @return Website
+     * @return mixed
      */
     public function getWebsite()
     {
@@ -103,9 +103,9 @@ class PostCategory extends Model implements \JsonSerializable
     }
 
     /**
-     * @param Website $website
+     * @param  $website
      */
-    public function setWebsite(Website $website)
+    public function setWebsite($website)
     {
         $this->website = $website;
     }
