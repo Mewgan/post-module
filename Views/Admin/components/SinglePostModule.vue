@@ -211,8 +211,8 @@
                     alias: '',
                     type: 'static',
                     column: '',
-                    value: '',
                     route: '',
+                    value: '',
                     value_id: ''
                 });
                 this.$nextTick(function () {
