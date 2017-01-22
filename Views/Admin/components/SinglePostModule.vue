@@ -1,9 +1,10 @@
 <style>
-    .module-title{
+    .module-title {
         padding: 10px;
         background: #f2f2f2;
     }
-    .edit-post .add-field{
+
+    .edit-post .add-field {
         margin-top: -20px;
         margin-right: 8px;
     }
@@ -45,12 +46,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group" >
+                <div class="form-group">
                     <input type="text" class="form-control" v-model="content_data.class" :id="'content-class-' + line">
                     <label :for="'content-class-' + line">Class</label>
                 </div>
                 <h5 class="module-title">Choix du template :</h5>
-                <template-editor :id="line" :templates="templates" :template="content.template" label="Template du contenu"></template-editor>
+                <template-editor :id="line" :templates="templates" :template="content.template"
+                                 label="Template du contenu"></template-editor>
             </div>
             <div>
                 <div>
@@ -74,18 +76,11 @@
                                 <label :for="'db_table_'+i">Table</label>
                             </div>
                         </td>
-                        <td style="width: 30%">
-                            <div class="form-group">
-                                <select :id="'db_column_'+i" v-model="db.column" class="form-control">
-                                    <option v-for="column in columns" :value="column">{{column}}</option>
-                                </select>
-                                <label :for="'db_column_'+i">Colonne</label>
-                            </div>
-                        </td>
                         <td>
                             <div>
                                 <ul class="nav nav-tabs nav-justified" data-toggle="tabs">
-                                    <li :class="classStatic(i)"><a @click="changeType(i, 'static')" href="#content_static">Statique</a>
+                                    <li :class="classStatic(i)"><a @click="changeType(i, 'static')"
+                                                                   href="#content_static">Statique</a>
                                     </li>
                                     <li :class="classDynamic(i)"><a @click="changeType(i, 'dynamic')"
                                                                     href="#content_dynamic">Dynamique</a></li>
@@ -93,20 +88,20 @@
                             </div><!--end .card-head -->
                             <div class="card-body tab-content">
                                 <div :class="[classStatic(i), 'tab-pane']" id="content_static">
-                                    <div class="form-group">
-                                        <select :id="'db_value_'+i" @change="setValueId(i,db.alias,db.column,db.value)"
-                                                v-model="db.value" class="form-control">
-                                            <option v-for="value in getValues(db.alias)" :value="value[db.column]">
-                                                {{value.name}}
-                                            </option>
-                                        </select>
-                                        <label :for="'db_value_'+i">Valeur</label>
-                                    </div>
+                                    <select2 @updateValue="updateDbValue" :updateParams="{key: i}"
+                                             :contents="getValues(db.alias)" :id="'select-' + line + '-' + i" val_index="id" index="name" label="Valeur"
+                                             :val="db.value"></select2>
                                 </div>
                                 <div :class="[classDynamic(i), 'tab-pane']" id="content_dynamic">
                                     <div class="form-group">
                                         <input type="text" v-model="db.route" class="form-control" :id="'db_route_'+i">
                                         <label :for="'db_route_'+i">Route</label>
+                                    </div>
+                                    <div class="form-group">
+                                        <select :id="'db_column_'+i" v-model="db.column" class="form-control">
+                                            <option v-for="column in columns" :value="column">{{column}}</option>
+                                        </select>
+                                        <label :for="'db_column_'+i">Colonne</label>
                                     </div>
                                 </div>
                             </div>
@@ -135,6 +130,7 @@
 <script type="text/babel">
 
     import TemplateEditor from '../../../../../Blocks/AdminBlock/Front/components/Helper/TemplateEditor.vue'
+    import Select2 from '../../../../../Blocks/AdminBlock/Front/components/Helper/Select2.vue'
 
     import {AppVendor} from '../../../../../Blocks/AdminBlock/Resources/public/js/app'
     import {mapActions} from 'vuex'
@@ -144,10 +140,10 @@
 
     export default{
         name: 'single-post',
-        components: {TemplateEditor},
+        components: {TemplateEditor, Select2},
         props: {
             line: {
-                default: '0'
+                default: 'default'
             },
             content: {
                 type: Object,
@@ -190,11 +186,8 @@
             ...mapActions([
                 'read', 'setResponse'
             ]),
-            setValueId(key, table, col, val){
-                if (table in this.values && this.values[table] != null) {
-                    let index = this.values[table].findIndex((i) => i[col] == val);
-                    this.content_data.db[key].value_id = this.values[table][index].id
-                }
+            updateDbValue(val, oldVal, params){
+                this.content_data.db[params.key].value = val;
             },
             classStatic (i) {
                 return {
@@ -212,8 +205,7 @@
                     type: 'static',
                     column: '',
                     route: '',
-                    value: '',
-                    value_id: ''
+                    value: []
                 });
                 this.$nextTick(function () {
                     AppVendor()._initTabs();

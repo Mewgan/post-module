@@ -2,12 +2,12 @@
 namespace Jet\Modules\Post\Fixtures;
 
 use Doctrine\Common\DataFixtures\AbstractFixture;
-use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Jet\Services\LoadFixture;
 
 
-class LoadPostModule extends AbstractFixture implements OrderedFixtureInterface
+class LoadPostModule extends AbstractFixture implements DependentFixtureInterface
 {
     use LoadFixture;
 
@@ -18,11 +18,7 @@ class LoadPostModule extends AbstractFixture implements OrderedFixtureInterface
             'callback' => 'Jet\Modules\Post\Controllers\FrontPostController@read',
             'description' => 'Affiche un seul article',
             'category' => 'post',
-            'access_level' => 4,
-            'templates' => [
-                'post_whole_content',
-                'post_only_body'
-            ]
+            'access_level' => 4
         ],
         'module_post_list' => [
             'name' => 'Liste d\'articles',
@@ -30,10 +26,7 @@ class LoadPostModule extends AbstractFixture implements OrderedFixtureInterface
             'callback' => 'Jet\Modules\Post\Controllers\FrontPostController@all',
             'description' => 'Liste d\'articles par catégorie',
             'category' => 'post',
-            'access_level' => 4,
-            'templates' => [
-                'post_basic_list'
-            ]
+            'access_level' => 4
         ]
     ];
 
@@ -43,12 +36,15 @@ class LoadPostModule extends AbstractFixture implements OrderedFixtureInterface
     }
 
     /**
-     * Get the order of this fixture
+     * This method must return an array of fixtures classes
+     * on which the implementing class depends on
      *
-     * @return integer
+     * @return array
      */
-    public function getOrder()
+    function getDependencies()
     {
-        return 103;
+        return [
+            'Jet\Modules\Post\Fixtures\LoadPostModuleCategory'
+        ];
     }
 }

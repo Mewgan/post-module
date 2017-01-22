@@ -84,14 +84,6 @@
                             </div>
                         </td>
                         <td style="width: 30%">
-                            <div class="form-group">
-                                <select :id="'db_column_'+i" v-model="db.column" class="form-control">
-                                    <option v-for="column in columns" :value="column">{{column}}</option>
-                                </select>
-                                <label :for="'db_column_'+i">Colonne</label>
-                            </div>
-                        </td>
-                        <td style="width: 30%">
                             <div>
                                 <ul class="nav nav-tabs nav-justified" data-toggle="tabs">
                                     <li :class="classDbStatic(i)"><a @click="changeDbType(i,'static')" :href="'#db_static'+i">Statique</a></li>
@@ -100,17 +92,20 @@
                             </div><!--end .card-head -->
                             <div class="card-body tab-content">
                                 <div :class="[classDbStatic(i), 'tab-pane']" :id="'db_static'+i">
-                                    <div class="form-group">
-                                        <select :id="'db_value_' + line + '_' + i" class="values-select form-control select2-list" :data-index="i" multiple>
-                                            <option v-for="value in getValues(db.alias)" :value="value[db.column]">{{value.name}}</option>
-                                        </select>
-                                        <label :for="'db_value_' + line + '_' + i">Valeur</label>
-                                    </div>
+                                    <select2 @updateValue="updateDbValue" :updateParams="{key: i}"
+                                             :contents="getValues(db.alias)" :id="'db-value-' + line + '-' + i" val_index="id" index="name" label="Valeur"
+                                             :val="db.value"></select2>
                                 </div>
                                 <div :class="[classDbDynamic(i), 'tab-pane']" :id="'db_dynamic'+i">
                                     <div class="form-group">
                                         <input type="text" v-model="db.route" class="form-control" :id="'db_route_'+i">
                                         <label :for="'db_route_'+i">Route</label>
+                                    </div>
+                                    <div class="form-group">
+                                        <select :id="'db_column_'+i" v-model="db.column" class="form-control">
+                                            <option v-for="column in columns" :value="column">{{column}}</option>
+                                        </select>
+                                        <label :for="'db_column_'+i">Colonne</label>
                                     </div>
                                 </div>
                             </div>
@@ -121,7 +116,7 @@
                     </tr>
                     </tbody>
                 </table>
-                <button type="button" @click="addDbField(content_data.db.length)" class="btn ink-reaction pull-right btn-floating-action btn-info add-field"><i class="fa fa-plus"></i></button>
+                <button type="button" @click="addDbField" class="btn ink-reaction pull-right btn-floating-action btn-info add-field"><i class="fa fa-plus"></i></button>
             </div>
             <div class="row">
                 <div class="col-md-12">
@@ -200,13 +195,10 @@
 
 <script type="text/babel">
 
-    /* CSS */
-    import '../../../../../Blocks/AdminBlock/Resources/public/libs/select2/select2.css'
-    import '../../../../../Blocks/AdminBlock/Resources/public/libs/select2/select2.min'
-
     /* JS*/
     import RouteEditor from '../../../../../Blocks/AdminBlock/Front/components/Helper/RouteEditor.vue'
     import TemplateEditor from '../../../../../Blocks/AdminBlock/Front/components/Helper/TemplateEditor.vue'
+    import Select2 from '../../../../../Blocks/AdminBlock/Front/components/Helper/Select2.vue'
 
     import {AppVendor} from '../../../../../Blocks/AdminBlock/Resources/public/js/app'
     import {mapActions, mapGetters} from 'vuex'
@@ -215,7 +207,7 @@
 
     export default{
         name: 'list-post',
-        components: {RouteEditor, TemplateEditor},
+        components: {RouteEditor, TemplateEditor, Select2},
         props: {
             line: {
                 default: '0'
@@ -249,7 +241,6 @@
                     c: null,
                     p: null
                 },
-                selectDbValues: {},
                 route: {},
                 templates: []
             }
@@ -257,40 +248,24 @@
         watch: {
             'content_data': {
                 handler(){
-                    let o = this;
-                    this.$nextTick(function () {
-                        $('.select2-list').on('change', function () {
-                            let key = o.line + '@' + $(this).attr('data-index');
-                            if (key in o.selectDbValues) {
-                                o.content_data.db[$(this).attr('data-index')].value = o.selectDbValues[key].val();
-                                o.content_data.db[$(this).attr('data-index')].value_id = {};
-                                o.selectDbValues[key].val().forEach((element,k) => {
-                                    let table = o.content_data.db[$(this).attr('data-index')].alias;
-                                    let index = o.values[table].findIndex((i) => i[o.content_data.db[$(this).attr('data-index')].column] == element);
-                                    o.content_data.db[$(this).attr('data-index')].value_id[k] = o.values[table][index].id
-                                })
-                            }
-                        });
-                    });
                     this.$set(this.content, 'data', this.content_data);
                 },
                 deep: true
             }
         },
         computed: {
-            ...mapGetters([
-                'auth'
-            ])
+            ...mapGetters(['auth'])
         },
         methods: {
-            ...mapActions([
-                'read'
-            ]),
+            ...mapActions(['read']),
             setValueId(key, table, col, val){
                 if (table in this.values && this.values[table] != null) {
                     let index = this.values[table].findIndex((i) => i[col] == val);
                     this.content_data.link[key].value_id = this.values[table][index].id
                 }
+            },
+            updateDbValue(val, oldVal, params){
+                this.content_data.db[params.key].value = val;
             },
             classDbStatic (i) {
                 return {
@@ -316,19 +291,15 @@
                 this.route = route;
                 this.content_data.route_name = route.name;
             },
-            addDbField(index){
+            addDbField(){
                 this.content_data.db.push({
                     alias: '',
                     type: 'static',
                     column: '',
-                    value: [],
-                    value_id: [],
-                    route: ''
+                    route: '',
+                    value: []
                 });
                 this.$nextTick(function () {
-                    this.selectDbValues[this.line + '@' + index] = $("#db_value_" + this.line + '_' + index).select2({
-                        allowClear: true
-                    });
                     AppVendor()._initTabs();
                 });
             },
@@ -380,25 +351,10 @@
             });
             this.read({api: post_api.list_table_values + this.website}).then((response) => {
                 this.values = response.data;
-            }).then(() => {
-                this.content_data.db.forEach((el, index) => {
-                    this.selectDbValues[this.line + '@' + index] = $("#db_value_" + this.line + '_' + index).select2({
-                        allowClear: true
-                    });
-                    this.selectDbValues[this.line + '@' + index].val(el.value).trigger("change");
-                });
             });
         },
         mounted () {
-            if ('db' in this.content.data) {
-                this.content_data = this.content.data;
-                this.content_data.db.forEach((el, index) => {
-                    this.selectDbValues[this.line + '@' + index] = $("#db_value_" + this.line + '_' + index).select2({
-                        allowClear: true
-                    });
-                    this.selectDbValues[this.line + '@' + index].val(el.value).trigger("change");
-                });
-            }
+            if (this.content.data != null && 'db' in this.content.data) this.content_data = this.content.data;
 
             this.$nextTick(function () {
                 AppVendor()._initTabs();

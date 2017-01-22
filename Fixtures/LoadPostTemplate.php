@@ -2,12 +2,11 @@
 
 namespace Jet\Modules\Post\Fixtures;
 
-use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Jet\Services\LoadFixture;
 
-class LoadPostTemplate extends AbstractFixture implements OrderedFixtureInterface
+class LoadPostTemplate extends AbstractFixture
 {
     use LoadFixture;
 
@@ -43,14 +42,5 @@ class LoadPostTemplate extends AbstractFixture implements OrderedFixtureInterfac
     {
         $this->loadTemplate($manager);
     }
-
-    /**
-     * Get the order of this fixture
-     *
-     * @return integer
-     */
-    public function getOrder()
-    {
-        return 101;
-    }
+    
 }

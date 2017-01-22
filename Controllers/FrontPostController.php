@@ -121,7 +121,7 @@ class FrontPostController extends MainController
                 $data = $website->getData();
                 if(isset($data['parent_replace']['posts'][$post->getId()])){
                     return Post::findOneById($data['parent_replace']['posts'][$post->getId()]);
-                } else if(!in_array($post->getId(), $data['parent_exclude']['posts']))
+                } else if(!isset($data['parent_exclude']['posts']) || !in_array($post->getId(), $data['parent_exclude']['posts']))
                     return $post;
             }
         }

@@ -3,6 +3,7 @@
 namespace Jet\Modules\Post\Models;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
@@ -152,11 +153,11 @@ class PostRepository extends EntityRepository
     }
 
     /**
-     * @param $query
+     * @param QueryBuilder $query
      * @param $params
      * @return mixed
      */
-    private function getQueryWithParams($query, $params)
+    private function getQueryWithParams(QueryBuilder $query, $params)
     {
         if (isset($params['published'])) {
             $query->where($query->expr()->eq('p.published', ':published'))
@@ -184,24 +185,24 @@ class PostRepository extends EntityRepository
             foreach ($params['db'] as $key => $db) {
                 if (isset($db['type'])) {
                     if ($db['type'] == 'dynamic' && isset($db['route']) && !empty($db['route']) && isset($params['params'][$db['route']])) {
-                        $query->andWhere($db['alias'] . '.' . $db['column'] . ' = :column_' . $key)
+                        $query->andWhere($query->expr()->eq($db['alias'] . '.' . $db['column'], ':column_' . $key))
                             ->setParameter('column_' . $key, $params['params'][$db['route']]);
-                    } elseif ($db['type'] == 'static' && isset($db['value_id']) && !empty($db['value_id'])) {
+                    } elseif ($db['type'] == 'static' && isset($db['value']) && !empty($db['value'])) {
                         $replace_content = ($db['alias'] == 'p') ? 'posts' : 'post_categories';
-                        if (is_array($db['value_id'])) {
+                        if (is_array($db['value'])) {
                             if (isset($params['website_options']['parent_replace']) && isset($params['website_options']['parent_replace'][$replace_content])) {
-                                foreach ($db['value_id'] as $k => $id) {
+                                foreach ($db['value'] as $k => $id) {
                                     if (isset($params['website_options']['parent_replace'][$replace_content][$id]))
-                                        $db['value_id'][$k] = $params['website_options']['parent_replace'][$replace_content][$id];
+                                        $db['value'][$k] = $params['website_options']['parent_replace'][$replace_content][$id];
                                 }
                             }
-                            $query->andWhere($db['alias'] . '.id IN (:column_' . $key . ')')
-                                ->setParameter('column_' . $key, $db['value_id']);
+                            $query->andWhere($query->expr()->in($db['alias'] . '.id', ':column_' . $key))
+                                ->setParameter('column_' . $key, $db['value']);
                         } else {
-                            if (isset($params['website_options']['parent_replace']) && isset($params['website_options']['parent_replace'][$replace_content]) && isset($params['website_options']['parent_replace'][$replace_content][$db['value_id']]))
-                                $db['value_id'] = $params['website_options']['parent_replace'][$replace_content][$db['value_id']];
-                            $query->andWhere($db['alias'] . '.id = :column_' . $key)
-                                ->setParameter('column_' . $key, $db['value_id']);
+                            if (isset($params['website_options']['parent_replace']) && isset($params['website_options']['parent_replace'][$replace_content]) && isset($params['website_options']['parent_replace'][$replace_content][$db['value']]))
+                                $db['value'] = $params['website_options']['parent_replace'][$replace_content][$db['value']];
+                            $query->andWhere($query->expr()->eq($db['alias'] . '.id', ':column_' . $key))
+                                ->setParameter('column_' . $key, $db['value']);
                         }
                     }
                 }

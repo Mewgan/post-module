@@ -3,11 +3,10 @@
 namespace Jet\Modules\Post\Fixtures;
 
 use Doctrine\Common\DataFixtures\AbstractFixture;
-use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Jet\Models\CustomFieldRule;
 
-class LoadCustomFieldRule extends AbstractFixture implements OrderedFixtureInterface
+class LoadCustomFieldRule extends AbstractFixture
 {
     protected $data = [
         'post_rule' => [
@@ -37,19 +36,9 @@ class LoadCustomFieldRule extends AbstractFixture implements OrderedFixtureInter
             $cf->setCallback($data['callback']);
             $cf->setType($data['type']);
             $cf->setReplaceTable($data['table']);
-            $this->addReference($key, $cf);
+            $this->setReference($key, $cf);
             $manager->persist($cf);
         }
         $manager->flush();
-    }
-
-    /**
-     * Get the order of this fixture
-     *
-     * @return integer
-     */
-    public function getOrder()
-    {
-        return 106;
     }
 }

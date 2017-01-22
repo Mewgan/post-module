@@ -3,13 +3,10 @@
 namespace Jet\Modules\Post\Fixtures;
 
 use Doctrine\Common\DataFixtures\AbstractFixture;
-use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
-use Jet\Models\Website;
-use Jet\Modules\Post\Models\Post;
 use Jet\Modules\Post\Models\PostCategory;
 
-class LoadPostCategory extends AbstractFixture implements OrderedFixtureInterface
+class LoadPostCategory extends AbstractFixture
 {
     protected $data = [
         [
@@ -36,13 +33,4 @@ class LoadPostCategory extends AbstractFixture implements OrderedFixtureInterfac
         $manager->flush();
     }
 
-    /**
-     * Get the order of this fixture
-     *
-     * @return integer
-     */
-    public function getOrder()
-    {
-        return 104;
-    }
 }
