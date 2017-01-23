@@ -120,4 +120,25 @@ trait LoadPostFixture
         }
         return $new_content;
     }
+
+    /**
+     * @param $title
+     * @param $website
+     * @return mixed
+     */
+    public function getPostTypeId($title, $website){
+        $post = $this->hasReference($title) ? $this->getReference($title): Post::findOneBy(['slug' => $title, 'website' => $website]);
+        return $post->getId();
+    }
+
+    /**
+     * @param $title
+     * @param $website
+     * @return mixed
+     */
+    public function getPostCategoryTypeId($title, $website){
+        $post = $this->hasReference($title) ? $this->getReference($title): PostCategory::findOneBy(['slug' => $title, 'website' => $website]);
+        if(is_null($post)) $post = PostCategory::findOneBySlug($title);
+        return $post->getId();
+    }
 }
