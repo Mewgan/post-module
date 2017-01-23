@@ -46,7 +46,7 @@ trait LoadPostFixture
     {
         if(isset($data['data'])){
             if(isset($data['data']['db'])){
-                foreach ($data['data']['db'] as $db_item){
+                foreach ($data['data']['db'] as $index => $db_item){
                     if($db_item['type'] == 'static'){
                         $new_db_item = [];
                         if(is_array($db_item['value'])) {
@@ -60,12 +60,12 @@ trait LoadPostFixture
                                 $new_db_item[] = $cat->getId();
                             }
                         }
-                        $db_item['value'] = $new_db_item;
+                        $data['data']['db'][$index]['value'] = $new_db_item;
                     }
                 }
             }
             if(isset($data['data']['link'])){
-                foreach ($data['data']['link'] as $db_item){
+                foreach ($data['data']['link'] as $key => $db_item){
                     if($db_item['type'] == 'static'){
                         /** @var PostCategory $cat */
                         if($this->hasReference($db_item['value']))
@@ -73,8 +73,8 @@ trait LoadPostFixture
                         else
                             $item = ($db_item['alias'] == 'c')
                                 ? PostCategory::findOneBy(['slug' => $db_item['value'], 'website' => $website]) : Post::findOneBy(['slug' => $db_item['value'], 'website' => $website]);
-                        $db_item['value_id'] = $item->getId();
-                        $db_item['value'] = $item[$db_item['column']];
+                        $data['data']['link'][$key]['value_id'] = $item->getId();
+                        $data['data']['link'][$key]['value'] = $item[$db_item['column']];
                     }
                 }
             }
