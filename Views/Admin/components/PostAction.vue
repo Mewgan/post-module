@@ -78,7 +78,7 @@
                                             <input id="post-slug" class="title-input" v-model="post.slug" type="text">
                                         </div>
                                         <div class="text-default-light"><strong class="text-primary">Lien : </strong><a
-                                                :href="post.website.domain + route" target="_blank">{{post.website.domain}}{{route}}</a>
+                                                :href="website.url + route" target="_blank">{{website.url}}{{route}}</a>
                                         </div>
                                     </div>
                                 </div><!--end .col -->
@@ -267,7 +267,7 @@
                         <h4 class="modal-title" id="previewPageModalLabel">Prévisualisation</h4>
                     </div>
                     <div class="modal-body">
-                        <iframe v-if="preview" width="100%" height="500" :src="post_url"></iframe>
+                        <iframe v-if="preview" width="100%" height="500" :src="website.url + route"></iframe>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
@@ -335,12 +335,6 @@
             ...mapGetters([
                 'website','auth', 'system'
             ]),
-            post_url(){
-                if (this.preview == true && this.post_id != 'create' && 'domain' in this.website) {
-                    return (this.website.domain.substring(0, 4) == 'http') ? this.website.domain + this.route : this.system.domain + '/site/' + this.website.domain + this.route;
-                }
-                return '';
-            },
             custom_fields_params () {
                 return {
                     everywhere: '',

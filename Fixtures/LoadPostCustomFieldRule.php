@@ -6,7 +6,7 @@ use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Jet\Models\CustomFieldRule;
 
-class LoadCustomFieldRule extends AbstractFixture
+class LoadPostCustomFieldRule extends AbstractFixture
 {
     protected $data = [
         'post_rule' => [
@@ -28,9 +28,8 @@ class LoadCustomFieldRule extends AbstractFixture
     public function load(ObjectManager $manager)
     {
         foreach($this->data as $key => $data) {
-            $cf = (CustomFieldRule::where('name',$data['name'])->count() == 0)
-                ? new CustomFieldRule()
-                : CustomFieldRule::findOneByName($data['name']);
+            $cf = (CustomFieldRule::where('name', $data['name'])->count() == 0)
+                ? new CustomFieldRule() : CustomFieldRule::findOneByName($data['name']);
             $cf->setTitle($data['title']);
             $cf->setName($data['name']);
             $cf->setCallback($data['callback']);

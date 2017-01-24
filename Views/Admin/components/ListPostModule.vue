@@ -92,7 +92,7 @@
                             </div><!--end .card-head -->
                             <div class="card-body tab-content">
                                 <div :class="[classDbStatic(i), 'tab-pane']" :id="'db_static'+i">
-                                    <select2 @updateValue="updateDbValue" :updateParams="{key: i}"
+                                    <select2 v-if="getValues(db.alias) instanceof Array && getValues(db.alias).length > 0" @updateValue="updateDbValue" :updateParams="{key: i}"
                                              :contents="getValues(db.alias)" :id="'db-value-' + line + '-' + i" val_index="id" index="name" label="Valeur"
                                              :val="db.value"></select2>
                                 </div>

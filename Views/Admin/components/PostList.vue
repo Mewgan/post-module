@@ -20,7 +20,9 @@
     .list-post .list-results .post-box {
         padding: 20px 10px;
     }
-
+    .list-post a.pointer{
+        cursor: pointer;
+    }
     .list-post .post-icon {
         padding: 0 10px;
         display: inline-block;
@@ -91,8 +93,8 @@
                     <li class="post-category post-all active"><a @click="refresh(resource.name);addClass('all')">Tous les
                         articles</a></li>
                     <li :class="'post-category post-' + category.slug" v-for="category in categories">
-                        <a @click="setParams({resource:resource.name, key: 'filter', value: {column:'c.id',operator:'eq',value:category.id}});addClass(category.slug)">
-                            <i :title="getIconTitle('Cette catégorie',category.website.id)" :class="'category-icon ' + getIconClass(category.website.id)"></i>
+                        <a class="pointer" @click="setParams({resource:resource.name, key: 'filter', value: {column:'c.id',operator:'eq',value:category.id}});addClass(category.slug)">
+                            <i :title="getIconTitle('Cette catégorie',category.website)" :class="'category-icon ' + getIconClass(category.website)"></i>
                             <span class="category-title">{{category.name}}</span>
                         </a>
                         <span @click="selectCategory(category)" data-toggle="modal" data-target="#editPostCategoryModal" class="pull-right clearfix edit-category"><i class="fa fa-pencil"></i></span>
@@ -173,8 +175,8 @@
                                                        class="btn ink-reaction btn-floating-action btn-warning"><i
                                                             class="fa fa-times"></i></a>
                                                 </span>
-                                                <span class="post-icon"><i :title="getIconTitle('Cet article',post.website.id)"
-                                                                           :class="getIconClass(post.website.id)"></i> </span>
+                                                <span class="post-icon"><i :title="getIconTitle('Cet article', post.website)"
+                                                                           :class="getIconClass(post.website)"></i> </span>
                                             </div>
                                             <br/>
                                         </div>
@@ -326,10 +328,10 @@
                 $('.post-' + slug).addClass('active');
             },
             getIconClass (website) {
-                return (this.website_id == website) ? 'fa fa-laptop' : 'fa fa-sitemap';
+                return (website != null && 'id' in website && this.website_id == website.id) ? 'fa fa-laptop' : 'fa fa-sitemap';
             },
-            getIconTitle (content,website) {
-                return (this.website_id == website) ? content + ' vient du site' : content + ' vient du thème parent';
+            getIconTitle (content, website) {
+                return (website != null && 'id' in website && this.website_id == website.id) ? content + ' vient du site' : content + ' vient du thème parent';
             },
             selectPost (post){
                 this.selected_items = [post.id];

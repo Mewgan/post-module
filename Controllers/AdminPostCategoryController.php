@@ -168,7 +168,7 @@ class AdminPostCategoryController extends AdminController
     public function listNames($website)
     {
         if (!$this->getWebsite($website)) return ['status' => 'error', 'Impossible de trouver le site web'];
-        return ['resource' => PostCategory::repo()->getPostCategoryRules($this->websites, $this->website->getData(), 'partial c.{id,name}')];
+        return ['resource' => PostCategory::repo()->getPostCategoryRules($this->websites, $this->website->getData())];
     }
 
     /**
