@@ -24,7 +24,7 @@ class LoadPostRoute extends AbstractFixture
             'url' => '/articles/:slug',
             'name' => 'module:post.type:dynamic.action:all',
             'method' => ['GET'],
-            'argument' => ['slug' => '([a-z-_]+)'],
+            'argument' => ['slug' => '([a-zA-Z0-9-_]+)'],
             'middleware' => null,
             'subdomain' => null,
         ],
@@ -32,7 +32,7 @@ class LoadPostRoute extends AbstractFixture
             'url' => '/article/:slug',
             'name' => 'module:post.type:dynamic.action:read',
             'method' => ['GET'],
-            'argument' => ['slug' => '([a-z-_]+)'],
+            'argument' => ['slug' => '([a-zA-Z0-9-_]+)'],
             'middleware' => null,
             'subdomain' => null,
         ]

@@ -2,6 +2,7 @@
 
 namespace Jet\Modules\Post\Controllers;
 
+use Cocur\Slugify\Slugify;
 use Jet\Services\Auth;
 use Jet\AdminBlock\Controllers\AdminController;
 use Jet\Models\Account;
@@ -55,12 +56,12 @@ class AdminPostCategoryController extends AdminController
      * @param $website
      * @return array
      */
-    public function create(Request $request, $website)
+    public function create(Request $request, Slugify $slugify, $website)
     {
         if ($request->method() == 'POST') {
             $category = $request->request->get('name');
             if (PostCategory::where('name', $category)->where('website', $website)->count() == 0) {
-                if (PostCategory::create(['name' => $category, 'slug' => slugify($category), 'website' => Website::findOneById($website)]))
+                if (PostCategory::create(['name' => $category, 'slug' => $slugify->slugify($category), 'website' => Website::findOneById($website)]))
                     return ['status' => 'success', 'message' => 'La catégorie a bien été créée'];
                 return ['status' => 'error', 'message' => 'La catégorie n\'a pas été créée'];
             }
@@ -75,7 +76,7 @@ class AdminPostCategoryController extends AdminController
      * @param $website
      * @return array
      */
-    public function update(Request $request, $id, $website)
+    public function update(Request $request, Slugify $slugify, $id, $website)
     {
         if ($request->method() == 'PUT') {
             $category = $request->request->get('name');
@@ -89,14 +90,14 @@ class AdminPostCategoryController extends AdminController
                 if ($post_category->getWebsite()->getId() != $website) {
                     $new_category = new PostCategory();
                     $new_category->setName($category);
-                    $new_category->setSlug(slugify($category));
+                    $new_category->setSlug($slugify->slugify($category));
                     $new_category->setWebsite($post_category_website);
                     $new_category->setPosts($post_category->getPosts());
                     if (!PostCategory::watchAndSave($new_category))
                         return ['status' => 'error', 'message' => 'La catégorie n\'a pas été mis à jour'];
                     if (!isset($post_categories_exclude[$id])) $post_categories_exclude[] = $id;
                 } else
-                    if (!PostCategory::where('id', $id)->set(['name' => $category, 'slug' => slugify($category)]))
+                    if (!PostCategory::where('id', $id)->set(['name' => $category, 'slug' => $slugify->slugify($category)]))
                         return ['status' => 'error', 'message' => 'La catégorie n\'a pas été mis à jour'];
             }
             $data['parent_exclude']['post_categories'] = $post_categories_exclude;

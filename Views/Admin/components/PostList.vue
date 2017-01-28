@@ -12,11 +12,9 @@
     .list-post .section-body {
         margin-top: 10px;;
     }
-
     .list-post .checkbox {
         float: left;
     }
-
     .list-post .list-results .post-box {
         padding: 20px 10px;
     }
@@ -48,6 +46,10 @@
     }
     .list-post .category-title{
         padding-right:20px;
+    }
+    .list-post .post-change-state{
+        float: left;
+        margin: 10px 20px;
     }
 </style>
 
@@ -162,19 +164,21 @@
                                         <div>
                                             <router-link :to="{name: 'module:post:action', params:{website_id: website_id, post_id: post.id}}" class="text-medium text-lg text-primary">{{post.title}}</router-link>
                                             <div class="pull-right">
+                                                <div class="post-change-state" v-if="post.website.id == website_id">
+                                                    <div class="switch">
+                                                        <label>
+                                                            Brouillon
+                                                            <input @click="changeState(post)" :checked="post.published" type="checkbox">
+                                                            <span class="lever"></span>
+                                                            Publié
+                                                        </label>
+                                                    </div>
+                                                </div>
                                                 <router-link :to="{name: 'module:post:action', params:{website_id: website_id, post_id: post.id}}" class="btn ink-reaction btn-floating-action btn-info"><i
                                                         class="fa fa-pencil"></i></router-link>
                                                 <a @click="selectPost(post)" data-toggle="modal" data-target="#deletePostModal"
                                                    class="btn ink-reaction btn-floating-action btn-danger"><i
                                                         class="fa fa-trash"></i></a>
-                                                <span v-if="post.website.id == website_id">
-                                                    <a @click="changeState(post)" title="Cet article est publié" v-show="post.published"
-                                                       class="btn ink-reaction btn-floating-action btn-success"><i
-                                                            class="fa fa-check"></i></a>
-                                                    <a @click="changeState(post)" title="Cet article n'est pas publié" v-show="!post.published"
-                                                       class="btn ink-reaction btn-floating-action btn-warning"><i
-                                                            class="fa fa-times"></i></a>
-                                                </span>
                                                 <span class="post-icon"><i :title="getIconTitle('Cet article', post.website)"
                                                                            :class="getIconClass(post.website)"></i> </span>
                                             </div>

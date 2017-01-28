@@ -2,6 +2,7 @@
 
 namespace Jet\Modules\Post\Controllers;
 
+use Cocur\Slugify\Slugify;
 use Jet\Models\Media;
 use Jet\Modules\Post\Requests\PostRequest;
 use Jet\Services\Auth;
@@ -71,11 +72,12 @@ class AdminPostController extends AdminController
 
     /**
      * @param PostRequest $request
+     * @param Slugify $slugify
      * @param $website
      * @param $id
      * @return array|bool
      */
-    public function updateOrCreate(PostRequest $request, $website, $id)
+    public function updateOrCreate(PostRequest $request, Slugify $slugify, $website, $id)
     {
         if ($request->method() == 'PUT' || $request->method() == 'POST') {
             $response = $request->validate();
@@ -98,7 +100,8 @@ class AdminPostController extends AdminController
 
                     $post->setWebsite($website);
                     $post->setTitle($value->get('title'));
-                    ($value->has('slug') && !empty($value->get('slug'))) ? $post->setSlug($value->get('slug')) : $post->setSlug(slugify($value->get('title')));
+                    ($value->has('slug') && !empty($value->get('slug')))
+                        ? $post->setSlug($value->get('slug')) : $post->setSlug($slugify->slugify($value->get('title')));
                     $post->setDescription($value->get('description'));
                     $post->setContent($value->get('content'));
                     ($value->has('published') && $value->get('published') == 'true') ? $post->setPublished(1) : $post->setPublished(0);
