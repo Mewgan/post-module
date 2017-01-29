@@ -190,7 +190,16 @@ class Post extends Model implements \JsonSerializable
      */
     public function addPostCategory(PostCategory $category)
     {
-        $this->categories[] = $category;
+        if (!$this->categories->contains($category)) $this->categories[] = $category;
+    }
+
+    /**
+     * @param PostCategory $category
+     */
+    public function removePostCategory(PostCategory $category)
+    {
+        if ($this->categories->contains($category)) $this->categories->removeElement($category);
+
     }
 
     /**

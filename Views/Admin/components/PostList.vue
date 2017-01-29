@@ -359,9 +359,8 @@
                                 });
                             });
                         this.selected_items = [];
-                        this.refresh_items = true;
+                        this.refresh_items = !this.refresh_items;
                     });
-                    this.refresh_items = false;
                 }
             },
             changeState (post) {
@@ -380,9 +379,8 @@
                             key: 'published',
                             value: state
                         });
-                    this.refresh_items = true;
+                    this.refresh_items = !this.refresh_items;
                 });
-                this.refresh_items = false;
             },
             deletePost () {
                 if (this.selected_items.length > 0) {
@@ -413,6 +411,9 @@
                     this.update({
                         api: post_category_api.update + this.category.id + '/' + this.website_id,
                         value: {name: this.category.name}
+                    }).then(() => {
+                        this.loadCategory();
+                        this.refresh_items = !this.refresh_items;
                     });
                 }
             },

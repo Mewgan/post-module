@@ -3,9 +3,9 @@
 namespace Jet\Modules\Post\Controllers;
 
 use Cocur\Slugify\Slugify;
+use Jet\Modules\Post\Models\Post;
 use Jet\Services\Auth;
 use Jet\AdminBlock\Controllers\AdminController;
-use Jet\Models\Account;
 use Jet\Models\Website;
 use Jet\Modules\Post\Models\PostCategory;
 use JetFire\Framework\System\Request;
@@ -53,12 +53,18 @@ class AdminPostCategoryController extends AdminController
 
     /**
      * @param Request $request
+     * @param Auth $auth
+     * @param Slugify $slugify
      * @param $website
      * @return array
      */
-    public function create(Request $request, Slugify $slugify, $website)
+    public function create(Request $request, Auth $auth, Slugify $slugify, $website)
     {
         if ($request->method() == 'POST') {
+
+            if(!$this->isWebsiteOwner($auth, $website))
+                return ['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour mettre à jour une catégorie'];
+
             $category = $request->request->get('name');
             if (PostCategory::where('name', $category)->where('website', $website)->count() == 0) {
                 if (PostCategory::create(['name' => $category, 'slug' => $slugify->slugify($category), 'website' => Website::findOneById($website)]))
@@ -72,43 +78,102 @@ class AdminPostCategoryController extends AdminController
 
     /**
      * @param Request $request
+     * @param Auth $auth
+     * @param Slugify $slugify
      * @param $id
      * @param $website
      * @return array
      */
-    public function update(Request $request, Slugify $slugify, $id, $website)
+    public function update(Request $request, Auth $auth, Slugify $slugify, $id, $website)
     {
         if ($request->method() == 'PUT') {
-            $category = $request->request->get('name');
-            if (PostCategory::where('name', $category)->where('website', $website)->count() > 1) {
+
+            if(!$this->isWebsiteOwner($auth, $website))
+                return ['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour mettre à jour une catégorie'];
+
+            $name = $request->get('name');
+            $replace = false;
+            if (PostCategory::where('name', $name)->where('website', $website)->count() > 0) {
                 return ['status' => 'error', 'message' => 'La catégorie existe déjà'];
             } else {
-                $post_category_website = Website::findOneById($website);
-                $data = $post_category_website->getData();
-                $post_categories_exclude = (isset($data['parent_exclude']['post_categories'])) ? $data['parent_exclude']['post_categories'] : [];
-                $post_category = PostCategory::findOneById($id);
-                if ($post_category->getWebsite()->getId() != $website) {
-                    $new_category = new PostCategory();
-                    $new_category->setName($category);
-                    $new_category->setSlug($slugify->slugify($category));
-                    $new_category->setWebsite($post_category_website);
-                    $new_category->setPosts($post_category->getPosts());
-                    if (!PostCategory::watchAndSave($new_category))
-                        return ['status' => 'error', 'message' => 'La catégorie n\'a pas été mis à jour'];
-                    if (!isset($post_categories_exclude[$id])) $post_categories_exclude[] = $id;
-                } else
-                    if (!PostCategory::where('id', $id)->set(['name' => $category, 'slug' => $slugify->slugify($category)]))
-                        return ['status' => 'error', 'message' => 'La catégorie n\'a pas été mis à jour'];
+
+                /** @var PostCategory $category */
+                $category = PostCategory::findOneById($id);
+                if (is_null($category)) return ['status' => 'error', 'message' => 'Impossible de trouver la catégorie'];
+
+                $old_category = $category;
+
+                /** @var Website $website */
+                $website = Website::findOneById($website);
+                if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
+
+                if (is_null($category->getWebsite()) || $category->getWebsite()->getId() != $website) {
+                    $data = $this->excludeData($website->getData(), 'post_categories', $category->getId());
+                    $website->setData($data);
+                    Website::watch($website);
+
+                    $category = new PostCategory();
+                    $replace = true;
+                }
+
+                $category->setName($name);
+                $category->setSlug($slugify->slugify($name));
+                $category->setWebsite($website);
             }
-            $data['parent_exclude']['post_categories'] = $post_categories_exclude;
-            $post_category_website->setData($data);
-            if(Website::watchAndSave($post_category_website)){
-                $this->app->emit('updatePostCategory', ['post_category' => $post_category->getId()]);
+
+            if(PostCategory::watchAndSave($category)){
+                $this->app->emit('updatePostCategory', ['old_post_category' => $old_category->getId(), 'post_category' => $category->getId(), 'website' => $website->getId()]);
+                if($replace){
+                    $this->createPosts($old_category, $category, $website);
+                    $website = $category->getWebsite();
+                    $data = $this->replaceData($website->getData(), 'post_categories', $id, $category->getId());
+                    $website->setData($data);
+                    Website::watchAndSave($website);
+                }
                 return ['status' => 'success', 'message' => 'La catégorie a bien été mis à jour'];
             }else
                 return ['status' => 'error', 'message' => 'Erreur lors de la mise à jour'];
         }
         return ['status' => 'error', 'message' => 'Requête non autorisée'];
+    }
+
+    /**
+     * @param PostCategory $old_category
+     * @param PostCategory $category
+     * @param Website $website
+     */
+    private function createPosts(PostCategory $old_category, PostCategory $category, Website $website){
+        $data = $website->getData();
+        $this->getWebsite($website);
+        $posts = $old_category->getPosts();
+        foreach ($posts as $post){
+            if(in_array($post->getWebsite()->getId(), $this->websites)) {
+                /** @var Post $post */
+                if ($post->getWebsite() != $website) {
+                    /** @var Post $new_post */
+                    $new_post = new Post;
+                    $new_post->setTitle($post->getTitle());
+                    $new_post->setSlug($post->getSlug());
+                    $new_post->setThumbnail($post->getThumbnail());
+                    $new_post->setDescription($post->getDescription());
+                    $new_post->setContent($post->getContent());
+                    $new_post->removePostCategory($old_category);
+                    $new_post->addPostCategory($category);
+                    $new_post->setWebsite($website);
+                    if (Post::watchAndSave($new_post)) $this->app->emit('updatePost', ['old_post' => $post->getId(),'post' => $new_post->getId(), 'website' => $website->getId()]);
+
+                    $data = $this->excludeData($data, 'posts', $post->getId());
+                    $data = $this->replaceData($data, 'posts', $post->getId(), $new_post->getId());
+                } else {
+                    $post->removePostCategory($old_category);
+                    $post->addPostCategory($category);
+                    Post::watch($post);
+                    $this->app->emit('updatePost', ['post' => $post->getId(), 'website' => $website->getId()]);
+                }
+            }
+        }
+        $website->setData($data);
+        Website::watch($website);
     }
 
 
@@ -124,20 +189,20 @@ class AdminPostCategoryController extends AdminController
 
             /** @var Website $website */
             $website = Website::findOneById($website);
-            $data = $website->getData();
-            $data['parent_exclude']['post_categories'] = (isset($data['parent_exclude']['post_categories']))
-                ? $data['parent_exclude']['post_categories']
-                : [];
-
+            if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
+            
             if(!$this->isWebsiteOwner($auth, $website->getId()))
                 return ['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour supprimer ces catégories'];
 
+            $data = $website->getData();
+           
             $categories = PostCategory::repo()->findById($request->get('ids'));
             $ids = [];
 
             foreach ($categories as $category) {
+                $data = $this->removeData($data, 'post_categories', $category['id']);
                 if ($category['website']['id'] != $website->getId()) {
-                    if (!in_array($category['id'], $data['parent_exclude']['post_categories'])) $data['parent_exclude']['post_categories'][] = $category['id'];
+                    $data = $this->excludeData($data, 'post_categories', $category['id']);
                 } else
                     $ids[] = $category['id'];
             }

@@ -53,14 +53,18 @@ class AdminPostController extends AdminController
     }
 
     /**
+     * @param Auth $auth
      * @param $website
      * @param $id
      * @return array
      */
-    public function read($website, $id)
+    public function read(Auth $auth, $website, $id)
     {
 
         if(!$this->getWebsite($website)) return ['status' => 'error', 'Site non trouvé'];
+
+        if(!$this->isWebsiteOwner($auth, $website))
+            return ['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour supprimer ces catégories'];
 
         $route = Route::repo()->getRouteByName('module:post.type:dynamic.action:read', $this->websites, $this->website->getData());
         $post = Post::repo()->readAdmin($id);
@@ -72,12 +76,13 @@ class AdminPostController extends AdminController
 
     /**
      * @param PostRequest $request
+     * @param Auth $auth
      * @param Slugify $slugify
      * @param $website
      * @param $id
      * @return array|bool
      */
-    public function updateOrCreate(PostRequest $request, Slugify $slugify, $website, $id)
+    public function updateOrCreate(PostRequest $request, Auth $auth, Slugify $slugify, $website, $id)
     {
         if ($request->method() == 'PUT' || $request->method() == 'POST') {
             $response = $request->validate();
@@ -88,6 +93,9 @@ class AdminPostController extends AdminController
 
                     $website = Website::findOneById($website);
                     if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
+
+                    if(!$this->isWebsiteOwner($auth, $website->getId()))
+                        return ['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour supprimer ces catégories'];
 
                     $value = $request->getPost();
                     if ($post->getWebsite() != $website && $id != 'create') {
@@ -119,13 +127,14 @@ class AdminPostController extends AdminController
                     }
 
                     if (Post::watchAndSave($post)){
-                        $this->app->emit('updatePost', [$post->getId()]);
                         if($replace && $id != 'create'){
+                            $this->app->emit('updatePost', ['old_post' => $id, 'post' => $post->getId(), 'website' => $website->getId()]);
                             $website = $post->getWebsite();
                             $data = $this->replaceData($website->getData(), 'posts', $id, $post->getId());
                             $website->setData($data);
                             Website::watchAndSave($website);
-                        }
+                        }else
+                            $this->app->emit('updatePost', ['post' => $post->getId(), 'website' => $website->getId()]);
                         return ['status' => 'success', 'message' => 'L\'article a bien été mis à jour', 'resource' => $post];
                     }
                     return ['status' => 'error', 'message' => 'Erreur lors de la mise à jour'];
@@ -149,18 +158,19 @@ class AdminPostController extends AdminController
 
             $website = Website::findOneById($website);
             if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
-
-            $data = $website->getData();
-
+            
             if(!$this->isWebsiteOwner($auth, $website->getId()))
                 return ['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour supprimer ces catégories'];
+
+            $data = $website->getData();
 
             $posts = Post::repo()->findById($request->get('ids'));
             $ids = [];
 
             foreach ($posts as $post) {
+                $data = $this->removeData($data, 'posts', $post['id']);
                 if ($post['website']['id'] != $website->getId())
-                    $this->excludeData($data, 'posts', $post['id']);
+                    $data = $this->excludeData($data, 'posts', $post['id']);
                 else
                     $ids[] = $post['id'];
             }
@@ -177,35 +187,44 @@ class AdminPostController extends AdminController
 
     /**
      * @param PostRequest $request
+     * @param Auth $auth
      * @param $website
      * @return array
      */
-    public function changeState(PostRequest $request, $website)
+    public function changeState(PostRequest $request, Auth $auth, $website)
     {
         if ($request->method() == 'PUT' && $request->exists(['ids', 'state'])) {
-            $post_website = Website::findOneById($website);
-            $data = $post_website->getData();
+            $website = Website::findOneById($website);
+            $state = $request->get('state');
+
+            if(is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site'];
+
+            if(!$this->isWebsiteOwner($auth, $website->getId()))
+                return ['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour supprimer ces catégories'];
+
+            $data = $website->getData();
             foreach ($request->get('ids') as $id) {
                 $post = Post::findOneById($id);
-                if ($post->getWebsite()->getId() != $website) {
-                    $new_post = new Post();
-                    $new_post->setTitle($post->getTitle());
-                    $new_post->setSlug($post->getSlug());
-                    $new_post->setDescription($post->getDescription());
-                    $new_post->setContent($post->getContent());
-                    $new_post->setPublished($request->get('state'));
-                    $new_post->setWebsite($post_website);
-                    $new_post->setThumbnail($post->getThumbnail());
-                    $new_post->setPostCategories($post->getPostCategories());
-                    Post::watchAndSave($new_post);
+                if(is_null($post)) return ['status' => 'error', 'message' => 'Impossible de trouver l\'article aves l\'identifiant : '. $id];
+                if (is_null($post->getWebsite()) || $post->getWebsite() != $website) {
+                    $post = new Post();
+                    $post->setTitle($post->getTitle());
+                    $post->setSlug($post->getSlug());
+                    $post->setDescription($post->getDescription());
+                    $post->setContent($post->getContent());
+                    $post->setWebsite($website);
+                    $post->setThumbnail($post->getThumbnail());
+                    $post->setPostCategories($post->getPostCategories());
                     $data = $this->excludeData($data, 'posts', $post->getId());
-                    $data = $this->replaceData($data, 'posts', $post->getId(), $new_post->getId());
-                } else
-                    Post::where('id', $id)->set(['published' => $request->get('state')]);
+                    $data = $this->replaceData($data, 'posts', $id, $post->getId());
+                }
+                $post->setPublished($state);
+                Post::watch($post);
             }
-            $post_website->setData($data);
-            Website::watchAndSave($post_website);
-            return ['status' => 'success', 'message' => 'Le(s) article(s) ont bien été mis à jour'];
+            $website->setData($data);
+            return (Website::watchAndSave($website))
+                ? ['status' => 'success', 'message' => 'Le(s) article(s) ont bien été mis à jour']
+                : ['status' => 'error', 'message' => 'Erreur lors de la mise à jour'];
         }
         return ['status' => 'error', 'message' => 'Le(s) article(s) n\'ont pas pu être mis à jour'];
     }
