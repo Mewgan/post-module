@@ -122,14 +122,15 @@ class AdminPostCategoryController extends AdminController
             }
 
             if(PostCategory::watchAndSave($category)){
-                $this->app->emit('updatePostCategory', ['old_post_category' => $old_category->getId(), 'post_category' => $category->getId(), 'website' => $website->getId()]);
                 if($replace){
+                    $this->app->emit('updatePostCategory', ['old_post_category' => $old_category->getId(), 'post_category' => $category->getId(), 'website' => $website->getId()]);
                     $this->createPosts($old_category, $category, $website);
                     $website = $category->getWebsite();
                     $data = $this->replaceData($website->getData(), 'post_categories', $id, $category->getId());
                     $website->setData($data);
                     Website::watchAndSave($website);
-                }
+                }else
+                    $this->app->emit('updatePostCategory', ['post_category' => $category->getId(), 'website' => $website->getId()]);
                 return ['status' => 'success', 'message' => 'La catégorie a bien été mis à jour'];
             }else
                 return ['status' => 'error', 'message' => 'Erreur lors de la mise à jour'];
