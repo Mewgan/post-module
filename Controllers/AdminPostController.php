@@ -95,7 +95,7 @@ class AdminPostController extends AdminController
                     if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
 
                     if(!$this->isWebsiteOwner($auth, $website->getId()))
-                        return ['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour supprimer ces catégories'];
+                        return ['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour mettre à jour l\'article'];
 
                     $value = $request->getPost();
                     if ($post->getWebsite() != $website && $id != 'create') {
@@ -108,7 +108,7 @@ class AdminPostController extends AdminController
 
                     $post->setWebsite($website);
                     $post->setTitle($value->get('title'));
-                    ($value->has('slug') && !empty($value->get('slug')))
+                    ($value->has('slug') && !empty($value->get('slug')) && $auth['status']->level < 4)
                         ? $post->setSlug($value->get('slug')) : $post->setSlug($slugify->slugify($value->get('title')));
                     $post->setDescription($value->get('description'));
                     $post->setContent($value->get('content'));
