@@ -340,7 +340,7 @@
                     everywhere: '',
                     publication_type: 'post',
                     user_role: this.auth.status.id,
-                    post: this.post_id,
+                    post: ('id' in this.post) ? this.post.id :this.post_id,
                     post_category: this.post_categories
                 }
             }
@@ -381,7 +381,7 @@
                 this.post['new_categories'] = this.post_categories;
                 if (this.post_id == 'create') {
                     this.createResource({
-                        api: post_api.update_or_create + this.website_id + '/' + this.post_id,
+                        api: post_api.update_or_create + this.website_id + '/create',
                         resource: 'posts_' + this.website_id,
                         value: this.post
                     }).then((response) => {
@@ -394,8 +394,10 @@
                         resource: 'posts_' + this.website_id,
                         value: this.post
                     }).then((response) => {
-                        if (response.data.status == 'success')
+                        if (response.data.status == 'success'){
+                            if ('resource' in response.data) this.post = response.data.resource;
                             this.updateOthers(response);
+                        }
                     });
                 }
             },
@@ -406,9 +408,10 @@
                     value: {
                         custom_fields: this.custom_fields,
                         old_content_key: 'post@' + this.post_id,
-                        old_row_key: 'rows@post@' + this.post_id
+                        old_row_key: 'rows@post@' + this.post_id,
+                        params: this.custom_fields_params
                     }
-                }).then(() => {
+                }).then((field_response) => {
                     if (this.post_id != post) {
                         if (this.post_id != 'create') {
                             this.removeResource({
@@ -424,6 +427,11 @@
                             }
                         });
                     }
+                    this.post_id = ('id' in this.post) ? this.post.id : 'create';
+                    if ('resource' in field_response.data)
+                        this.custom_fields = field_response.data.resource;
+                    else if ('reload' in field_response.data)
+                        location.reload();
                 });
             },
             deletePost (){
@@ -440,7 +448,7 @@
                 }
             }
         },
-        mounted(){
+        created(){
             if (this.post_id == 'create') {
                 this.launch_tinymce = true;
                 this.loadCategory();

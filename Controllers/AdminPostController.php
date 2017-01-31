@@ -112,7 +112,9 @@ class AdminPostController extends AdminController
                         ? $post->setSlug($value->get('slug')) : $post->setSlug($slugify->slugify($value->get('title')));
                     $post->setDescription($value->get('description'));
                     $post->setContent($value->get('content'));
-                    ($value->has('published') && $value->get('published') == 'true') ? $post->setPublished(1) : $post->setPublished(0);
+
+                    ($value->has('published') && ($value->get('published') == 'true' || $value->get('published') == 1))
+                        ? $post->setPublished(1) : $post->setPublished(0);
 
                     if ($value->has('thumbnail')) {
                         if (isset($value->get('thumbnail')['id']) && !empty($value->get('thumbnail')['id'])) {
