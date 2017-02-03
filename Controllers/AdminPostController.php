@@ -91,10 +91,12 @@ class AdminPostController extends AdminController
                 $post = ($id == 'create') ? new Post() : Post::findOneById($id);
                 if (!is_null($post)) {
 
-                    $website = Website::findOneById($website);
-                    if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
+                    if($this->getWebsite($website) == false)
+                        return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
+                  /*  $website = Website::findOneById($website);
+                    if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web']; */
 
-                    if(!$this->isWebsiteOwner($auth, $website->getId()))
+                    if(!$this->isWebsiteOwner($auth, $website))
                         return ['status' => 'error', 'message' => 'Vous n\'avez pas les permissions pour mettre à jour l\'article'];
 
                     $value = $request->getPost();
@@ -102,20 +104,19 @@ class AdminPostController extends AdminController
                         ? $value->get('slug') : $slugify->slugify($value->get('title'));
 
                     /* Check for douplon */
-                    $this->getWebsite($website);
-                    $countPost = Post::repo()->countBySlug($slug, ['websites' => $this->websites, 'website_options' => $website->getData()]);
+                    $countPost = Post::repo()->countBySlug($slug, ['websites' => $this->websites, 'website_options' => $this->website->getData()]);
                     if($id == 'create' && $countPost > 0 || $id != 'create' && $countPost > 1)
                         return ['status' => 'error', 'message' => 'Un article existe déjà avec ce titre'];
 
-                    if ($post->getWebsite() != $website && $id != 'create') {
-                        $data = $this->excludeData($website->getData(), 'posts', $post->getId());
-                        $website->setData($data);
-                        Website::watch($website);
+                    if ($post->getWebsite()->getId() != $website && $id != 'create') {
+                        $data = $this->excludeData($this->website->getData(), 'posts', $post->getId());
+                        $this->website->setData($data);
+                        Website::watch($this->website);
                         $post = new Post();
                         $replace = true;
                     }
 
-                    $post->setWebsite($website);
+                    $post->setWebsite($this->website);
                     $post->setTitle($value->get('title'));
                     $post->setSlug($slug);
                     $post->setDescription($value->get('description'));
@@ -137,14 +138,13 @@ class AdminPostController extends AdminController
                     }
 
                     if (Post::watchAndSave($post)){
+                        $this->app->emit('updatePost', ['old_post' => $id, 'post' => $post->getId(), 'website' => $this->website->getId()]);
                         if($replace && $id != 'create'){
-                            $this->app->emit('updatePost', ['old_post' => $id, 'post' => $post->getId(), 'website' => $website->getId()]);
                             $website = $post->getWebsite();
                             $data = $this->replaceData($website->getData(), 'posts', $id, $post->getId());
                             $website->setData($data);
                             Website::watchAndSave($website);
-                        }else
-                            $this->app->emit('updatePost', ['post' => $post->getId(), 'website' => $website->getId()]);
+                        }
                         return ['status' => 'success', 'message' => 'L\'article a bien été mis à jour', 'resource' => $post];
                     }
                     return ['status' => 'error', 'message' => 'Erreur lors de la mise à jour'];
