@@ -95,9 +95,18 @@ class AdminPostController extends AdminController
                     if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
 
                     if(!$this->isWebsiteOwner($auth, $website->getId()))
-                        return ['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour mettre à jour l\'article'];
+                        return ['status' => 'error', 'message' => 'Vous n\'avez pas les permissions pour mettre à jour l\'article'];
 
                     $value = $request->getPost();
+                    $slug = ($value->has('slug') && !empty($value->get('slug')) && $auth->get('status')->level < 4)
+                        ? $value->get('slug') : $slugify->slugify($value->get('title'));
+
+                    /* Check for douplon */
+                    $this->getWebsite($website);
+                    $countPost = Post::repo()->countBySlug($slug, ['websites' => $this->websites, 'website_options' => $website->getData()]);
+                    if($id == 'create' && $countPost > 0 || $id != 'create' && $countPost > 1)
+                        return ['status' => 'error', 'message' => 'Un article existe déjà avec ce titre'];
+
                     if ($post->getWebsite() != $website && $id != 'create') {
                         $data = $this->excludeData($website->getData(), 'posts', $post->getId());
                         $website->setData($data);
@@ -108,8 +117,7 @@ class AdminPostController extends AdminController
 
                     $post->setWebsite($website);
                     $post->setTitle($value->get('title'));
-                    ($value->has('slug') && !empty($value->get('slug')) && $auth['status']->level < 4)
-                        ? $post->setSlug($value->get('slug')) : $post->setSlug($slugify->slugify($value->get('title')));
+                    $post->setSlug($slug);
                     $post->setDescription($value->get('description'));
                     $post->setContent($value->get('content'));
 

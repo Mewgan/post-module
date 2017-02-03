@@ -78,7 +78,7 @@
                                             <input id="post-slug" class="title-input" v-model="post.slug" type="text">
                                         </div>
                                         <div class="text-default-light"><strong class="text-primary">Lien : </strong><a
-                                                :href="website.url + route" target="_blank">{{website.url}}{{route}}</a>
+                                                :href="website.url + post_url" target="_blank">{{website.url}}{{post_url}}</a>
                                         </div>
                                     </div>
                                 </div><!--end .col -->
@@ -267,7 +267,7 @@
                         <h4 class="modal-title" id="previewPageModalLabel">Prévisualisation</h4>
                     </div>
                     <div class="modal-body">
-                        <iframe v-if="preview" width="100%" height="500" :src="website.url + route"></iframe>
+                        <iframe v-if="preview" width="100%" height="500" :src="website.url + post_url"></iframe>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
@@ -321,6 +321,7 @@
                 categories: {},
                 new_category: '',
                 route: '',
+                post_url: '',
                 file_type: ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'],
                 max_media: 24,
                 max_media_options: [24, 48, 96],
@@ -347,7 +348,7 @@
         },
         methods: {
             ...mapActions([
-                'create', 'read', 'update', 'destroy', 'createResource', 'updateResource', 'updateResourceValue', 'removeResource', 'deleteResources'
+                'create', 'read', 'update', 'destroy', 'createResource', 'updateResource', 'updateResourceValue', 'removeResource', 'removePagination', 'deleteResources'
             ]),
             updateContent (content) {
                 this.post.content = content;
@@ -395,7 +396,10 @@
                         value: this.post
                     }).then((response) => {
                         if (response.data.status == 'success'){
-                            if ('resource' in response.data) this.post = response.data.resource;
+                            if ('resource' in response.data) {
+                                this.post = response.data.resource;
+                                this.generateUrl();
+                            }
                             this.updateOthers(response);
                         }
                     });
@@ -412,6 +416,7 @@
                         params: this.custom_fields_params
                     }
                 }).then((field_response) => {
+                    this.removePagination('custom_fields_' + this.website_id);
                     if (this.post_id != post) {
                         if (this.post_id != 'create') {
                             this.removeResource({
@@ -446,9 +451,18 @@
                         }
                     });
                 }
+            },
+            generateUrl(){
+                let regex = {':slug': this.post.slug, ':id': this.post.id};
+                this.post_url = this.route.url;
+                for (let index in regex) {
+                    if (regex.hasOwnProperty(index)) {
+                        this.post_url = this.post_url.replace(index, regex[index]);
+                    }
+                }
             }
         },
-        created(){
+        mounted(){
             if (this.post_id == 'create') {
                 this.launch_tinymce = true;
                 this.loadCategory();
@@ -464,14 +478,9 @@
                     if (response.data.status == 'success') {
                         this.post = response.data.resource;
                         this.launch_tinymce = true;
-                        if (response.data.route != '') {
-                            let regex = {':slug': this.post.slug, ':id': this.post.id};
-                            this.route = response.data.route.url;
-                            for (let index in regex) {
-                                if (regex.hasOwnProperty(index)) {
-                                    this.route = this.route.replace(index, regex[index]);
-                                }
-                            }
+                        if ('route' in response.data && response.data.route != '') {
+                            this.route = response.data.route;
+                            this.generateUrl();
                         }
                     }
 

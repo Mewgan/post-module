@@ -119,6 +119,25 @@ class PostRepository extends EntityRepository
     }
 
     /**
+     * @param $slug
+     * @param $params
+     * @return int
+     */
+    public function countBySlug($slug, $params){
+        $query = Post::queryBuilder()
+            ->select('COUNT(p)')
+            ->from('Jet\Modules\Post\Models\Post', 'p')
+            ->leftJoin('p.website','w');
+
+        $query->where($query->expr()->eq('p.slug',':slug'))
+            ->setParameter('slug', $slug);
+
+        $query = $this->getRequiredParams($query, $params);
+
+        return (int)$query->getQuery()->getSingleScalarResult();
+    }
+
+    /**
      * @param $id
      * @return mixed
      */

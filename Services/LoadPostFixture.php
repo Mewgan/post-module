@@ -94,10 +94,9 @@ trait LoadPostFixture
             $new_content['data']['categories'] = $this->getCustomFieldPostCategories($new_content['data']['categories'], $website);
         foreach ($data['content'] as $key => $item) {
             if (is_array($item)) {
-                foreach ($item as $post) {
-                    $post = ($this->hasReference($post)) ? $this->getReference($post) : Post::findOneBy(['slug' => $post, 'website' => $website]);
-                    $new_content['content'][$key][] = $post->getId();
-                }
+                $content = [];
+                $this->recursiveSetPost($item, $content, $website);
+                $new_content['content'][$key] = $content;
             } else {
                 $post = ($this->hasReference($item)) ? $this->getReference($item) : Post::findOneBy(['slug' => $item, 'website' => $website]);
                 $new_content['content'][$key] = $post->getId();
@@ -106,6 +105,22 @@ trait LoadPostFixture
         return $new_content;
     }
 
+    /**
+     * @param $items
+     * @param array $content
+     * @param $website
+     */
+    private function recursiveSetPost($items, &$content = [], $website){
+        foreach ($items as $index => $post) {
+            if(is_array($post)){
+                $content[$index] = [];
+                $this->recursiveSetPost($post, $content[$index], $website);
+            } else {
+                $post = ($this->hasReference($post)) ? $this->getReference($post) : Post::findOneBy(['slug' => $post, 'website' => $website]);
+                $content[] = $post->getId();
+            }
+        }
+    }
     /**
      * @param $data
      * @param $website
