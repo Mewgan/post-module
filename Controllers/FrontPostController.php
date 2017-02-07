@@ -79,7 +79,7 @@ class FrontPostController extends MainController
         $data['params'] = (View::hasData('data') && isset(View::getData('data')['route_params'])) ? View::getData('data')['route_params'] : [];
         $data['published'] = true;
         if (empty($this->websites)) {
-            $this->websites[] = $website;
+            $this->websites[] = $website->getId();
             $this->getThemeWebsites($website);
         }
         $data['websites'] = $this->websites;

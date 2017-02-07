@@ -93,8 +93,6 @@ class AdminPostController extends AdminController
 
                     if($this->getWebsite($website) == false)
                         return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
-                  /*  $website = Website::findOneById($website);
-                    if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web']; */
 
                     if(!$this->isWebsiteOwner($auth, $website))
                         return ['status' => 'error', 'message' => 'Vous n\'avez pas les permissions pour mettre à jour l\'article'];
@@ -138,7 +136,7 @@ class AdminPostController extends AdminController
                     }
 
                     if (Post::watchAndSave($post)){
-                        $this->app->emit('updatePost', ['old_post' => $id, 'post' => $post->getId(), 'website' => $this->website->getId()]);
+                        //$this->app->emit('updatePost', ['old_post' => $id, 'post' => $post->getId(), 'website' => $this->website->getId()]);
                         if($replace && $id != 'create'){
                             $website = $post->getWebsite();
                             $data = $this->replaceData($website->getData(), 'posts', $id, $post->getId());
@@ -154,6 +152,16 @@ class AdminPostController extends AdminController
             return $response;
         }
         return ['status' => 'error', 'message' => 'Requête non autorisée'];
+    }
+
+    /**
+     * @param $old_post
+     * @param $post
+     * @param $website
+     */
+    public function emitPostEvent($old_post, $post, $website){
+        /* Emit event to listen */
+        $this->app->emit('updatePost', ['old_post' => $old_post, 'post' => $post, 'website' => $website]);
     }
 
     /**

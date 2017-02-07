@@ -5,7 +5,8 @@ export const post_api = {
     destroy: ADMIN_DOMAIN + '/module/post/delete/',
     change_state: ADMIN_DOMAIN + '/module/post/change-state/',
     list_table_values: ADMIN_DOMAIN + '/module/post/list-table-values/',
-    list_names: ADMIN_DOMAIN + '/module/post/list-names/'
+    list_names: ADMIN_DOMAIN + '/module/post/list-names/',
+    emit_post_event: ADMIN_DOMAIN + '/module/post/emit-post-event/',
 };
 
 export const post_category_api = {

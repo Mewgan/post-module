@@ -94,6 +94,9 @@
                 <ul class="card-head nav nav-tabs tabs-accent post-categories" data-toggle="tabs">
                     <li class="post-category post-all active"><a @click="refresh(resource.name);addClass('all')">Tous les
                         articles</a></li>
+                    <li class="post-category post-nothing">
+                        <a @click="setParams({resource:resource.name, key: 'filter', value: {column:'c.id', operator:'isNull'}});addClass('nothing')">Pas de catégorie</a>
+                    </li>
                     <li :class="'post-category post-' + category.slug" v-for="category in categories">
                         <a class="pointer" @click="setParams({resource:resource.name, key: 'filter', value: {column:'c.id',operator:'eq',value:category.id}});addClass(category.slug)">
                             <i :title="getIconTitle('Cette catégorie',category.website)" :class="'category-icon ' + getIconClass(category.website)"></i>

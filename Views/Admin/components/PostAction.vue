@@ -416,6 +416,7 @@
                         params: this.custom_fields_params
                     }
                 }).then((field_response) => {
+                    this.read({api: post_api.emit_post_event + this.post_id + '/' + post + '/' + this.website_id})
                     this.removePagination('custom_fields_' + this.website_id);
                     if (this.post_id != post) {
                         if (this.post_id != 'create') {

@@ -23,6 +23,7 @@ class PostRepository extends EntityRepository
     {
 
         $countSearch = false;
+        /** @var QueryBuilder $query */
         $query = Post::queryBuilder();
 
         $query->select('p')
@@ -55,8 +56,12 @@ class PostRepository extends EntityRepository
 
         if (isset($params['filter']) && !empty($params['filter']) && !empty($params['filter']['column'])) {
             $countSearch = true;
-            $query->andWhere($query->expr()->eq($params['filter']['column'], ':value'))
-                ->setParameter('value', $params['filter']['value']);
+            $op = (isset($params['filter']['operator'])) ? $params['filter']['operator'] : 'eq';
+            if($op == 'isNull')
+                $query->andWhere($query->expr()->isNull($params['filter']['column']));
+            else
+                $query->andWhere($query->expr()->$op($params['filter']['column'], ':value'))
+                    ->setParameter('value', $params['filter']['value']);
         }
 
         (isset($params['order']) && !empty($params['order']) && !empty($params['order']['column']))
@@ -95,11 +100,10 @@ class PostRepository extends EntityRepository
         $query = Post::queryBuilder()
             ->select('p')
             ->from('Jet\Modules\Post\Models\Post', 'p')
-            ->innerJoin('p.categories', 'c')
+            ->leftJoin('p.categories', 'c')
             ->leftJoin('p.website', 'w');
 
         $query = $this->getQueryWithParams($query, $params);
-
         return $query->getQuery()->getOneOrNullResult();
     }
 
