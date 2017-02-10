@@ -1,6 +1,7 @@
 export const post_api = {
     all: ADMIN_DOMAIN + '/module/post/all/',
     read: ADMIN_DOMAIN + '/module/post/read/',
+    get_single_post_route: ADMIN_DOMAIN + '/module/post/get-single-post-route/',
     update_or_create: ADMIN_DOMAIN + '/module/post/update-or-create/',
     destroy: ADMIN_DOMAIN + '/module/post/delete/',
     change_state: ADMIN_DOMAIN + '/module/post/change-state/',

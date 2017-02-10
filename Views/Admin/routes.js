@@ -25,5 +25,6 @@ export var field_routes = {
 
 export default {
     routes,
-    content_routes
+    content_routes,
+    field_routes
 }

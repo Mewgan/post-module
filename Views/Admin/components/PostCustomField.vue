@@ -9,7 +9,7 @@
         <div class="form-group row">
             <div class="col-md-3">
                 <h4>Catégorie d'article</h4>
-                <span>Choisir une catégorie d'article à afficher ou laisser vide pour tout afficher</span>
+                <p>Choisir une catégorie d'article à afficher ou laisser vide pour tout afficher</p>
             </div>
             <div class="col-md-9">
                 <select2 v-if="categories.length > 0"
@@ -26,20 +26,21 @@
 
 <script type="text/babel">
 
-    import Select2 from '../../../../../Blocks/AdminBlock/Front/components/Helper/Select2.vue'
     import {mapActions} from 'vuex'
     import {post_category_api} from '../api'
 
     export default{
         name: 'post-custom-field',
-        components: {Select2},
+        components: {
+            Select2: resolve => require(['../../../../../Blocks/AdminBlock/Front/components/Helper/Select2.vue'], resolve),
+        },
         props: {
             field: {
                 type: Object,
                 required: true
             },
             line: {
-                default: '0'
+                default: 'default'
             }
         },
         data(){

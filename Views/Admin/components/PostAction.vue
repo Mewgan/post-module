@@ -47,6 +47,8 @@
     .post-action .mar-top-10{
         margin-top:10px;
     }
+
+
 </style>
 
 <template>
@@ -168,7 +170,7 @@
                                                     data-target="#mediaLibrary0" type="button"
                                                     class="btn pull-right ink-reaction btn-floating-action btn-info"><i
                                                     class="fa fa-pencil"></i></button>
-                                            <button @click="deleteThumbnail" type="button"
+                                            <button @click="post.thumbnail = null" type="button"
                                                     class="btn pull-right ink-reaction btn-floating-action btn-danger">
                                                 <i class="fa fa-trash"></i></button>
                                         </h3>
@@ -334,14 +336,14 @@
         },
         computed: {
             ...mapGetters([
-                'website','auth', 'system'
+                'website', 'auth', 'system'
             ]),
             custom_fields_params () {
                 return {
                     everywhere: '',
                     publication_type: 'post',
                     user_role: this.auth.status.id,
-                    post: ('id' in this.post) ? this.post.id :this.post_id,
+                    post: ('id' in this.post) ? this.post.id : this.post_id,
                     post_category: this.post_categories
                 }
             }
@@ -350,14 +352,32 @@
             ...mapActions([
                 'create', 'read', 'update', 'destroy', 'createResource', 'updateResource', 'updateResourceValue', 'removeResource', 'removePagination', 'deleteResources'
             ]),
-            updateContent (content) {
-                this.post.content = content;
+            callDependencies(){
+                this.loadCategory();
+                this.read({
+                    api: custom_field_api.admin_render + this.website_id,
+                    options: {params: {params: this.custom_fields_params}}
+                }).then((response) => {
+                    if ('resource' in response.data)
+                        this.custom_fields = response.data.resource;
+                })
             },
-            targetUpdate(target){
-                this.post.thumbnail = target;
+            generateUrl(){
+                if ('url' in this.route) {
+                    let regex = {':slug': this.post.slug, ':id': this.post.id};
+                    this.post_url = this.route.url;
+                    for (let index in regex) {
+                        if (regex.hasOwnProperty(index)) {
+                            this.post_url = this.post_url.replace(index, regex[index]);
+                        }
+                    }
+                }
             },
-            launchMedia () {
-                this.launch_media = !this.launch_media;
+            loadCategory(){
+                this.read({api: post_category_api.list_names + this.website_id}).then((response) => {
+                    if ('resource' in response.data)
+                        this.categories = response.data.resource;
+                })
             },
             createCategory(){
                 if (this.new_category != '') {
@@ -369,14 +389,14 @@
                     });
                 }
             },
-            loadCategory(){
-                this.read({api: post_category_api.list_names + this.website_id}).then((response) => {
-                    if('resource' in response.data)
-                        this.categories = response.data.resource;
-                })
+            updateContent (content) {
+                this.post.content = content;
             },
-            deleteThumbnail(){
-                this.post.thumbnail = null;
+            targetUpdate(target){
+                this.post.thumbnail = target;
+            },
+            launchMedia () {
+                this.launch_media = !this.launch_media;
             },
             updateOrCreatePost(){
                 this.post['new_categories'] = this.post_categories;
@@ -386,8 +406,7 @@
                         resource: 'posts_' + this.website_id,
                         value: this.post
                     }).then((response) => {
-                        if (response.data.status == 'success')
-                            this.updateOthers(response);
+                        this.updateOthers(response);
                     });
                 } else {
                     this.updateResource({
@@ -395,50 +414,50 @@
                         resource: 'posts_' + this.website_id,
                         value: this.post
                     }).then((response) => {
-                        if (response.data.status == 'success'){
-                            if ('resource' in response.data) {
-                                this.post = response.data.resource;
-                                this.generateUrl();
-                            }
-                            this.updateOthers(response);
-                        }
+                        this.updateOthers(response);
                     });
                 }
             },
             updateOthers(response){
-                let post = response.data.resource.id;
-                this.update({
-                    api: custom_field_api.update_or_create_front + this.website_id + '/post/' + post,
-                    value: {
-                        custom_fields: this.custom_fields,
-                        old_content_key: 'post@' + this.post_id,
-                        old_row_key: 'rows@post@' + this.post_id,
-                        params: this.custom_fields_params
+                if (response.data.status == 'success') {
+                    if ('resource' in response.data) {
+                        this.post = response.data.resource;
+                        this.generateUrl();
                     }
-                }).then((field_response) => {
-                    this.read({api: post_api.emit_post_event + this.post_id + '/' + post + '/' + this.website_id})
-                    this.removePagination('custom_fields_' + this.website_id);
-                    if (this.post_id != post) {
-                        if (this.post_id != 'create') {
-                            this.removeResource({
-                                resource: 'posts_' + this.website_id,
-                                id: this.post_id
+                    let post = response.data.resource.id;
+                    this.update({
+                        api: custom_field_api.update_or_create_front + this.website_id + '/post/' + post,
+                        value: {
+                            custom_fields: this.custom_fields,
+                            old_content_key: 'post@' + this.post_id,
+                            old_row_key: 'rows@post@' + this.post_id,
+                            params: this.custom_fields_params
+                        }
+                    }).then((field_response) => {
+                        this.read({api: post_api.emit_post_event + this.post_id + '/' + post + '/' + this.website_id})
+                        this.removePagination('custom_fields_' + this.website_id);
+                        if (this.post_id != post) {
+                            if (this.post_id != 'create') {
+                                this.removeResource({
+                                    resource: 'posts_' + this.website_id,
+                                    id: this.post_id
+                                });
+                            }
+                            this.$router.replace({
+                                name: 'module:post:action',
+                                params: {
+                                    website_id: this.website_id,
+                                    post_id: post
+                                }
                             });
                         }
-                        this.$router.replace({
-                            name: 'module:post:action',
-                            params: {
-                                website_id: this.website_id,
-                                post_id: post
-                            }
-                        });
-                    }
-                    this.post_id = ('id' in this.post) ? this.post.id : 'create';
-                    if ('resource' in field_response.data)
-                        this.custom_fields = field_response.data.resource;
-                    else if ('reload' in field_response.data)
-                        location.reload();
-                });
+                        this.post_id = ('id' in this.post) ? this.post.id : 'create';
+                        if ('resource' in field_response.data)
+                            this.custom_fields = field_response.data.resource;
+                        else if ('reload' in field_response.data)
+                            location.reload();
+                    });
+                }
             },
             deletePost (){
                 if ('id' in this.post) {
@@ -452,51 +471,27 @@
                         }
                     });
                 }
-            },
-            generateUrl(){
-                let regex = {':slug': this.post.slug, ':id': this.post.id};
-                this.post_url = this.route.url;
-                for (let index in regex) {
-                    if (regex.hasOwnProperty(index)) {
-                        this.post_url = this.post_url.replace(index, regex[index]);
-                    }
-                }
             }
         },
         mounted(){
+            this.read({api: post_api.get_single_post_route + this.website_id}).then((response) => {
+                if ('resource' in response.data) this.route = response.data.resource;
+            })
             if (this.post_id == 'create') {
                 this.launch_tinymce = true;
-                this.loadCategory();
-                this.read({
-                    api: custom_field_api.admin_render + this.website_id,
-                    options: {params: {params: this.custom_fields_params}}
-                }).then((response) => {
-                    if ('resource' in response.data)
-                        this.custom_fields = response.data.resource;
-                })
+                this.callDependencies();
             } else {
                 this.read({api: post_api.read + this.website_id + '/' + this.post_id}).then((response) => {
                     if (response.data.status == 'success') {
                         this.post = response.data.resource;
                         this.launch_tinymce = true;
-                        if ('route' in response.data && response.data.route != '') {
-                            this.route = response.data.route;
-                            this.generateUrl();
-                        }
+                        this.generateUrl();
                     }
-
                 }).then(() => {
-                    this.loadCategory();
+                    this.callDependencies();
                     for (let index in this.post.categories)
                         if (this.post.categories.hasOwnProperty(index))
                             this.post_categories.push(this.post.categories[index].id);
-                    this.read({
-                        api: custom_field_api.admin_render + this.website_id,
-                        options: {params: {params: this.custom_fields_params}}
-                    }).then((response) => {
-                        if ('resource' in response.data)
-                            this.custom_fields = response.data.resource;
-                    })
                 });
             }
         }

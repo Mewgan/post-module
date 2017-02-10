@@ -110,13 +110,12 @@ class FrontPostController extends MainController
 
     /**
      * @param Website $website
-     * @param $field
-     * @param $key
+     * @param $value
      * @return null
      */
-    public function renderField(Website $website, $field, $key){
-        if (isset($field['content'][$key]) && is_numeric($field['content'][$key])){
-            $post = Post::findOneById($field['content'][$key]);
+    public function renderField(Website $website, $value){
+        if (!empty($value) && !is_null($value) && is_numeric($value)){
+            $post = Post::findOneById($value);
             if(!is_null($post)){
                 $data = $website->getData();
                 if(isset($data['parent_replace']['posts'][$post->getId()])){

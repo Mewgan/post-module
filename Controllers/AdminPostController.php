@@ -61,17 +61,24 @@ class AdminPostController extends AdminController
     public function read(Auth $auth, $website, $id)
     {
 
-        if(!$this->getWebsite($website)) return ['status' => 'error', 'Site non trouvé'];
-
         if(!$this->isWebsiteOwner($auth, $website))
             return ['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour supprimer ces catégories'];
 
-        $route = Route::repo()->getRouteByName('module:post.type:dynamic.action:read', $this->websites, $this->website->getData());
         $post = Post::repo()->readAdmin($id);
 
         if (!is_null($post))
-            return ['status' => 'success', 'resource' => $post, 'route' => is_null($route) ? '' : $route];
+            return ['status' => 'success', 'resource' => $post];
         return ['status' => 'error', 'message' => 'Article inexistant'];
+    }
+
+    /**
+     * @param $website
+     * @return array
+     */
+    public function getSinglePostRoute($website)
+    {
+        if(!$this->getWebsite($website)) return ['status' => 'error', 'Site non trouvé'];
+        return ['resource' => Route::repo()->getRouteByName('module:post.type:dynamic.action:read', $this->websites, $this->website->getData())];
     }
 
     /**
@@ -106,7 +113,7 @@ class AdminPostController extends AdminController
                     if($id == 'create' && $countPost > 0 || $id != 'create' && $countPost > 1)
                         return ['status' => 'error', 'message' => 'Un article existe déjà avec ce titre'];
 
-                    if ($post->getWebsite()->getId() != $website && $id != 'create') {
+                    if ($id != 'create' && $post->getWebsite() != $this->website) {
                         $data = $this->excludeData($this->website->getData(), 'posts', $post->getId());
                         $this->website->setData($data);
                         Website::watch($this->website);
@@ -136,6 +143,7 @@ class AdminPostController extends AdminController
                     }
 
                     if (Post::watchAndSave($post)){
+
                         //$this->app->emit('updatePost', ['old_post' => $id, 'post' => $post->getId(), 'website' => $this->website->getId()]);
                         if($replace && $id != 'create'){
                             $website = $post->getWebsite();
