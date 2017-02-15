@@ -195,22 +195,21 @@
 
 <script type="text/babel">
 
-    /* JS*/
-    import RouteEditor from '../../../../../Blocks/AdminBlock/Front/components/Helper/RouteEditor.vue'
-    import TemplateEditor from '../../../../../Blocks/AdminBlock/Front/components/Helper/TemplateEditor.vue'
-    import Select2 from '../../../../../Blocks/AdminBlock/Front/components/Helper/Select2.vue'
-
-    import {AppVendor} from '../../../../../Blocks/AdminBlock/Resources/public/js/app'
+    import {AppVendor} from '../../../../../../Blocks/AdminBlock/Resources/public/js/app'
     import {mapActions, mapGetters} from 'vuex'
-    import {route_api, template_api} from '../../../../../Blocks/AdminBlock/Front/api'
-    import {post_api} from '../api'
+    import {route_api, template_api} from '../../../../../../Blocks/AdminBlock/Front/api'
+    import {post_api} from '../../api'
 
     export default{
         name: 'list-post',
-        components: {RouteEditor, TemplateEditor, Select2},
+        components: {
+            RouteEditor: resolve =>  require(['../../../../../../Blocks/AdminBlock/Front/components/Helper/RouteEditor.vue'], resolve),
+            TemplateEditor: resolve =>  require(['../../../../../../Blocks/AdminBlock/Front/components/Helper/TemplateEditor.vue'], resolve),
+            Select2: resolve =>  require(['../../../../../../Blocks/AdminBlock/Front/components/Helper/Select2.vue'], resolve)
+        },
         props: {
             line: {
-                default: '0'
+                default: 'default'
             },
             content: {
                 type: Object,
@@ -259,7 +258,7 @@
         methods: {
             ...mapActions(['read']),
             setValueId(key, table, col, val){
-                if (table in this.values && this.values[table] != null) {
+                if (this.values[table] !== undefined && this.values[table] != null) {
                     let index = this.values[table].findIndex((i) => i[col] == val);
                     this.content_data.link[key].value_id = this.values[table][index].id
                 }
@@ -269,17 +268,17 @@
             },
             classDbStatic (i) {
                 return {
-                    active: (i in this.content_data.db && 'type' in this.content_data.db[i] && this.content_data.db[i].type == 'static')
+                    active: (this.content_data.db[i] !== undefined && this.content_data.db[i]['type'] !== undefined && this.content_data.db[i]['type'] == 'static')
                 }
             },
             classDbDynamic (i) {
                 return {
-                    active: (i in this.content_data.db && 'type' in this.content_data.db[i] && this.content_data.db[i].type == 'dynamic')
+                    active: (this.content_data.db[i] !== undefined && this.content_data.db[i]['type'] !== undefined && this.content_data.db[i]['type'] == 'dynamic')
                 }
             },
             classLinkStatic (i) {
                 return {
-                    active: (i in this.content_data.link && 'type' in this.content_data.link[i] && this.content_data.link[i].type == 'static')
+                    active: (this.content_data.link[i] !== undefined && this.content_data.link[i]['type'] !== undefined && this.content_data.link[i]['type'] == 'static')
                 }
             },
             classLinkDynamic (i) {
@@ -354,7 +353,7 @@
             });
         },
         mounted () {
-            if (this.content.data != null && 'db' in this.content.data) this.content_data = this.content.data;
+            if (this.content.data != null && this.content.data.db !== undefined) this.content_data = this.content.data;
 
             this.$nextTick(function () {
                 AppVendor()._initTabs();

@@ -35,6 +35,22 @@ class LoadPostRoute extends AbstractFixture
             'argument' => ['slug' => '([a-zA-Z0-9-_]+)'],
             'middleware' => null,
             'subdomain' => null,
+        ],
+        [
+            'url' => '/service',
+            'name' => 'module:post.type:static.action:list.name:service',
+            'method' => ['GET'],
+            'argument' => ['slug' => '([a-zA-Z0-9-_]+)'],
+            'middleware' => null,
+            'subdomain' => null,
+        ],
+        [
+            'url' => '/actualite',
+            'name' => 'module:post.type:static.action:list.name:actualite',
+            'method' => ['GET'],
+            'argument' => ['slug' => '([a-zA-Z0-9-_]+)'],
+            'middleware' => null,
+            'subdomain' => null,
         ]
     ];
 

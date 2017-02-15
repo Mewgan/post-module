@@ -343,7 +343,7 @@
                     everywhere: '',
                     publication_type: 'post',
                     user_role: this.auth.status.id,
-                    post: ('id' in this.post) ? this.post.id : this.post_id,
+                    post: (this.post.id !== undefined) ? this.post.id : this.post_id,
                     post_category: this.post_categories
                 }
             }
@@ -358,12 +358,12 @@
                     api: custom_field_api.admin_render + this.website_id,
                     options: {params: {params: this.custom_fields_params}}
                 }).then((response) => {
-                    if ('resource' in response.data)
+                    if (response.data.resource !== undefined)
                         this.custom_fields = response.data.resource;
                 })
             },
             generateUrl(){
-                if ('url' in this.route) {
+                if (this.route.url !== undefined) {
                     let regex = {':slug': this.post.slug, ':id': this.post.id};
                     this.post_url = this.route.url;
                     for (let index in regex) {
@@ -375,7 +375,7 @@
             },
             loadCategory(){
                 this.read({api: post_category_api.list_names + this.website_id}).then((response) => {
-                    if ('resource' in response.data)
+                    if (response.data.resource !== undefined)
                         this.categories = response.data.resource;
                 })
             },
@@ -420,7 +420,7 @@
             },
             updateOthers(response){
                 if (response.data.status == 'success') {
-                    if ('resource' in response.data) {
+                    if (response.data.resource !== undefined) {
                         this.post = response.data.resource;
                         this.generateUrl();
                     }
@@ -451,16 +451,16 @@
                                 }
                             });
                         }
-                        this.post_id = ('id' in this.post) ? this.post.id : 'create';
-                        if ('resource' in field_response.data)
+                        this.post_id = (this.post.id !== undefined) ? this.post.id : 'create';
+                        if (field_response.data.resource !== undefined)
                             this.custom_fields = field_response.data.resource;
-                        else if ('reload' in field_response.data)
+                        else if (field_response.data.reload !== undefined)
                             location.reload();
                     });
                 }
             },
             deletePost (){
-                if ('id' in this.post) {
+                if (this.post.id !== undefined) {
                     this.deleteResources({
                         api: post_api.destroy + this.website_id,
                         resource: 'posts_' + this.website_id,
@@ -475,7 +475,7 @@
         },
         mounted(){
             this.read({api: post_api.get_single_post_route + this.website_id}).then((response) => {
-                if ('resource' in response.data) this.route = response.data.resource;
+                if (response.data.resource !== undefined) this.route = response.data.resource;
             })
             if (this.post_id == 'create') {
                 this.launch_tinymce = true;

@@ -51,6 +51,7 @@
         float: left;
         margin: 10px 20px;
     }
+
 </style>
 
 <template>
@@ -59,10 +60,12 @@
             <ol class="breadcrumb">
                 <li class="active">Articles</li>
             </ol>
-            <router-link :to="{name: 'module:post:action', params: {website_id: website_id, post_id: 'create'}}"  class="btn ink-reaction btn-raised btn-lg btn-info pull-right">
+            <router-link :to="{name: 'module:post:action', params: {website_id: website_id, post_id: 'create'}}"
+                         class="btn ink-reaction btn-raised btn-lg btn-info pull-right">
                 <i class="fa fa-plus" aria-hidden="true"></i> Ajouter un article
             </router-link>
-            <button data-toggle="modal" data-target="#createPostCategoryModal" class="btn ink-reaction btn-raised btn-lg btn-info pull-right">
+            <button data-toggle="modal" data-target="#createPostCategoryModal"
+                    class="btn ink-reaction btn-raised btn-lg btn-info pull-right">
                 <i class="fa fa-plus" aria-hidden="true"></i>
                 Ajouter une catégorie
             </button>
@@ -92,17 +95,22 @@
 
                 <!-- BEGIN TAB RESULTS -->
                 <ul class="card-head nav nav-tabs tabs-accent post-categories" data-toggle="tabs">
-                    <li class="post-category post-all active"><a @click="refresh(resource.name);addClass('all')">Tous les
+                    <li class="post-category post-all active"><a @click="refresh(resource.name);addClass('all')">Tous
+                        les
                         articles</a></li>
                     <li class="post-category post-nothing">
-                        <a @click="setParams({resource:resource.name, key: 'filter', value: {column:'c.id', operator:'isNull'}});addClass('nothing')">Pas de catégorie</a>
+                        <a @click="setParams({resource:resource.name, key: 'filter', value: {column:'c.id', operator:'isNull'}});addClass('nothing')">Pas
+                            de catégorie</a>
                     </li>
                     <li :class="'post-category post-' + category.slug" v-for="category in categories">
-                        <a class="pointer" @click="setParams({resource:resource.name, key: 'filter', value: {column:'c.id',operator:'eq',value:category.id}});addClass(category.slug)">
-                            <i :title="getIconTitle('Cette catégorie',category.website)" :class="'category-icon ' + getIconClass(category.website)"></i>
+                        <a class="pointer"
+                           @click="setParams({resource:resource.name, key: 'filter', value: {column:'c.id',operator:'eq',value:category.id}});addClass(category.slug)">
+                            <i :title="getIconTitle('Cette catégorie',category.website)"
+                               :class="'category-icon ' + getIconClass(category.website)"></i>
                             <span class="category-title">{{category.name}}</span>
                         </a>
-                        <span @click="selectCategory(category)" data-toggle="modal" data-target="#editPostCategoryModal" class="pull-right clearfix edit-category"><i class="fa fa-pencil"></i></span>
+                        <span @click="selectCategory(category)" data-toggle="modal" data-target="#editPostCategoryModal"
+                              class="pull-right clearfix edit-category"><i class="fa fa-pencil"></i></span>
                     </li>
                 </ul>
                 <!-- END TAB RESULTS -->
@@ -133,10 +141,12 @@
                                             <li>
                                                 <a @click="setParams({resource: resource.name, key: 'order', value: {column:'p.updated_at',dir:'desc'}});addClass('all')">Date
                                                     décroissant</a></li>
-                                            <li><a @click="setParams({resource: resource.name, key: 'order', value: {column:'p.title',dir:'asc'}});addClass('all')">Titre
-                                                croissant</a></li>
-                                            <li><a @click="setParams({resource: resource.name, key: 'order', value: {column:'p.title',dir:'desc'}});addClass('all')">Titre
-                                                décroissant</a></li>
+                                            <li>
+                                                <a @click="setParams({resource: resource.name, key: 'order', value: {column:'p.title',dir:'asc'}});addClass('all')">Titre
+                                                    croissant</a></li>
+                                            <li>
+                                                <a @click="setParams({resource: resource.name, key: 'order', value: {column:'p.title',dir:'desc'}});addClass('all')">Titre
+                                                    décroissant</a></li>
                                         </ul>
                                     </div>
                                     <div class="btn-group btn-group-sm pull-right">
@@ -162,28 +172,37 @@
                                                 <span></span>
                                             </label>
                                         </div>
-                                        <img v-if="post.thumbnail != null" class="pull-left width-3" v-lazy="system.public_path + post.thumbnail.path"
+                                        <img v-if="post.thumbnail != null" class="pull-left width-3"
+                                             v-lazy="system.public_path + post.thumbnail.path"
                                              :alt="post.thumbnail.alt"/>
                                         <div>
-                                            <router-link :to="{name: 'module:post:action', params:{website_id: website_id, post_id: post.id}}" class="text-medium text-lg text-primary">{{post.title}}</router-link>
+                                            <router-link
+                                                    :to="{name: 'module:post:action', params:{website_id: website_id, post_id: post.id}}"
+                                                    class="text-medium text-lg text-primary">{{post.title}}
+                                            </router-link>
                                             <div class="pull-right">
                                                 <div class="post-change-state" v-if="post.website.id == website_id">
                                                     <div class="switch">
                                                         <label>
                                                             Brouillon
-                                                            <input @click="changeState(post)" :checked="post.published" type="checkbox">
+                                                            <input @click="selectPost(post);updatePostState(!post.published)"
+                                                                   :checked="post.published" type="checkbox">
                                                             <span class="lever"></span>
                                                             Publié
                                                         </label>
                                                     </div>
                                                 </div>
-                                                <router-link :to="{name: 'module:post:action', params:{website_id: website_id, post_id: post.id}}" class="btn ink-reaction btn-floating-action btn-info"><i
+                                                <router-link
+                                                        :to="{name: 'module:post:action', params:{website_id: website_id, post_id: post.id}}"
+                                                        class="btn ink-reaction btn-floating-action btn-info"><i
                                                         class="fa fa-pencil"></i></router-link>
-                                                <a @click="selectPost(post)" data-toggle="modal" data-target="#deletePostModal"
+                                                <a @click="selectPost(post)" data-toggle="modal"
+                                                   data-target="#deletePostModal"
                                                    class="btn ink-reaction btn-floating-action btn-danger"><i
                                                         class="fa fa-trash"></i></a>
-                                                <span class="post-icon"><i :title="getIconTitle('Cet article', post.website)"
-                                                                           :class="getIconClass(post.website)"></i> </span>
+                                                <span class="post-icon"><i
+                                                        :title="getIconTitle('Cet article', post.website)"
+                                                        :class="getIconClass(post.website)"></i> </span>
                                             </div>
                                             <br/>
                                         </div>
@@ -229,7 +248,8 @@
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
         </div>
-        <div class="modal fade" id="createPostCategoryModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel" aria-hidden="true">
+        <div class="modal fade" id="createPostCategoryModal" tabindex="-1" role="dialog"
+             aria-labelledby="formModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -249,13 +269,16 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-                            <button type="button" @click="createCategory" data-dismiss="modal" class="btn btn-primary">Enregistrer</button>
+                            <button type="button" @click="createCategory" data-dismiss="modal" class="btn btn-primary">
+                                Enregistrer
+                            </button>
                         </div>
                     </form>
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
-        <div class="modal fade" id="editPostCategoryModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel" aria-hidden="true">
+        <div class="modal fade" id="editPostCategoryModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
+             aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -267,15 +290,20 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <input type="text" v-model="category.name" id="edit-category" class="form-control">
+                                        <input type="text" v-model="category.name" id="edit-category"
+                                               class="form-control">
                                         <label for="edit-category" class="control-label">Titre</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button"  @click="deleteCategory" data-dismiss="modal" class="btn btn-danger">Supprimer la catégorie</button>
-                            <button type="button" @click="updateCategory" data-dismiss="modal" class="btn btn-primary">Enregistrer</button>
+                            <button type="button" @click="deleteCategory" data-dismiss="modal" class="btn btn-danger">
+                                Supprimer la catégorie
+                            </button>
+                            <button type="button" @click="updateCategory" data-dismiss="modal" class="btn btn-primary">
+                                Enregistrer
+                            </button>
                         </div>
                     </form>
                 </div><!-- /.modal-content -->
@@ -322,10 +350,10 @@
         },
         methods: {
             ...mapActions([
-                'create', 'read', 'update','destroy', 'setParams', 'refresh', 'updateResourceValue', 'deleteResources'
+                'create', 'read', 'update', 'destroy', 'setParams', 'refresh', 'deleteResources'
             ]),
             search () {
-                if (this.search_value !== ''){
+                if (this.search_value !== '') {
                     this.setParams({resource: this.resource.name, key: 'search', value: this.search_value});
                     this.addClass('all');
                 }
@@ -335,16 +363,18 @@
                 $('.post-' + slug).addClass('active');
             },
             getIconClass (website) {
-                return (website != null && 'id' in website && this.website_id == website.id) ? 'fa fa-laptop' : 'fa fa-sitemap';
+                return (website != null && website.id !== undefined && this.website_id == website.id) ? 'fa fa-laptop' : 'fa fa-sitemap';
             },
             getIconTitle (content, website) {
-                return (website != null && 'id' in website && this.website_id == website.id) ? content + ' vient du site' : content + ' vient du thème parent';
+                return (website != null && website.id !== undefined && this.website_id == website.id) ? content + ' vient du site' : content + ' vient du thème parent';
             },
             selectPost (post){
                 this.selected_items = [post.id];
             },
             updatePostState (state) {
                 if (this.selected_items.length > 0) {
+                    if (state == true || state == 'true') state = 1;
+                    if (state == false || state == 'false') state = 0;
                     this.update({
                         api: post_api.change_state + this.website_id,
                         value: {
@@ -352,38 +382,11 @@
                             ids: this.selected_items
                         }
                     }).then((response) => {
-                        if (response.data.status == 'success')
-                            this.selected_items.forEach((id) => {
-                                this.updateResourceValue({
-                                    resource: this.resource.name,
-                                    id,
-                                    key: 'published',
-                                    value: state
-                                });
-                            });
                         this.selected_items = [];
-                        this.refresh_items = !this.refresh_items;
+                        if (response.data.status == 'success')
+                            this.refresh_items = !this.refresh_items;
                     });
                 }
-            },
-            changeState (post) {
-                let state = (post.published == 0) ? 1 : 0;
-                this.update({
-                    api: post_api.change_state + this.website_id,
-                    value: {
-                        state,
-                        ids: [post.id]
-                    }
-                }).then((response) => {
-                    if (response.data.status == 'success')
-                        this.updateResourceValue({
-                            resource: this.resource.name,
-                            id: post.id,
-                            key: 'published',
-                            value: state
-                        });
-                    this.refresh_items = !this.refresh_items;
-                });
             },
             deletePost () {
                 if (this.selected_items.length > 0) {
@@ -400,7 +403,7 @@
                 this.category = category;
             },
             createCategory () {
-                if(this.new_category != '') {
+                if (this.new_category != '') {
                     this.create({
                         api: post_category_api.create + this.website_id,
                         value: {name: this.new_category}
@@ -410,7 +413,7 @@
                 }
             },
             updateCategory(){
-                if(this.category.name != '') {
+                if (this.category.name != '') {
                     this.update({
                         api: post_category_api.update + this.category.id + '/' + this.website_id,
                         value: {name: this.category.name}
@@ -430,7 +433,7 @@
             },
             loadCategory(){
                 this.read({api: post_category_api.list_names + this.website_id}).then((response) => {
-                    if('resource' in response.data)
+                    if (response.data.resource !== undefined)
                         this.categories = response.data.resource;
                 })
             }

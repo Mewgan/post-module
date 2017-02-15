@@ -14,13 +14,14 @@ export var routes = [
 
 
 export var content_routes = {
-    listPost:  (resolve) => { require(['./components/ListPostModule.vue'],resolve) },
-    singlePost: (resolve) => { require(['./components/SinglePostModule.vue'],resolve) }
+    listPost:  (resolve) => { require(['./components/Module/ListPostModule.vue'],resolve) },
+    singlePost: (resolve) => { require(['./components/Module/SinglePostModule.vue'],resolve) },
+    userListPost: (resolve) => { require(['./components/Module/UserListPostModule.vue'],resolve) },
 };
 
 export var field_routes = {
-    postRenderCustomField: (resolve) => { require(['./components/PostRenderCustomField.vue'],resolve) },
-    postCustomField: (resolve) => { require(['./components/PostCustomField.vue'],resolve) }
+    postRenderCustomField: (resolve) => { require(['./components/CustomField/PostRenderCustomField.vue'],resolve) },
+    postCustomField: (resolve) => { require(['./components/CustomField/PostCustomField.vue'],resolve) }
 };
 
 export default {

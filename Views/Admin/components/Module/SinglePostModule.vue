@@ -9,6 +9,7 @@
         margin-right: 8px;
     }
 
+
 </style>
 
 <template>
@@ -88,9 +89,12 @@
                             </div><!--end .card-head -->
                             <div class="card-body tab-content">
                                 <div :class="[classStatic(i), 'tab-pane']" id="content_static">
-                                    <select2 v-if="getValues(db.alias) instanceof Array && getValues(db.alias).length > 0" @updateValue="updateDbValue" :updateParams="{key: i}"
-                                             :contents="getValues(db.alias)" :id="'select-' + line + '-' + i" val_index="id" index="name" label="Valeur"
-                                             :val="db.value"></select2>
+                                    <select2
+                                            v-if="getValues(db.alias) instanceof Array && getValues(db.alias).length > 0"
+                                            @updateValue="updateDbValue" :updateParams="{key: i}"
+                                            :contents="getValues(db.alias)" :id="'select-' + line + '-' + i"
+                                            val_index="id" index="name" label="Valeur"
+                                            :val="db.value"></select2>
                                 </div>
                                 <div :class="[classDynamic(i), 'tab-pane']" id="content_dynamic">
                                     <div class="form-group">
@@ -129,18 +133,18 @@
 
 <script type="text/babel">
 
-    import TemplateEditor from '../../../../../Blocks/AdminBlock/Front/components/Helper/TemplateEditor.vue'
-    import Select2 from '../../../../../Blocks/AdminBlock/Front/components/Helper/Select2.vue'
-
-    import {AppVendor} from '../../../../../Blocks/AdminBlock/Resources/public/js/app'
+    import {AppVendor} from '../../../../../../Blocks/AdminBlock/Resources/public/js/app'
     import {mapActions} from 'vuex'
 
-    import {template_api} from '../../../../../Blocks/AdminBlock/Front/api'
-    import {post_api} from '../api'
+    import {template_api} from '../../../../../../Blocks/AdminBlock/Front/api'
+    import {post_api} from '../../api'
 
     export default{
         name: 'single-post',
-        components: {TemplateEditor, Select2},
+        components: {
+            TemplateEditor: resolve => require(['../../../../../../Blocks/AdminBlock/Front/components/Helper/TemplateEditor.vue'], resolve),
+            Select2: resolve => require(['../../../../../../Blocks/AdminBlock/Front/components/Helper/Select2.vue'], resolve)
+        },
         props: {
             line: {
                 default: 'default'
@@ -191,12 +195,12 @@
             },
             classStatic (i) {
                 return {
-                    active: (i in this.content_data.db && 'type' in this.content_data.db[i] && this.content_data.db[i].type == 'static')
+                    active: (this.content_data.db[i] !== undefined && this.content_data.db[i]['type'] !== undefined && this.content_data.db[i].type == 'static')
                 }
             },
             classDynamic (i) {
                 return {
-                    active: (i in this.content_data.db && 'type' in this.content_data.db[i] && this.content_data.db[i].type == 'dynamic')
+                    active: (this.content_data.db[i] !== undefined && this.content_data.db[i]['type'] !== undefined && this.content_data.db[i].type == 'dynamic')
                 }
             },
             addDbField(){
@@ -221,7 +225,7 @@
                 this.content_data.db[i].type = type;
             },
             updateContent(){
-                if ('id' in this.content.template && this.content.template.id != '') {
+                if (this.content.template.id !== undefined && this.content.template.id != '') {
                     this.$emit('updateContent', this.content);
                     this.closeModal();
                 } else
@@ -240,7 +244,7 @@
             });
         },
         mounted () {
-            if (this.content.data != null && 'db' in this.content.data)this.content_data = this.content.data;
+            if (this.content.data != null && this.content.data.db !== undefined)this.content_data = this.content.data;
 
             this.$nextTick(function () {
                 AppVendor()._initTabs();

@@ -2,6 +2,7 @@
     .post-custom-field .radio-inline span{
         margin-right: 20px;
     }
+
 </style>
 
 <template>
@@ -27,12 +28,12 @@
 <script type="text/babel">
 
     import {mapActions} from 'vuex'
-    import {post_category_api} from '../api'
+    import {post_category_api} from '../../api'
 
     export default{
         name: 'post-custom-field',
         components: {
-            Select2: resolve => require(['../../../../../Blocks/AdminBlock/Front/components/Helper/Select2.vue'], resolve),
+            Select2: resolve => require(['../../../../../../Blocks/AdminBlock/Front/components/Helper/Select2.vue'], resolve),
         },
         props: {
             field: {
@@ -50,21 +51,19 @@
             }
         },
         methods: {
-            ...mapActions([
-                'read'
-            ]),
+            ...mapActions(['read']),
             updateValue(value){
                 this.$set(this.field.data, 'categories', value);
             }
         },
         created(){
             this.read({api: post_category_api.list_names + this.website_id}).then((response) => {
-                if ('resource' in response.data)
+                if (response.data.resource !== undefined)
                     this.categories = response.data.resource;
             })
         },
         mounted(){
-            if (!('categories' in this.field.data)) {
+            if (this.field.data.categories === undefined) {
                 this.field.data = {
                     categories: []
                 };

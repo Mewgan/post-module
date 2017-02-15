@@ -12,12 +12,12 @@
 <script type="text/babel">
 
     import {mapActions} from 'vuex'
-    import Select2 from '../../../../../Blocks/AdminBlock/Front/components/Helper/Select2.vue'
-
-    import {post_api} from '../api'
+    import {post_api} from '../../api'
 
     export default{
-        components: {Select2},
+        components: {
+            Select2: resolve => require(['../../../../../../Blocks/AdminBlock/Front/components/Helper/Select2.vue'], resolve)
+        },
         name: 'post-render-custom-field',
         props: {
             field: {
@@ -48,13 +48,13 @@
         },
         created(){
             let categories = [];
-            if ('categories' in this.field.data) categories = this.field.data.categories;
+            if (this.field.data.categories !== undefined) categories = this.field.data.categories;
             this.read({
                 api: post_api.list_names + '/' + this.website_id, options: {
                     params: {categories: categories}
                 }
             }).then((response) => {
-                if ('resource' in response.data)
+                if (response.data.resource !== undefined)
                     this.posts = response.data.resource;
             });
         }
