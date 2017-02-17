@@ -12,6 +12,7 @@ use Jet\Models\Route;
 use Jet\Models\Website;
 use Jet\Modules\Post\Models\Post;
 use Jet\Modules\Post\Models\PostCategory;
+use JetFire\Framework\Providers\EventProvider;
 
 /**
  * Class AdminPostController
@@ -163,13 +164,14 @@ class AdminPostController extends AdminController
     }
 
     /**
+     * @param EventProvider $event
      * @param $old_post
      * @param $post
      * @param $website
      */
-    public function emitPostEvent($old_post, $post, $website){
+    public function emitPostEvent(EventProvider $event, $old_post, $post, $website){
         /* Emit event to listen */
-        $this->app->emit('updatePost', ['old_post' => $old_post, 'post' => $post, 'website' => $website]);
+        $event->emit('updatePost', ['old_post' => $old_post, 'post' => $post, 'website' => $website]);
     }
 
     /**

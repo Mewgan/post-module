@@ -52,6 +52,7 @@
         margin: 10px 20px;
     }
 
+
 </style>
 
 <template>
@@ -117,7 +118,7 @@
 
                 <!-- BEGIN TAB CONTENT -->
                 <div class="card-body tab-content style-default-bright">
-                    <div class="tab-pane active" id="web1">
+                    <div class="tab-pane active">
                         <div class="row">
                             <div class="col-lg-12">
 
@@ -311,7 +312,6 @@
         </div><!-- /.modal -->
     </section>
 
-
 </template>
 
 
@@ -350,7 +350,7 @@
         },
         methods: {
             ...mapActions([
-                'create', 'read', 'update', 'destroy', 'setParams', 'refresh', 'deleteResources'
+                'create', 'read', 'update', 'destroy', 'refresh', 'setParams', 'deleteResources'
             ]),
             search () {
                 if (this.search_value !== '') {
@@ -432,20 +432,29 @@
                 });
             },
             loadCategory(){
-                this.read({api: post_category_api.list_names + this.website_id}).then((response) => {
+                return this.read({api: post_category_api.list_names + this.website_id}).then((response) => {
                     if (response.data.resource !== undefined)
                         this.categories = response.data.resource;
                 })
             }
-        },
-        created () {
-            this.loadCategory();
         },
         mounted () {
             let o = this;
             $(".search-item").submit(function (e) {
                 e.preventDefault();
                 o.search();
+            });
+
+            this.loadCategory().then(() => {
+                if (this.$route.params.category !== undefined) {
+                    this.setParams({
+                        resource: this.resource.name,
+                        key: 'filter',
+                        value: {column: 'c.id', operator: 'eq', value: this.$route.params.category}
+                    });
+                    let index = this.categories.findIndex((i) => i.id == this.$route.params.category);
+                    if (this.categories[index].slug !== undefined) this.addClass(this.categories[index].slug);
+                }
             });
         }
     }

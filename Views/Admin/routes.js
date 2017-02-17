@@ -1,7 +1,7 @@
 
 export var routes = [
     {
-        path: 'post',
+        path: 'post-list/:category?',
         name: 'module:post',
         component:  resolve => require(['./components/PostList.vue'],resolve)
     },
@@ -16,7 +16,7 @@ export var routes = [
 export var content_routes = {
     listPost:  (resolve) => { require(['./components/Module/ListPostModule.vue'],resolve) },
     singlePost: (resolve) => { require(['./components/Module/SinglePostModule.vue'],resolve) },
-    userListPost: (resolve) => { require(['./components/Module/UserListPostModule.vue'],resolve) },
+    userListPost: (resolve) => { require(['./components/Module/UserListPostModule.vue'],resolve) }
 };
 
 export var field_routes = {

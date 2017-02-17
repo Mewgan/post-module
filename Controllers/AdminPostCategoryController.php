@@ -8,6 +8,7 @@ use Jet\Services\Auth;
 use Jet\AdminBlock\Controllers\AdminController;
 use Jet\Models\Website;
 use Jet\Modules\Post\Models\PostCategory;
+use JetFire\Framework\Providers\EventProvider;
 use JetFire\Framework\System\Request;
 
 /**
@@ -80,11 +81,12 @@ class AdminPostCategoryController extends AdminController
      * @param Request $request
      * @param Auth $auth
      * @param Slugify $slugify
+     * @param EventProvider $event
      * @param $id
      * @param $website
      * @return array
      */
-    public function update(Request $request, Auth $auth, Slugify $slugify, $id, $website)
+    public function update(Request $request, Auth $auth, Slugify $slugify, EventProvider $event, $id, $website)
     {
         if ($request->method() == 'PUT') {
 
@@ -123,14 +125,14 @@ class AdminPostCategoryController extends AdminController
 
             if(PostCategory::watchAndSave($category)){
                 if($replace){
-                    $this->app->emit('updatePostCategory', ['old_post_category' => $old_category->getId(), 'post_category' => $category->getId(), 'website' => $website->getId()]);
+                    $event->emit('updatePostCategory', ['old_post_category' => $old_category->getId(), 'post_category' => $category->getId(), 'website' => $website->getId()]);
                     $this->createPosts($old_category, $category, $website);
                     $website = $category->getWebsite();
                     $data = $this->replaceData($website->getData(), 'post_categories', $id, $category->getId());
                     $website->setData($data);
                     Website::watchAndSave($website);
                 }else
-                    $this->app->emit('updatePostCategory', ['post_category' => $category->getId(), 'website' => $website->getId()]);
+                    $event->emit('updatePostCategory', ['post_category' => $category->getId(), 'website' => $website->getId()]);
                 return ['status' => 'success', 'message' => 'La catégorie a bien été mis à jour'];
             }else
                 return ['status' => 'error', 'message' => 'Erreur lors de la mise à jour'];
@@ -142,8 +144,9 @@ class AdminPostCategoryController extends AdminController
      * @param PostCategory $old_category
      * @param PostCategory $category
      * @param Website $website
+     * @param EventProvider $event
      */
-    private function createPosts(PostCategory $old_category, PostCategory $category, Website $website){
+    private function createPosts(PostCategory $old_category, PostCategory $category, Website $website, EventProvider $event){
         $data = $website->getData();
         $this->getWebsite($website);
         $posts = $old_category->getPosts();
@@ -161,7 +164,7 @@ class AdminPostCategoryController extends AdminController
                     $new_post->removePostCategory($old_category);
                     $new_post->addPostCategory($category);
                     $new_post->setWebsite($website);
-                    if (Post::watchAndSave($new_post)) $this->app->emit('updatePost', ['old_post' => $post->getId(),'post' => $new_post->getId(), 'website' => $website->getId()]);
+                    if (Post::watchAndSave($new_post)) $event->emit('updatePost', ['old_post' => $post->getId(),'post' => $new_post->getId(), 'website' => $website->getId()]);
 
                     $data = $this->excludeData($data, 'posts', $post->getId());
                     $data = $this->replaceData($data, 'posts', $post->getId(), $new_post->getId());
@@ -169,7 +172,7 @@ class AdminPostCategoryController extends AdminController
                     $post->removePostCategory($old_category);
                     $post->addPostCategory($category);
                     Post::watch($post);
-                    $this->app->emit('updatePost', ['post' => $post->getId(), 'website' => $website->getId()]);
+                    $event->emit('updatePost', ['post' => $post->getId(), 'website' => $website->getId()]);
                 }
             }
         }

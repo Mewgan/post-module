@@ -59,6 +59,8 @@ class PostRepository extends EntityRepository
             $op = (isset($params['filter']['operator'])) ? $params['filter']['operator'] : 'eq';
             if($op == 'isNull')
                 $query->andWhere($query->expr()->isNull($params['filter']['column']));
+            elseif ($op == 'isNotNull')
+                $query->andWhere($query->expr()->isNotNull($params['filter']['column']));
             else
                 $query->andWhere($query->expr()->$op($params['filter']['column'], ':value'))
                     ->setParameter('value', $params['filter']['value']);

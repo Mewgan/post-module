@@ -50,7 +50,7 @@
             let categories = [];
             if (this.field.data.categories !== undefined) categories = this.field.data.categories;
             this.read({
-                api: post_api.list_names + '/' + this.website_id, options: {
+                api: post_api.list_names + this.website_id, options: {
                     params: {categories: categories}
                 }
             }).then((response) => {
