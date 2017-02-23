@@ -51,8 +51,6 @@
         float: left;
         margin: 10px 20px;
     }
-
-
 </style>
 
 <template>
@@ -317,14 +315,14 @@
 
 <script type="text/babel">
 
-    import Pagination from '../../../../../Blocks/AdminBlock/Front/components/Helper/Pagination.vue'
-
     import {mapGetters, mapActions} from 'vuex'
     import {post_api, post_category_api} from '../api'
 
     export default
     {
-        components: {Pagination},
+        components: {
+            Pagination: resolve => require(['../../../../../Blocks/AdminBlock/Front/components/Helper/Pagination.vue'], resolve),
+        },
         data () {
             return {
                 website_id: this.$route.params.website_id,

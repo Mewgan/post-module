@@ -27,7 +27,8 @@ class PostRequest extends Request
     public function rules()
     {
         return [
-            'title|published|thumbnail' => 'required',
+            'title|published' => 'required',
+            'thumbnail' => 'optional',
             'slug' => 'optional|noWhitespace|lowercase',
         ];
     }

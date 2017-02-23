@@ -47,8 +47,6 @@
     .post-action .mar-top-10{
         margin-top:10px;
     }
-
-
 </style>
 
 <template>
@@ -284,11 +282,6 @@
 
 <script type="text/babel">
 
-    import Pagination from '../../../../../Blocks/AdminBlock/Front/components/Helper/Pagination.vue'
-    import TinymceEditor from '../../../../../Blocks/AdminBlock/Front/components/Helper/TinymceEditor.vue'
-    import Media from '../../../../../Blocks/AdminBlock/Front/components/Helper/Media.vue'
-    import CustomFieldRender from '../../../../../Blocks/AdminBlock/Front/components/CustomFieldRender/Repeater/RepeaterRenderCustomField.vue'
-
     import {custom_field_api} from '../../../../../Blocks/AdminBlock/Front/api'
     import {post_api, post_category_api} from '../api'
 
@@ -296,7 +289,11 @@
 
     export default
     {
-        components: {Pagination, TinymceEditor, Media, CustomFieldRender},
+        components: {
+            TinymceEditor: resolve => require(['../../../../../Blocks/AdminBlock/Front/components/Helper/TinymceEditor.vue'], resolve),
+            Media: resolve => require(['../../../../../Blocks/AdminBlock/Front/components/Helper/Media.vue'], resolve),
+            CustomFieldRender: resolve => require(['../../../../../Blocks/AdminBlock/Front/components/CustomFieldRender/Repeater/RepeaterRenderCustomField.vue'], resolve)
+        },
         data () {
             return {
                 website_id: this.$route.params.website_id,
