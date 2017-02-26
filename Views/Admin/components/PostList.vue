@@ -74,7 +74,7 @@
 
                 <!-- BEGIN SEARCH BAR -->
                 <div class="card-body style-primary no-y-padding">
-                    <form class="form form-inverse search-item">
+                    <form class="form form-inverse search-item" @submit.prevent.stop="search">
                         <div class="form-group">
                             <div class="input-group input-group-lg">
                                 <div class="input-group-content">
@@ -317,12 +317,14 @@
 
     import {mapGetters, mapActions} from 'vuex'
     import {post_api, post_category_api} from '../api'
+    import pagination_mixin from '../../../../../Blocks/AdminBlock/Front/mixin/pagination'
 
     export default
     {
         components: {
             Pagination: resolve => require(['../../../../../Blocks/AdminBlock/Front/components/Helper/Pagination.vue'], resolve),
         },
+        mixins: [pagination_mixin],
         data () {
             return {
                 website_id: this.$route.params.website_id,
@@ -437,11 +439,6 @@
             }
         },
         mounted () {
-            let o = this;
-            $(".search-item").submit(function (e) {
-                e.preventDefault();
-                o.search();
-            });
 
             this.loadCategory().then(() => {
                 if (this.$route.params.category !== undefined) {
