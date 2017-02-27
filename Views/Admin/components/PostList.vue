@@ -199,7 +199,7 @@
                                                    data-target="#deletePostModal"
                                                    class="btn ink-reaction btn-floating-action btn-danger"><i
                                                         class="fa fa-trash"></i></a>
-                                                <span class="post-icon"><i
+                                                <span v-show="auth.status.level < 4" class="post-icon"><i
                                                         :title="getIconTitle('Cet article', post.website)"
                                                         :class="getIconClass(post.website)"></i> </span>
                                             </div>
@@ -346,7 +346,7 @@
             }
         },
         computed: {
-            ...mapGetters(['system'])
+            ...mapGetters(['auth', 'system'])
         },
         methods: {
             ...mapActions([
