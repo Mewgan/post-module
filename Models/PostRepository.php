@@ -194,16 +194,16 @@ class PostRepository extends EntityRepository
                 ->setParameter('websites', $params['websites']);
         }
 
-        if (isset($params['website_options']['parent_exclude'])) {
-            if (isset($params['website_options']['parent_exclude']['posts']) && !empty($params['website_options']['parent_exclude']['posts'])) {
+        if (isset($params['options']) && isset($params['options']['parent_exclude'])) {
+            if (isset($params['options']['parent_exclude']['posts']) && !empty($params['options']['parent_exclude']['posts'])) {
                 $query->andWhere($query->expr()->notIn('p.id', ':exclude_post_ids'))
-                    ->setParameter('exclude_post_ids', $params['website_options']['parent_exclude']['posts']);
+                    ->setParameter('exclude_post_ids', $params['options']['parent_exclude']['posts']);
             }
-
-            if(isset($params['website_options']['parent_exclude']['post_categories']) && !empty($params['website_options']['parent_exclude']['post_categories'])){
+/*
+            if(isset($params['options']['parent_exclude']['post_categories']) && !empty($params['options']['parent_exclude']['post_categories'])){
                 $query->andWhere($query->expr()->notIn('c.id',':exclude_category_ids'))
-                    ->setParameter('exclude_category_ids',$params['website_options']['parent_exclude']['post_categories']);
-            }
+                    ->setParameter('exclude_category_ids',$params['options']['parent_exclude']['post_categories']);
+            }*/
         }
 
         if (isset($params['db']) && !empty($params['db'])) {
@@ -215,17 +215,17 @@ class PostRepository extends EntityRepository
                     } elseif ($db['type'] == 'static' && isset($db['value']) && !empty($db['value'])) {
                         $replace_content = ($db['alias'] == 'p') ? 'posts' : 'post_categories';
                         if (is_array($db['value'])) {
-                            if (isset($params['website_options']['parent_replace']) && isset($params['website_options']['parent_replace'][$replace_content])) {
+                            if (isset($params['options']['parent_replace']) && isset($params['options']['parent_replace'][$replace_content])) {
                                 foreach ($db['value'] as $k => $id) {
-                                    if (isset($params['website_options']['parent_replace'][$replace_content][$id]))
-                                        $db['value'][$k] = $params['website_options']['parent_replace'][$replace_content][$id];
+                                    if (isset($params['options']['parent_replace'][$replace_content][$id]))
+                                        $db['value'][$k] = $params['options']['parent_replace'][$replace_content][$id];
                                 }
                             }
                             $query->andWhere($query->expr()->in($db['alias'] . '.id', ':column_' . $key))
                                 ->setParameter('column_' . $key, $db['value']);
                         } else {
-                            if (isset($params['website_options']['parent_replace']) && isset($params['website_options']['parent_replace'][$replace_content]) && isset($params['website_options']['parent_replace'][$replace_content][$db['value']]))
-                                $db['value'] = $params['website_options']['parent_replace'][$replace_content][$db['value']];
+                            if (isset($params['options']['parent_replace']) && isset($params['options']['parent_replace'][$replace_content]) && isset($params['options']['parent_replace'][$replace_content][$db['value']]))
+                                $db['value'] = $params['options']['parent_replace'][$replace_content][$db['value']];
                             $query->andWhere($query->expr()->eq($db['alias'] . '.id', ':column_' . $key))
                                 ->setParameter('column_' . $key, $db['value']);
                         }
@@ -239,18 +239,18 @@ class PostRepository extends EntityRepository
 
     /**
      * @param $websites
-     * @param $exclude
+     * @param $options
      * @param array $select
      * @return array
      */
-    public function getPostRules($websites, $exclude, $select = ['p.id as id', 'p.title as name'])
+    public function getPostRules($websites, $options, $select = ['p.id as id', 'p.title as name'])
     {
         $query = Post::queryBuilder()
             ->select($select)
             ->from('Jet\Modules\Post\Models\Post', 'p')
             ->leftJoin('p.website', 'w');
 
-        $query = $this->getRequiredParams($query, ['websites' => $websites, 'website_options' => $exclude]);
+        $query = $this->getRequiredParams($query, ['websites' => $websites, 'options' => $options]);
 
         return $query->getQuery()
             ->getArrayResult();
@@ -258,11 +258,11 @@ class PostRepository extends EntityRepository
 
     /**
      * @param $websites
-     * @param $exclude
+     * @param $options
      * @param $categories
      * @return array
      */
-    public function getPostByCategories($websites, $exclude, $categories = [])
+    public function getPostByCategories($websites, $options, $categories = [])
     {
 
         $query = Post::queryBuilder()
@@ -276,7 +276,7 @@ class PostRepository extends EntityRepository
                 ->setParameter('categories', $categories);
         }
 
-        $query = $this->getRequiredParams($query, ['websites' => $websites, 'website_options' => $exclude]);
+        $query = $this->getRequiredParams($query, ['websites' => $websites, 'options' => $options]);
 
         return $query->getQuery()
             ->getArrayResult();
@@ -284,10 +284,10 @@ class PostRepository extends EntityRepository
 
     /**
      * @param $websites
-     * @param $exclude
+     * @param $options
      * @return array
      */
-    public function listTableValues($websites, $exclude)
+    public function listTableValues($websites, $options)
     {
         $query = Post::queryBuilder()
             ->select(['p.id as id', 'p.title as name', 'p.slug as slug'])
@@ -296,7 +296,7 @@ class PostRepository extends EntityRepository
             ->where('p.published = :published')
             ->setParameter('published', true);
 
-        $query = $this->getRequiredParams($query, ['websites' => $websites, 'website_options' => $exclude]);
+        $query = $this->getRequiredParams($query, ['websites' => $websites, 'options' => $options]);
 
         return $query->getQuery()
             ->getArrayResult();
@@ -328,10 +328,10 @@ class PostRepository extends EntityRepository
                 ->setParameter('websites', $params['websites']);
         }
 
-        if (isset($params['website_options']['parent_exclude'])) {
-            if (isset($params['website_options']['parent_exclude']['posts']) && !empty($params['website_options']['parent_exclude']['posts'])) {
+        if (isset($params['options']['parent_exclude'])) {
+            if (isset($params['options']['parent_exclude']['posts']) && !empty($params['options']['parent_exclude']['posts'])) {
                 $query->andWhere($query->expr()->notIn('p.id', ':exclude_post_ids'))
-                    ->setParameter('exclude_post_ids', $params['website_options']['parent_exclude']['posts']);
+                    ->setParameter('exclude_post_ids', $params['options']['parent_exclude']['posts']);
             }
         }
         return $query;

@@ -362,12 +362,6 @@
                 $('.post-category').removeClass('active');
                 $('.post-' + slug).addClass('active');
             },
-            getIconClass (website) {
-                return (website != null && website.id !== undefined && this.website_id == website.id) ? 'fa fa-laptop' : 'fa fa-sitemap';
-            },
-            getIconTitle (content, website) {
-                return (website != null && website.id !== undefined && this.website_id == website.id) ? content + ' vient du site' : content + ' vient du thème parent';
-            },
             selectPost (post){
                 this.selected_items = [post.id];
             },

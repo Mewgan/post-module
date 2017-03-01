@@ -3,6 +3,7 @@
 namespace Jet\Modules\Post\Models;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
@@ -49,7 +50,7 @@ class PostCategoryRepository extends EntityRepository
         if (isset($params['filter']) && !empty($params['filter']) && !empty($params['filter']['column'])) {
             $countSearch = true;
             $op = (isset($params['filter']['operator'])) ? $params['filter']['operator'] : 'eq';
-            if($op == 'isNull')
+            if ($op == 'isNull')
                 $query->andWhere($query->expr()->isNull($params['filter']['column']));
             else
                 $query->andWhere($query->expr()->eq($params['filter']['column'], ':value'))
@@ -130,40 +131,14 @@ class PostCategoryRepository extends EntityRepository
             ->getQuery()->getArrayResult();
     }
 
-    /**
-     * @param $query
-     * @param $params
-     * @return mixed
-     */
-    private function getQueryWithParams($query, $params)
-    {
-
-        if (isset($params['websites'])) {
-            $query->where(
-                $query->expr()->orX(
-                    $query->expr()->in('w.id', ':websites'),
-                    $query->expr()->isNull('w.id')
-                )
-            )->setParameter('websites', $params['websites']);
-        } else {
-            $query->where($query->expr()->isNull('w.id'));
-        }
-
-        if (isset($params['website_options']['parent_exclude']) && isset($params['website_options']['parent_exclude']['post_categories']) && !empty($params['website_options']['parent_exclude']['post_categories'])) {
-            $query->andWhere($query->expr()->notIn('c.id', ':exclude_ids'))
-                ->setParameter('exclude_ids', $params['website_options']['parent_exclude']['post_categories']);
-        }
-
-        return $query;
-    }
 
     /**
      * @param $websites
-     * @param $exclude
+     * @param $options
      * @param string $select
      * @return array
      */
-    public function getPostCategoryRules($websites, $exclude, $select = 'partial c.{id,name,slug}')
+    public function getPostCategoryRules($websites, $options, $select = 'partial c.{id,name,slug}')
     {
         $query = PostCategory::queryBuilder()
             ->select($select)
@@ -171,17 +146,7 @@ class PostCategoryRepository extends EntityRepository
             ->from('Jet\Modules\Post\Models\PostCategory', 'c')
             ->leftJoin('c.website', 'w');
 
-        $query->where(
-            $query->expr()->orX(
-                $query->expr()->in('w.id', ':websites'),
-                $query->expr()->isNull('w.id')
-            )
-        )->setParameter('websites', $websites);
-
-        if (isset($exclude['parent_exclude']) && isset($exclude['parent_exclude']['post_categories']) && !empty($exclude['parent_exclude']['post_categories'])) {
-            $query->andWhere($query->expr()->notIn('c.id', ':exclude_ids'))
-                ->setParameter('exclude_ids', $exclude['parent_exclude']['post_categories']);
-        }
+        $query = $this->getQueryWithParams($query, ['websites' => $websites, 'options' => $options]);
 
         return $query->getQuery()
             ->getArrayResult();
@@ -189,30 +154,46 @@ class PostCategoryRepository extends EntityRepository
 
     /**
      * @param $websites
-     * @param $exclude
+     * @param $options
      * @return array
      */
-    public function listTableValues($websites, $exclude)
+    public function listTableValues($websites, $options)
     {
         $query = PostCategory::queryBuilder()
             ->select(['c.id as id', 'c.name as name', 'c.slug as slug'])
             ->from('Jet\Modules\Post\Models\PostCategory', 'c')
             ->leftJoin('c.website', 'w');
 
-        $query->where(
-            $query->expr()->orX(
-                $query->expr()->in('w.id', ':websites'),
-                $query->expr()->isNull('w.id')
-            )
-        )->setParameter('websites', $websites);
-
-        if (isset($exclude['parent_exclude']) && isset($exclude['parent_exclude']['post_categories']) && !empty($exclude['parent_exclude']['post_categories'])) {
-            $query->andWhere($query->expr()->notIn('c.id', ':exclude_ids'))
-                ->setParameter('exclude_ids', $exclude['parent_exclude']['post_categories']);
-        }
+        $query = $this->getQueryWithParams($query, ['websites' => $websites, 'options' => $options]);
 
         return $query->getQuery()
             ->getArrayResult();
     }
 
+    /**
+     * @param QueryBuilder $query
+     * @param $params
+     * @return mixed
+     */
+    private function getQueryWithParams(QueryBuilder $query, $params)
+    {
+
+        if (isset($params['websites'])) {
+            $query->andWhere(
+                $query->expr()->orX(
+                    $query->expr()->in('w.id', ':websites'),
+                    $query->expr()->isNull('w.id')
+                )
+            )->setParameter('websites', $params['websites']);
+        } else {
+            $query->andWhere($query->expr()->isNull('w.id'));
+        }
+
+        if (isset($params['options']) && isset($params['options']['parent_exclude']) && isset($params['options']['parent_exclude']['post_categories']) && !empty($params['options']['parent_exclude']['post_categories'])) {
+            $query->andWhere($query->expr()->notIn('c.id', ':exclude_ids'))
+                ->setParameter('exclude_ids', $params['options']['parent_exclude']['post_categories']);
+        }
+
+        return $query;
+    }
 } 

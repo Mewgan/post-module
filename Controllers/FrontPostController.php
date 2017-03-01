@@ -75,13 +75,10 @@ class FrontPostController extends MainController
      */
     private function getParams(Website $website, $data)
     {
-        $data['website_options'] = $website->getData();
         $data['params'] = (View::hasData('data') && isset(View::getData('data')['route_params'])) ? View::getData('data')['route_params'] : [];
         $data['published'] = true;
-        if (empty($this->websites)) {
-            $this->websites[] = $website->getId();
-            $this->getThemeWebsites($website);
-        }
+        $this->refreshWebsite($website);
+        $data['options'] = $this->getWebsiteData($website);
         $data['websites'] = $this->websites;
         return $data;
     }
@@ -104,7 +101,7 @@ class FrontPostController extends MainController
                 'post' => $post->getId(),
                 'post_category' => $post->getPostCategories()
             ];
-            return CustomField::repo()->frontRender($websites, $website->getData(), $rules);
+            return CustomField::repo()->frontRender($websites, $this->getWebsiteData($website), $rules);
         }
         return null;
     }
@@ -118,7 +115,8 @@ class FrontPostController extends MainController
         if (!empty($value) && !is_null($value) && is_numeric($value)){
             $post = Post::findOneById($value);
             if(!is_null($post)){
-                $data = $website->getData();
+                $this->refreshWebsite($website);
+                $data = $this->getWebsiteData($website);
                 if(isset($data['parent_replace']['posts'][$post->getId()])){
                     return Post::findOneById($data['parent_replace']['posts'][$post->getId()]);
                 } else if(!isset($data['parent_exclude']['posts']) || !in_array($post->getId(), $data['parent_exclude']['posts']))

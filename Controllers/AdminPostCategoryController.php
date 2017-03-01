@@ -34,7 +34,7 @@ class AdminPostCategoryController extends AdminController
 
         $params = [
             'websites' => $this->websites,
-            'website_options' => $website->getData(),
+            'options' => $this->getWebsiteData($website),
             'search' => ($request->has('params') && isset($request->query('params')['search'])) ? $request->query('params')['search'] : '',
             'order' => ($request->has('params') && isset($request->query('params')['order'])) ? $request->query('params')['order'] : [],
             'filter' => ($request->has('params') && isset($request->query('params')['filter'])) ? $request->query('params')['filter'] : [],
@@ -126,7 +126,7 @@ class AdminPostCategoryController extends AdminController
             if(PostCategory::watchAndSave($category)){
                 if($replace){
                     $event->emit('updatePostCategory', ['old_post_category' => $old_category->getId(), 'post_category' => $category->getId(), 'website' => $website->getId()]);
-                    $this->createPosts($old_category, $category, $website);
+                    $this->createPosts($old_category, $category, $website, $this->app->get('event'));
                     $website = $category->getWebsite();
                     $data = $this->replaceData($website->getData(), 'post_categories', $id, $category->getId());
                     $website->setData($data);
@@ -150,6 +150,7 @@ class AdminPostCategoryController extends AdminController
         $data = $website->getData();
         $this->getWebsite($website);
         $posts = $old_category->getPosts();
+        /** @var Post $post */
         foreach ($posts as $post){
             if(in_array($post->getWebsite()->getId(), $this->websites)) {
                 /** @var Post $post */
@@ -228,7 +229,7 @@ class AdminPostCategoryController extends AdminController
     public function listRuleValue($website)
     {
         if (!$this->getWebsite($website)) return ['status' => 'error', 'Impossible de trouver le site web'];
-        return PostCategory::repo()->getPostCategoryRules($this->websites, $this->website->getData());
+        return PostCategory::repo()->getPostCategoryRules($this->websites, $this->getWebsiteData($this->website));
     }
 
     /**
@@ -238,7 +239,7 @@ class AdminPostCategoryController extends AdminController
     public function listNames($website)
     {
         if (!$this->getWebsite($website)) return ['status' => 'error', 'Impossible de trouver le site web'];
-        return ['resource' => PostCategory::repo()->getPostCategoryRules($this->websites, $this->website->getData())];
+        return ['resource' => PostCategory::repo()->getPostCategoryRules($this->websites, $this->getWebsiteData($this->website))];
     }
 
     /**

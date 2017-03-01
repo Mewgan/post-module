@@ -7,7 +7,6 @@ use Jet\Models\Media;
 use Jet\Modules\Post\Requests\PostRequest;
 use Jet\Services\Auth;
 use Jet\AdminBlock\Controllers\AdminController;
-use Jet\Models\Account;
 use Jet\Models\Route;
 use Jet\Models\Website;
 use Jet\Modules\Post\Models\Post;
@@ -35,7 +34,7 @@ class AdminPostController extends AdminController
 
         $params = [
             'websites' => $this->websites,
-            'website_options' => $this->website->getData(),
+            'options' => $this->getWebsiteData($this->website),
             'search' => ($request->has('params') && isset($request->query('params')['search'])) ? $request->query('params')['search'] : '',
             'order' => ($request->has('params') && isset($request->query('params')['order'])) ? $request->query('params')['order'] : [],
             'filter' => ($request->has('params') && isset($request->query('params')['filter'])) ? $request->query('params')['filter'] : [],
@@ -79,7 +78,7 @@ class AdminPostController extends AdminController
     public function getSinglePostRoute($website)
     {
         if(!$this->getWebsite($website)) return ['status' => 'error', 'Site non trouvé'];
-        return ['resource' => Route::repo()->getRouteByName('module:post.type:dynamic.action:read', $this->websites, $this->website->getData())];
+        return ['resource' => Route::repo()->getRouteByName('module:post.type:dynamic.action:read', $this->websites, $this->getWebsiteData($this->website))];
     }
 
     /**
@@ -110,7 +109,7 @@ class AdminPostController extends AdminController
                         ? $value->get('slug') : $slugify->slugify($value->get('title'));
 
                     /* Check for douplon */
-                    $countPost = Post::repo()->countBySlug($slug, ['websites' => $this->websites, 'website_options' => $this->website->getData()]);
+                    $countPost = Post::repo()->countBySlug($slug, ['websites' => $this->websites, 'options' => $this->getWebsiteData($this->website)]);
                     if($id == 'create' && $countPost > 0 || $id != 'create' && $countPost > 1)
                         return ['status' => 'error', 'message' => 'Un article existe déjà avec ce titre'];
 
@@ -265,8 +264,8 @@ class AdminPostController extends AdminController
     {
         if(!$this->getWebsite($website)) return ['status' => 'error', 'Impossible de trouver le site web'];
         return [
-            'c' => PostCategory::repo()->listTableValues($this->websites, $this->website->getData()),
-            'p' => Post::repo()->listTableValues($this->websites, $this->website->getData())
+            'c' => PostCategory::repo()->listTableValues($this->websites, $this->getWebsiteData($this->website)),
+            'p' => Post::repo()->listTableValues($this->websites, $this->getWebsiteData($this->website))
         ];
 
     }
@@ -278,7 +277,7 @@ class AdminPostController extends AdminController
     public function listRuleValue($website)
     {
         if(!$this->getWebsite($website)) return ['status' => 'error', 'Impossible de trouver le site web'];
-        return Post::repo()->getPostRules($this->websites, $this->website->getData());
+        return Post::repo()->getPostRules($this->websites, $this->getWebsiteData($this->website));
     }
 
     /**
@@ -290,8 +289,8 @@ class AdminPostController extends AdminController
     {
         if(!$this->getWebsite($website)) return ['status' => 'error', 'Impossible de trouver le site web'];
         if($request->exists('categories'))
-            return ['resource' => Post::repo()->getPostByCategories($this->websites, $this->website->getData(), $request->get('categories'))];
-        return ['resource' => Post::repo()->getPostRules($this->websites, $this->website->getData())];
+            return ['resource' => Post::repo()->getPostByCategories($this->websites, $this->getWebsiteData($this->website), $request->get('categories'))];
+        return ['resource' => Post::repo()->getPostRules($this->websites, $this->getWebsiteData($this->website))];
     }
 
     /**
