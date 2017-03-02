@@ -70,6 +70,14 @@
             </button>
         </div>
         <div class="section-body">
+
+            <div class="alert alert-info" role="alert">
+                <strong><i class="fa fa-info-circle"></i> Sur cette page vous avez la possibilité de :</strong><br/>
+                <p>- de créer, modifier ou supprimer un article</p>
+                <p>- de publier ou dépublier un article</p>
+                <p>- de créer, modifier ou supprimer une catégorie</p>
+            </div>
+
             <div class="card tabs-left style-default-light">
 
                 <!-- BEGIN SEARCH BAR -->
@@ -353,8 +361,14 @@
                 'create', 'read', 'update', 'destroy', 'refresh', 'setParams', 'deleteResources'
             ]),
             search () {
-                if (this.search_value !== '') {
-                    this.setParams({resource: this.resource.name, key: 'search', value: this.search_value});
+                if (this.search_value === '') {
+                    if (this.resource.name !== undefined) this.refresh(this.resource.name);
+                } else {
+                    this.setParams({
+                        resource: this.resource.name,
+                        key: 'search',
+                        value: this.search_value
+                    });
                     this.addClass('all');
                 }
             },
