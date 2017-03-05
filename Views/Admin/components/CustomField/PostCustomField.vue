@@ -1,5 +1,5 @@
 <style>
-    .post-custom-field .radio-inline span{
+    .post-custom-field .radio-inline span {
         margin-right: 20px;
     }
 
@@ -33,7 +33,7 @@
     export default{
         name: 'post-custom-field',
         components: {
-            Select2: resolve => require(['../../../../../../Blocks/AdminBlock/Front/components/Helper/Select2.vue'], resolve),
+            Select2: resolve => { require(['@front/components/Helper/Select2.vue'], resolve) }
         },
         props: {
             field: {

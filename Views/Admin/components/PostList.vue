@@ -180,7 +180,7 @@
                                             </label>
                                         </div>
                                         <img v-if="post.thumbnail != null" class="pull-left width-3"
-                                             v-lazy="system.public_path + post.thumbnail.path"
+                                             v-img="post.thumbnail.path"
                                              :alt="post.thumbnail.alt"/>
                                         <div>
                                             <router-link
@@ -325,12 +325,12 @@
 
     import {mapGetters, mapActions} from 'vuex'
     import {post_api, post_category_api} from '../api'
-    import pagination_mixin from '../../../../../Blocks/AdminBlock/Front/mixin/pagination'
+    import pagination_mixin from '@front/mixin/pagination'
 
     export default
     {
         components: {
-            Pagination: resolve => require(['../../../../../Blocks/AdminBlock/Front/components/Helper/Pagination.vue'], resolve),
+            Pagination: resolve => { require(['@front/components/Helper/Pagination.vue'], resolve) }
         },
         mixins: [pagination_mixin],
         data () {
@@ -354,7 +354,7 @@
             }
         },
         computed: {
-            ...mapGetters(['auth', 'system'])
+            ...mapGetters(['auth'])
         },
         methods: {
             ...mapActions([

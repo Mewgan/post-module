@@ -195,17 +195,17 @@
 
 <script type="text/babel">
 
-    import {AppVendor} from '../../../../../../Blocks/AdminBlock/Resources/public/js/app'
+    import {AppVendor} from '@admin/js/app'
     import {mapActions, mapGetters} from 'vuex'
-    import {route_api, template_api} from '../../../../../../Blocks/AdminBlock/Front/api'
+    import {route_api, template_api} from '@front/api'
     import {post_api} from '../../api'
 
     export default{
         name: 'list-post',
         components: {
-            RouteEditor: resolve =>  require(['../../../../../../Blocks/AdminBlock/Front/components/Helper/RouteEditor.vue'], resolve),
-            TemplateEditor: resolve =>  require(['../../../../../../Blocks/AdminBlock/Front/components/Helper/TemplateEditor.vue'], resolve),
-            Select2: resolve =>  require(['../../../../../../Blocks/AdminBlock/Front/components/Helper/Select2.vue'], resolve)
+            RouteEditor: resolve => { require(['@front/components/Helper/RouteEditor.vue'], resolve) },
+            TemplateEditor: resolve => { require(['@front/components/Helper/TemplateEditor.vue'], resolve) },
+            Select2: resolve => { require(['@front/components/Helper/Select2.vue'], resolve) }
         },
         props: {
             line: {

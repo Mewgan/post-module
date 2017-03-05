@@ -143,8 +143,8 @@
                                                             :value="post.content"></tinymce-editor>
                                         </div>
                                     </article>
-                                    <div>
-                                        <form class="form">
+                                    <div class="style-default-bright col-md-12">
+                                        <form class="form row">
                                             <div class="col-md-12 custom-field-render">
                                                 <div class="card-body no-padding">
                                                     <div v-if="custom_fields.length > 0"
@@ -282,7 +282,7 @@
 
 <script type="text/babel">
 
-    import {custom_field_api} from '../../../../../Blocks/AdminBlock/Front/api'
+    import {custom_field_api} from '@front/api'
     import {post_api, post_category_api} from '../api'
 
     import {mapGetters, mapActions} from 'vuex'
@@ -290,9 +290,9 @@
     export default
     {
         components: {
-            TinymceEditor: resolve => require(['../../../../../Blocks/AdminBlock/Front/components/Helper/TinymceEditor.vue'], resolve),
-            Media: resolve => require(['../../../../../Blocks/AdminBlock/Front/components/Helper/Media.vue'], resolve),
-            CustomFieldRender: resolve => require(['../../../../../Blocks/AdminBlock/Front/components/CustomFieldRender/Repeater/RepeaterRenderCustomField.vue'], resolve)
+            TinymceEditor: resolve => { require(['@front/components/Helper/TinymceEditor.vue'], resolve) },
+            Media: resolve => { require(['@front/components/Helper/Media.vue'], resolve) },
+            CustomFieldRender: resolve => { require(['@front/components/CustomFieldRender/Repeater/RepeaterRenderCustomField.vue'], resolve) }
         },
         data () {
             return {
