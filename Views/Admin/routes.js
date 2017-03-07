@@ -25,6 +25,9 @@ export var content_routes = {
     },
     userListPost: (resolve) => {
         require(['./components/Module/UserListPostModule.vue'], resolve)
+    },
+    userSinglePost: (resolve) => {
+        require(['./components/Module/UserListPostModule.vue'], resolve)
     }
 };
 

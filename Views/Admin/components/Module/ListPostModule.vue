@@ -3,17 +3,17 @@
         padding: 10px;
         background: #f2f2f2;
     }
-    .edit-list-post .add-field{
+    .edit-list-post-module .add-field{
         margin-top: -20px;
         margin-right: 8px;
     }
-    .edit-list-post .edit-route-btn{
+    .edit-list-post-module .edit-route-btn{
         margin-top: -22px !important;
         margin-right: 10px !important;
     }
 </style>
 <template>
-    <div class="edit-list-post">
+    <div class="edit-list-post-module">
         <form class="form">
             <h5 class="module-title">Information :</h5>
             <div class="row">
@@ -30,7 +30,7 @@
                     </div>
                 </div>
             </div>
-            <div v-show="auth.status.level < 4">
+            <div>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -196,9 +196,11 @@
 <script type="text/babel">
 
     import {AppVendor} from '@admin/js/app'
-    import {mapActions, mapGetters} from 'vuex'
+    import {mapActions} from 'vuex'
     import {route_api, template_api} from '@front/api'
     import {post_api} from '../../api'
+
+    import module_mixin from '@front/mixin/module'
 
     export default{
         name: 'list-post',
@@ -207,6 +209,7 @@
             TemplateEditor: resolve => { require(['@front/components/Helper/TemplateEditor.vue'], resolve) },
             Select2: resolve => { require(['@front/components/Helper/Select2.vue'], resolve) }
         },
+        mixins: [module_mixin],
         props: {
             line: {
                 default: 'default'
@@ -252,11 +255,8 @@
                 deep: true
             }
         },
-        computed: {
-            ...mapGetters(['auth'])
-        },
         methods: {
-            ...mapActions(['read']),
+            ...mapActions(['read', 'setResponse']),
             setValueId(key, table, col, val){
                 if (this.values[table] !== undefined && this.values[table] != null) {
                     let index = this.values[table].findIndex((i) => i[col] == val);
@@ -329,16 +329,6 @@
             },
             changeLinkType(i, type){
                 this.content_data.link[i].type = type;
-            },
-            updateContent(){
-                if ('id' in this.content.template && this.content.template.id != '') {
-                    this.$emit('updateContent', this.content);
-                    this.closeModal();
-                } else
-                    this.setResponse({status: 'error', message: 'Veuillez choisir le template'});
-            },
-            closeModal(){
-                $("#editContentModal" + this.line).modal("hide")
             }
         },
         created () {

@@ -3,7 +3,6 @@
 namespace Jet\Modules\Post\Models;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Jet\Models\Website;
 use JetFire\Db\Model;
 use Doctrine\ORM\Mapping;
 

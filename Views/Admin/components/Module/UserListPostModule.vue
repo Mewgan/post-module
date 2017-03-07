@@ -34,8 +34,18 @@
             }
         },
         mounted(){
-            if(this.content.data.db !== undefined && this.content.data.db instanceof Array && this.content.data.db.length == 1){
-                if(this.content.data.db[0].type !== undefined && this.content.data.db[0].type == 'static' && this.content.data.db[0].value !== undefined && this.content.data.db[0].value instanceof Array && this.content.data.db[0].value.length == 1){
+            if(
+                this.content.data.db !== undefined &&
+                this.content.data.db instanceof Array &&
+                this.content.data.db.length == 1
+            ){
+                if(
+                    this.content.data.db[0].type !== undefined &&
+                    this.content.data.db[0].type == 'static' &&
+                    this.content.data.db[0].value !== undefined &&
+                    this.content.data.db[0].value instanceof Array &&
+                    this.content.data.db[0].value.length == 1
+                ){
                     this.category = this.content.data.db[0].value[0];
                 }
             }

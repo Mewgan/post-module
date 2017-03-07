@@ -4,16 +4,15 @@
         background: #f2f2f2;
     }
 
-    .edit-post .add-field {
+    .edit-post-module .add-field {
         margin-top: -20px;
         margin-right: 8px;
     }
 
-
 </style>
 
 <template>
-    <div class="edit-post">
+    <div class="edit-post-module">
         <form class="form">
             <h5 class="module-title">Information :</h5>
             <div class="row">
@@ -139,12 +138,19 @@
     import {template_api} from '@front/api'
     import {post_api} from '../../api'
 
+    import module_mixin from '@front/mixin/module'
+
     export default{
         name: 'single-post',
         components: {
-            TemplateEditor: resolve => { require(['@front/components/Helper/TemplateEditor.vue'], resolve) },
-            Select2: resolve => { require(['@front/components/Helper/Select2.vue'], resolve) }
+            TemplateEditor: resolve => {
+                require(['@front/components/Helper/TemplateEditor.vue'], resolve)
+            },
+            Select2: resolve => {
+                require(['@front/components/Helper/Select2.vue'], resolve)
+            }
         },
+        mixins: [module_mixin],
         props: {
             line: {
                 default: 'default'
@@ -223,16 +229,6 @@
             },
             changeType(i, type){
                 this.content_data.db[i].type = type;
-            },
-            updateContent(){
-                if (this.content.template.id !== undefined && this.content.template.id != '') {
-                    this.$emit('updateContent', this.content);
-                    this.closeModal();
-                } else
-                    this.setResponse({status: 'error', message: 'Veuillez choisir le template'});
-            },
-            closeModal(){
-                $("#editContentModal" + this.line).modal("hide")
             }
         },
         created () {
