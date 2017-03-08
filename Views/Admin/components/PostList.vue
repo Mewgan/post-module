@@ -173,7 +173,7 @@
                                 <!-- BEGIN RESULT LIST -->
                                 <div class="list-results list-results-underlined">
                                     <div v-for="post in resource.data" class="col-xs-12 post-box">
-                                        <div class="checkbox checkbox-styled checkbox-primary">
+                                        <div v-if="post.website.id == website_id" class="checkbox checkbox-styled checkbox-primary">
                                             <label>
                                                 <input type="checkbox" :value="post.id" v-model="selected_items">
                                                 <span></span>
@@ -217,7 +217,7 @@
                                             {{post.description}}
                                         </div>
                                         <div class="clearfix"></div>
-                                        <em class="pull-right">Dernière mise à jour : {{ post.updated_at.data |
+                                        <em class="pull-right">Dernière mise à jour : {{ post.updated_at.date |
                                             moment('DD/MM/YYYY') }}</em>
                                     </div><!--end .col -->
                                 </div><!--end .list-results -->
