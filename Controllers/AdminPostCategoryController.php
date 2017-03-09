@@ -63,8 +63,8 @@ class AdminPostCategoryController extends AdminController
     {
         if ($request->method() == 'POST') {
 
-            if(!$this->isWebsiteOwner($auth, $website))
-                return ['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour mettre à jour une catégorie'];
+            if (!$this->isWebsiteOwner($auth, $website))
+                return ['status' => 'error', 'message' => 'Vous n\'avez pas les permissions pour créer une catégorie'];
 
             $category = $request->request->get('name');
             if (PostCategory::where('name', $category)->where('website', $website)->count() == 0) {
@@ -90,11 +90,17 @@ class AdminPostCategoryController extends AdminController
     {
         if ($request->method() == 'PUT') {
 
-            if(!$this->isWebsiteOwner($auth, $website))
-                return ['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour mettre à jour une catégorie'];
+            if (!$this->isWebsiteOwner($auth, $website))
+                return ['status' => 'error', 'message' => 'Vous n\'avez pas les permissions pour mettre à jour une catégorie'];
 
             $name = $request->get('name');
             $replace = false;
+
+            /** @var Website $website */
+            $website = Website::findOneById($website);
+            if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
+
+
             if (PostCategory::where('name', $name)->where('website', $website)->count() > 0) {
                 return ['status' => 'error', 'message' => 'La catégorie existe déjà'];
             } else {
@@ -105,11 +111,7 @@ class AdminPostCategoryController extends AdminController
 
                 $old_category = $category;
 
-                /** @var Website $website */
-                $website = Website::findOneById($website);
-                if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
-
-                if (is_null($category->getWebsite()) || $category->getWebsite()->getId() != $website) {
+                if (is_null($category->getWebsite()) || $category->getWebsite()->getId() != $website->getId()) {
                     $data = $this->excludeData($website->getData(), 'post_categories', $category->getId());
                     $website->setData($data);
                     Website::watch($website);
@@ -123,18 +125,18 @@ class AdminPostCategoryController extends AdminController
                 $category->setWebsite($website);
             }
 
-            if(PostCategory::watchAndSave($category)){
-                if($replace){
+            if (PostCategory::watchAndSave($category)) {
+                if ($replace) {
                     $event->emit('updatePostCategory', ['old_post_category' => $old_category->getId(), 'post_category' => $category->getId(), 'website' => $website->getId()]);
-                    $this->createPosts($old_category, $category, $website, $this->app->get('event'));
+                    $this->createPosts($old_category, $category, $website, $event);
                     $website = $category->getWebsite();
                     $data = $this->replaceData($website->getData(), 'post_categories', $id, $category->getId());
                     $website->setData($data);
                     Website::watchAndSave($website);
-                }else
+                } else
                     $event->emit('updatePostCategory', ['post_category' => $category->getId(), 'website' => $website->getId()]);
                 return ['status' => 'success', 'message' => 'La catégorie a bien été mis à jour'];
-            }else
+            } else
                 return ['status' => 'error', 'message' => 'Erreur lors de la mise à jour'];
         }
         return ['status' => 'error', 'message' => 'Requête non autorisée'];
@@ -146,13 +148,14 @@ class AdminPostCategoryController extends AdminController
      * @param Website $website
      * @param EventProvider $event
      */
-    private function createPosts(PostCategory $old_category, PostCategory $category, Website $website, EventProvider $event){
+    private function createPosts(PostCategory $old_category, PostCategory $category, Website $website, EventProvider $event)
+    {
         $data = $website->getData();
         $this->getWebsite($website);
         $posts = $old_category->getPosts();
         /** @var Post $post */
-        foreach ($posts as $post){
-            if(in_array($post->getWebsite()->getId(), $this->websites)) {
+        foreach ($posts as $post) {
+            if (in_array($post->getWebsite()->getId(), $this->websites)) {
                 /** @var Post $post */
                 if ($post->getWebsite() != $website) {
                     /** @var Post $new_post */
@@ -165,7 +168,7 @@ class AdminPostCategoryController extends AdminController
                     $new_post->removePostCategory($old_category);
                     $new_post->addPostCategory($category);
                     $new_post->setWebsite($website);
-                    if (Post::watchAndSave($new_post)) $event->emit('updatePost', ['old_post' => $post->getId(),'post' => $new_post->getId(), 'website' => $website->getId()]);
+                    if (Post::watchAndSave($new_post)) $event->emit('updatePost', ['old_post' => $post->getId(), 'post' => $new_post->getId(), 'website' => $website->getId()]);
 
                     $data = $this->excludeData($data, 'posts', $post->getId());
                     $data = $this->replaceData($data, 'posts', $post->getId(), $new_post->getId());
@@ -195,12 +198,12 @@ class AdminPostCategoryController extends AdminController
             /** @var Website $website */
             $website = Website::findOneById($website);
             if (is_null($website)) return ['status' => 'error', 'message' => 'Impossible de trouver le site web'];
-            
-            if(!$this->isWebsiteOwner($auth, $website->getId()))
-                return ['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour supprimer ces catégories'];
+
+            if (!$this->isWebsiteOwner($auth, $website->getId()))
+                return ['status' => 'error', 'message' => 'Vous n\'avez pas les permissions pour supprimer ces catégories'];
 
             $data = $website->getData();
-           
+
             $categories = PostCategory::repo()->findById($request->get('ids'));
             $ids = [];
 
