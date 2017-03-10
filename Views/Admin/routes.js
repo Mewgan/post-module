@@ -24,10 +24,10 @@ export var content_routes = {
         require(['./components/Module/SinglePostModule.vue'], resolve)
     },
     userListPost: (resolve) => {
-        require(['./components/Module/UserListPostModule.vue'], resolve)
+        require(['./components/Module/UserPostModule.vue'], resolve)
     },
     userSinglePost: (resolve) => {
-        require(['./components/Module/UserListPostModule.vue'], resolve)
+        require(['./components/Module/UserPostModule.vue'], resolve)
     }
 };
 
