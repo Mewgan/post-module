@@ -6,48 +6,57 @@
     .list-post button {
         margin-left: 10px;
     }
-    .list-post .section-header .btn{
+
+    .list-post .section-header .btn {
         margin-left: 10px;
     }
+
     .list-post .section-body {
         margin-top: 10px;;
     }
+
     .list-post .checkbox {
         float: left;
     }
+
     .list-post .list-results .post-box {
         padding: 20px 10px;
     }
-    .list-post a.pointer{
+
+    .list-post a.pointer {
         cursor: pointer;
     }
+
     .list-post .post-icon {
         padding: 0 10px;
         display: inline-block;
         vertical-align: middle;
     }
-    .list-post .category-icon{
+
+    .list-post .category-icon {
         padding-right: 10px;
     }
-    .list-post .clearfix{
+
+    .list-post .clearfix {
         clear: both;
     }
-    .list-post .edit-category{
+
+    .list-post .edit-category {
         cursor: pointer;
         position: absolute;
         top: 0;
         right: 5px;
     }
-    .list-post .edit-category i{
+
+    .list-post .edit-category i {
         margin-right: 10px;
     }
-    .list-post .edit-category:hover i{
-        font-size:2em;
+
+    .list-post .edit-category:hover i {
+        font-size: 2em;
     }
-    .list-post .category-title{
-        padding-right:20px;
-    }
-    .list-post .post-change-state{
+
+    .list-post .post-change-state {
         float: left;
         margin: 10px 20px;
     }
@@ -114,7 +123,7 @@
                            @click="setParams({resource:resource.name, key: 'filter', value: {column:'c.id',operator:'eq',value:category.id}});addClass(category.slug)">
                             <i :title="getIconTitle('Cette catégorie',category.website)"
                                :class="'category-icon ' + getIconClass(category.website)"></i>
-                            <span class="category-title">{{category.name}}</span>
+                            <span class="category-title pr20">{{category.name}}</span>
                         </a>
                         <span @click="selectCategory(category)" data-toggle="modal" data-target="#editPostCategoryModal"
                               class="pull-right clearfix edit-category"><i class="fa fa-pencil"></i></span>
@@ -136,10 +145,11 @@
                                         </option>
                                     </select>
                                     <span class="text-light text-lg">Total <strong>{{resource.total}}</strong></span>
-                                    <div class="btn-group btn-group-sm pull-right">
-                                        <button type="button" class="btn btn-default-light dropdown-toggle"
-                                                data-toggle="dropdown">
-                                            <span class="glyphicon glyphicon-arrow-down"></span> Trier
+                                    <div class="ml10 btn-group pull-right group-action">
+                                        <button type="button" class="btn ink-reaction btn-default">Trier</button>
+                                        <button type="button" class="btn ink-reaction btn-primary dropdown-toggle"
+                                                data-toggle="dropdown" aria-expanded="false"><i
+                                                class="fa fa-caret-down"></i>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-right animation-dock" role="menu">
                                             <li>
@@ -156,15 +166,19 @@
                                                     décroissant</a></li>
                                         </ul>
                                     </div>
-                                    <div class="btn-group btn-group-sm pull-right">
-                                        <button type="button" class="btn btn-default-light dropdown-toggle"
-                                                data-toggle="dropdown">
-                                            <span class="glyphicon glyphicon-arrow-down"></span> Séléction
+                                    <div class="btn-group pull-right group-action">
+                                        <button type="button" class="btn ink-reaction btn-default">Sélection</button>
+                                        <button type="button" class="btn ink-reaction btn-primary dropdown-toggle"
+                                                data-toggle="dropdown" aria-expanded="false"><i
+                                                class="fa fa-caret-down"></i>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-right animation-dock" role="menu">
-                                            <li><a @click="updatePostState(1)">Publier</a></li>
-                                            <li><a @click="updatePostState(0)">Dépubier</a></li>
-                                            <li><a data-toggle="modal" data-target="#deletePostModal">Supprimer</a></li>
+                                            <li><a @click="updatePostState(1)"><i
+                                                    class="fa fa-fw fa-check text-primary"></i> Publier</a></li>
+                                            <li><a @click="updatePostState(0)"><i
+                                                    class="fa fa-fw fa-times text-warning"></i> Dépublier</a></li>
+                                            <li><a data-toggle="modal" data-target="#deletePostModal"><i
+                                                    class="fa fa-fw fa-trash text-danger"></i> Supprimer</a></li>
                                         </ul>
                                     </div>
                                 </div><!--end .margin-bottom-xxl -->
@@ -173,7 +187,8 @@
                                 <!-- BEGIN RESULT LIST -->
                                 <div class="list-results list-results-underlined">
                                     <div v-for="post in resource.data" class="col-xs-12 post-box">
-                                        <div v-if="post.website.id == website_id" class="checkbox checkbox-styled checkbox-primary">
+                                        <div v-if="post.website.id == website_id"
+                                             class="checkbox checkbox-styled checkbox-primary">
                                             <label>
                                                 <input type="checkbox" :value="post.id" v-model="selected_items">
                                                 <span></span>
@@ -330,7 +345,9 @@
     export default
     {
         components: {
-            Pagination: resolve => { require(['@front/components/Helper/Pagination.vue'], resolve) }
+            Pagination: resolve => {
+                require(['@front/components/Helper/Pagination.vue'], resolve)
+            }
         },
         mixins: [pagination_mixin],
         data () {

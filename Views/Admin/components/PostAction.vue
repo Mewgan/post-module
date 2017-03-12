@@ -1,28 +1,27 @@
 <style>
-    .post-action .title-input{
+    .post-action .title-input {
         color: #20252b;
         font-size: 1em;
         width: 100%;
         padding: 5px;
     }
-    .post-action .right-bloc{
-        font-size:1.3em;
-        margin-bottom:10px;
+    .post-action .right-bloc {
+        font-size: 1.3em;
+        margin-bottom: 10px;
     }
-    .post-action i{
+    .post-action i {
         margin-right: 5px;
     }
-    .post-action article{
+    .post-action article {
         padding: 10px;
     }
-    .post-action .right-bottom-bloc h3{
+    .post-action .right-bottom-bloc h3 {
         overflow: auto;
         padding: 15px 10px;
     }
-    .post-action .right-bottom-bloc button{
+    .post-action .right-bottom-bloc button {
         margin-left: 5px;
     }
-
     .post-action .img-body {
         padding: 0;
         height: 200px !important;
@@ -31,7 +30,6 @@
         position: relative;
         background: #c2bfbf;
     }
-
     .post-action .img-body img {
         max-height: 100%;
         max-width: 100%;
@@ -44,8 +42,16 @@
         right: 0;
         margin: auto;
     }
-    .post-action .mar-top-10{
-        margin-top:10px;
+    .post-action .mar-top-10 {
+        margin-top: 10px;
+    }
+    .post-action .media-action-btn{
+        float: right;
+        padding: 5px 0;
+    }
+    .post-action .right-bottom-bloc .media-title{
+        float: left;
+        margin-top: 0;
     }
 </style>
 
@@ -163,18 +169,33 @@
                                 <!-- BEGIN BLOG POST MENUBAR -->
                                 <div class="col-md-3">
                                     <div class="card-body right-bottom-bloc">
-                                        <h3 class="text-light">Image à la une
-                                            <button @click="launchMedia" data-toggle="modal"
+                                        <h3 class="media-title text-light">Image à la une
+                                            <!--<button @click="launchMedia" data-toggle="modal"
                                                     data-target="#mediaLibrary0" type="button"
                                                     class="btn pull-right ink-reaction btn-floating-action btn-info"><i
                                                     class="fa fa-pencil"></i></button>
                                             <button @click="post.thumbnail = null" type="button"
                                                     class="btn pull-right ink-reaction btn-floating-action btn-danger">
-                                                <i class="fa fa-trash"></i></button>
+                                                <i class="fa fa-trash"></i></button>-->
                                         </h3>
+                                        <div class="media-action-btn btn-group">
+                                            <button type="button"
+                                                    class="btn ink-reaction btn-floating-action btn-primary"
+                                                    data-toggle="dropdown" aria-expanded="false">
+                                                <i class="fa fa-bars"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                                <li><a @click="launchMedia" data-toggle="modal"
+                                                       data-target="#mediaLibrary0"><i class="fa text-info fa-pencil"></i>
+                                                    Modifier l'image</a></li>
+                                                <li><a @click="post.thumbnail = null"><i class="fa text-danger fa-trash"></i>
+                                                    Supprimer l'image</a></li>
+                                            </ul>
+                                        </div>
                                         <div v-if="post.thumbnail != null" class="img-body">
                                             <img v-img="post.thumbnail.path" :alt="post.thumbnail.alt" width="100%">
                                         </div>
+                                        <div class="clearfix"></div>
                                         <h3 class="text-light">Catégories
                                             <button data-toggle="modal" data-target="#createPostCategoryModal"
                                                     type="button"
@@ -290,9 +311,15 @@
     export default
     {
         components: {
-            TinymceEditor: resolve => { require(['@front/components/Helper/TinymceEditor.vue'], resolve) },
-            Media: resolve => { require(['@front/components/Helper/Media.vue'], resolve) },
-            CustomFieldRender: resolve => { require(['@front/components/CustomFieldRender/Repeater/RepeaterRenderCustomField.vue'], resolve) }
+            TinymceEditor: resolve => {
+                require(['@front/components/Helper/TinymceEditor.vue'], resolve)
+            },
+            Media: resolve => {
+                require(['@front/components/Helper/Media.vue'], resolve)
+            },
+            CustomFieldRender: resolve => {
+                require(['@front/components/CustomFieldRender/Repeater/RepeaterRenderCustomField.vue'], resolve)
+            }
         },
         data () {
             return {
