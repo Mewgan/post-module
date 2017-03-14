@@ -145,7 +145,7 @@
                                         <div>
                                             <tinymce-editor @updateContent="updateContent" :height="300"
                                                             :id="'post-' + post_id" :launch="launch_tinymce"
-                                                            :dir="'/public/media/sites/' + website_id + '/'"
+                                                            :dir="website_dir"
                                                             :value="post.content"></tinymce-editor>
                                         </div>
                                     </article>
@@ -275,7 +275,7 @@
                 </div><!-- /.modal-dialog -->
             </div>
             <media :launch_media="launch_media" :button="false" @updateTarget="targetUpdate"
-                   :dir="'/public/media/sites/' + website_id + '/'" :accepted_file_type="file_type"
+                   :dir="website_dir" :accepted_file_type="file_type"
                    :max_options="max_media_options"></media>
         </section>
 
@@ -303,6 +303,7 @@
 
 <script type="text/babel">
 
+    import {dropzone_mixin} from '@front/mixin/dropzone'
     import {custom_field_api} from '@front/api'
     import {post_api, post_category_api} from '../api'
 
@@ -321,6 +322,7 @@
                 require(['@front/components/CustomFieldRender/Repeater/RepeaterRenderCustomField.vue'], resolve)
             }
         },
+        mixins: [dropzone_mixin],
         data () {
             return {
                 website_id: this.$route.params.website_id,
@@ -335,7 +337,7 @@
                         date: ''
                     },
                     thumbnail: {
-                        path: '/public/media/user/default-photo.png',
+                        path: '',
                         alt: ''
                     },
                     website: {
