@@ -53,6 +53,7 @@
         float: left;
         margin-top: 0;
     }
+
 </style>
 
 <template>
@@ -145,7 +146,6 @@
                                         <div>
                                             <tinymce-editor @updateContent="updateContent" :height="300"
                                                             :id="'post-' + post_id" :launch="launch_tinymce"
-                                                            :dir="website_dir"
                                                             :value="post.content"></tinymce-editor>
                                         </div>
                                     </article>
@@ -186,9 +186,11 @@
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                                 <li><a @click="launchMedia" data-toggle="modal"
-                                                       data-target="#mediaLibrary0"><i class="fa text-info fa-pencil"></i>
+                                                       data-target="#mediaLibrary0"><i
+                                                        class="fa text-info fa-pencil"></i>
                                                     Modifier l'image</a></li>
-                                                <li><a @click="post.thumbnail = null"><i class="fa text-danger fa-trash"></i>
+                                                <li><a @click="post.thumbnail = null"><i
+                                                        class="fa text-danger fa-trash"></i>
                                                     Supprimer l'image</a></li>
                                             </ul>
                                         </div>
@@ -275,7 +277,7 @@
                 </div><!-- /.modal-dialog -->
             </div>
             <media :launch_media="launch_media" :button="false" @updateTarget="targetUpdate"
-                   :dir="website_dir" :accepted_file_type="file_type"
+                   :accepted_file_type="file_type"
                    :max_options="max_media_options"></media>
         </section>
 
@@ -303,7 +305,6 @@
 
 <script type="text/babel">
 
-    import {dropzone_mixin} from '@front/mixin/dropzone'
     import {custom_field_api} from '@front/api'
     import {post_api, post_category_api} from '../api'
 
@@ -322,7 +323,6 @@
                 require(['@front/components/CustomFieldRender/Repeater/RepeaterRenderCustomField.vue'], resolve)
             }
         },
-        mixins: [dropzone_mixin],
         data () {
             return {
                 website_id: this.$route.params.website_id,
