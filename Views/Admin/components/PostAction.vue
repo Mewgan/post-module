@@ -54,6 +54,7 @@
         margin-top: 0;
     }
 
+
 </style>
 
 <template>
@@ -144,8 +145,9 @@
                                     <article class="style-default-bright">
                                         <h4>Contenu</h4>
                                         <div>
-                                            <tinymce-editor @updateContent="updateContent" :height="300"
-                                                            :id="'post-' + post_id" :launch="launch_tinymce"
+                                            <tinymce-editor v-if="launch_tinymce" @updateContent="updateContent"
+                                                            :height="300"
+                                                            :id="'post-' + post_id"
                                                             :value="post.content"></tinymce-editor>
                                         </div>
                                     </article>
