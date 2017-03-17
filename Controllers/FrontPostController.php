@@ -93,7 +93,7 @@ class FrontPostController extends MainController
         /** @var Post $post */
         $post = null;
         $key = explode('@', $key);
-        if(isset($key[1]) && $key[0] == 'post' && is_numeric($key[1])) $post = Post::findOneBydId($key[1]);
+        if(isset($key[1]) && $key[0] == 'post' && is_numeric($key[1])) $post = Post::findOneById($key[1]);
         if(!is_null($post)) {
             $rules = [
                 'everywhere' => null,

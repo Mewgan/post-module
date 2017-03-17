@@ -17,6 +17,10 @@ class LoadPostCategory extends AbstractFixture
             'name' => 'Actualité',
             'slug' => 'actualite'
         ],
+        [
+            'name' => 'Partenaire',
+            'slug' => 'partenaire'
+        ],
     ];
 
     public function load(ObjectManager $manager)
