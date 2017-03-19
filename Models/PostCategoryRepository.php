@@ -2,15 +2,15 @@
 
 namespace Jet\Modules\Post\Models;
 
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Jet\Models\AppRepository;
 
 /**
  * Class PostCategoryRepository
  * @package Jet\Modules\Post\Models
  */
-class PostCategoryRepository extends EntityRepository
+class PostCategoryRepository extends AppRepository
 {
 
     /**
@@ -188,10 +188,9 @@ class PostCategoryRepository extends EntityRepository
         } else {
             $query->andWhere($query->expr()->isNull('w.id'));
         }
-
-        if (isset($params['options']) && isset($params['options']['parent_exclude']) && isset($params['options']['parent_exclude']['post_categories']) && !empty($params['options']['parent_exclude']['post_categories'])) {
-            $query->andWhere($query->expr()->notIn('c.id', ':exclude_ids'))
-                ->setParameter('exclude_ids', $params['options']['parent_exclude']['post_categories']);
+        
+        if(isset($params['options'])){
+            $query = $this->excludeData($query, $params['options'], 'post_categories', 'c');
         }
 
         return $query;

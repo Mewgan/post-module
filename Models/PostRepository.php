@@ -2,15 +2,15 @@
 
 namespace Jet\Modules\Post\Models;
 
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Jet\Models\AppRepository;
 
 /**
  * Class PostRepository
  * @package Jet\Modules\Post\Models
  */
-class PostRepository extends EntityRepository
+class PostRepository extends AppRepository
 {
 
     /**
@@ -194,17 +194,8 @@ class PostRepository extends EntityRepository
                 ->setParameter('websites', $params['websites']);
         }
 
-        if (isset($params['options']) && isset($params['options']['parent_exclude'])) {
-            if (isset($params['options']['parent_exclude']['posts']) && !empty($params['options']['parent_exclude']['posts'])) {
-                $query->andWhere($query->expr()->notIn('p.id', ':exclude_post_ids'))
-                    ->setParameter('exclude_post_ids', $params['options']['parent_exclude']['posts']);
-            }
-/*
-            if(isset($params['options']['parent_exclude']['post_categories']) && !empty($params['options']['parent_exclude']['post_categories'])){
-                $query->andWhere($query->expr()->notIn('c.id',':exclude_category_ids'))
-                    ->setParameter('exclude_category_ids',$params['options']['parent_exclude']['post_categories']);
-            }*/
-        }
+        if (isset($params['options'])) $query = $this->excludeData($query, $params['options'], 'posts');
+
 
         if (isset($params['db']) && !empty($params['db'])) {
             foreach ($params['db'] as $key => $db) {
@@ -318,22 +309,20 @@ class PostRepository extends EntityRepository
     }
 
     /**
-     * @param $query
+     * @param QueryBuilder $query
      * @param $params
      * @return mixed
      */
-    private function getRequiredParams($query, $params){
+    private function getRequiredParams(QueryBuilder $query, $params){
         if (isset($params['websites']) && !empty($params['websites'])) {
             $query->andWhere($query->expr()->in('w.id', ':websites'))
                 ->setParameter('websites', $params['websites']);
         }
-
-        if (isset($params['options']['parent_exclude'])) {
-            if (isset($params['options']['parent_exclude']['posts']) && !empty($params['options']['parent_exclude']['posts'])) {
-                $query->andWhere($query->expr()->notIn('p.id', ':exclude_post_ids'))
-                    ->setParameter('exclude_post_ids', $params['options']['parent_exclude']['posts']);
-            }
+        
+        if (isset($params['options'])){
+            $query = $this->excludeData($query, $params['options'], 'posts', 'p', 1);
         }
+        
         return $query;
     }
 } 
