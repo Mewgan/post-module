@@ -38,6 +38,7 @@ class AdminPostController extends AdminController
             'search' => ($request->has('params') && isset($request->query('params')['search'])) ? $request->query('params')['search'] : '',
             'order' => ($request->has('params') && isset($request->query('params')['order'])) ? $request->query('params')['order'] : [],
             'filter' => ($request->has('params') && isset($request->query('params')['filter'])) ? $request->query('params')['filter'] : [],
+            'no_category' => ($request->has('params') && isset($request->query('params')['no_category'])) ? true : false,
         ];
 
         $response = Post::repo()->listAll($page, $max, $params);

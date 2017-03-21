@@ -66,6 +66,16 @@ class PostRepository extends AppRepository
                     ->setParameter('value', $params['filter']['value']);
         }
 
+        if(isset($params['no_category']) && $params['no_category'] && isset($params['options']['parent_exclude']['post_categories']) && !empty($params['options']['parent_exclude']['post_categories'])){
+            $countSearch = true;
+            $query->andWhere(
+                $query->expr()->orX(
+                    $query->expr()->isNull('c.id'),
+                    $query->expr()->in('c.id', ':exclude_cat')
+                )
+            )->setParameter('exclude_cat', $params['options']['parent_exclude']['post_categories']);
+        }
+
         (isset($params['order']) && !empty($params['order']) && !empty($params['order']['column']))
             ? $query->addOrderBy($params['order']['column'], strtoupper($params['order']['dir']))
             : $query->orderBy('p.id', 'DESC');
@@ -194,8 +204,9 @@ class PostRepository extends AppRepository
                 ->setParameter('websites', $params['websites']);
         }
 
-        if (isset($params['options'])) $query = $this->excludeData($query, $params['options'], 'posts');
-
+        if (isset($params['options'])) {
+            $query = $this->excludeData($query, $params['options'], 'posts');
+        }
 
         if (isset($params['db']) && !empty($params['db'])) {
             foreach ($params['db'] as $key => $db) {

@@ -26,7 +26,6 @@ class FrontPostController extends MainController
      */
     public function all(Request $request, Website $website, $content)
     {
-
         $data = $content->getData();
         $max = (isset($data['total_row']) && !empty($data['total_row'])) ? (int)$data['total_row'] : 10;
         $page = ($request->exists('page')) ? (int)$request->query('page') : 1;

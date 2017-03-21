@@ -115,7 +115,7 @@
                         les
                         articles</a></li>
                     <li class="post-category post-nothing">
-                        <a @click="setParams({resource:resource.name, key: 'filter', value: {column:'c.id', operator:'isNull'}});addClass('nothing')">Pas
+                        <a @click="setParams({resource:resource.name, key: 'no_category', value: true});addClass('nothing')">Pas
                             de catégorie</a>
                     </li>
                     <li :class="'post-category post-' + category.slug" v-for="category in categories">
