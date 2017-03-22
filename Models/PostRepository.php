@@ -57,23 +57,28 @@ class PostRepository extends AppRepository
         if (isset($params['filter']) && !empty($params['filter']) && !empty($params['filter']['column'])) {
             $countSearch = true;
             $op = (isset($params['filter']['operator'])) ? $params['filter']['operator'] : 'eq';
-            if($op == 'isNull')
+            if ($op == 'isNull')
                 $query->andWhere($query->expr()->isNull($params['filter']['column']));
             elseif ($op == 'isNotNull')
                 $query->andWhere($query->expr()->isNotNull($params['filter']['column']));
-            else
+            else {
                 $query->andWhere($query->expr()->$op($params['filter']['column'], ':value'))
                     ->setParameter('value', $params['filter']['value']);
+            }
         }
 
-        if(isset($params['no_category']) && $params['no_category'] && isset($params['options']['parent_exclude']['post_categories']) && !empty($params['options']['parent_exclude']['post_categories'])){
+        if (isset($params['no_category']) && $params['no_category']) {
             $countSearch = true;
-            $query->andWhere(
-                $query->expr()->orX(
-                    $query->expr()->isNull('c.id'),
-                    $query->expr()->in('c.id', ':exclude_cat')
-                )
-            )->setParameter('exclude_cat', $params['options']['parent_exclude']['post_categories']);
+            if (isset($params['options']['parent_exclude']['post_categories']) && !empty($params['options']['parent_exclude']['post_categories'])) {
+                $query->andWhere(
+                    $query->expr()->orX(
+                        $query->expr()->isNull('c.id'),
+                        $query->expr()->in('c.id', ':exclude_cat')
+                    )
+                )->setParameter('exclude_cat', $params['options']['parent_exclude']['post_categories']);
+            } else {
+                $query->andWhere($query->expr()->isNull('c.id'));
+            }
         }
 
         (isset($params['order']) && !empty($params['order']) && !empty($params['order']['column']))
@@ -123,14 +128,15 @@ class PostRepository extends AppRepository
      * @param $ids
      * @return array
      */
-    public function findById($ids){
+    public function findById($ids)
+    {
         $query = Post::queryBuilder()
             ->select('partial p.{id}')
             ->addSelect('partial w.{id}')
-            ->from('Jet\Modules\Post\Models\Post','p')
-            ->leftJoin('p.website','w');
+            ->from('Jet\Modules\Post\Models\Post', 'p')
+            ->leftJoin('p.website', 'w');
         return $query->where($query->expr()->in('p.id', ':ids'))
-            ->setParameter('ids',$ids)
+            ->setParameter('ids', $ids)
             ->getQuery()->getArrayResult();
     }
 
@@ -139,13 +145,14 @@ class PostRepository extends AppRepository
      * @param $params
      * @return int
      */
-    public function countBySlug($slug, $params){
+    public function countBySlug($slug, $params)
+    {
         $query = Post::queryBuilder()
             ->select('COUNT(p)')
             ->from('Jet\Modules\Post\Models\Post', 'p')
-            ->leftJoin('p.website','w');
+            ->leftJoin('p.website', 'w');
 
-        $query->where($query->expr()->eq('p.slug',':slug'))
+        $query->where($query->expr()->eq('p.slug', ':slug'))
             ->setParameter('slug', $slug);
 
         $query = $this->getRequiredParams($query, $params);
@@ -273,7 +280,7 @@ class PostRepository extends AppRepository
             ->leftJoin('p.website', 'w')
             ->leftJoin('p.categories', 'c');
 
-        if(is_array($categories) && !empty($categories)) {
+        if (is_array($categories) && !empty($categories)) {
             $query->where($query->expr()->in('c.id', ':categories'))
                 ->setParameter('categories', $categories);
         }
@@ -310,10 +317,11 @@ class PostRepository extends AppRepository
      * @return mixed
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function retrieveData($id, $keys){
+    public function retrieveData($id, $keys)
+    {
         $query = Post::queryBuilder()
             ->select($keys)
-            ->from('Jet\Modules\Post\Models\Post','p')
+            ->from('Jet\Modules\Post\Models\Post', 'p')
             ->where('p.id = :id')
             ->setParameter('id', $id);
         return $query->getQuery()->getOneOrNullResult();
@@ -324,16 +332,17 @@ class PostRepository extends AppRepository
      * @param $params
      * @return mixed
      */
-    private function getRequiredParams(QueryBuilder $query, $params){
+    private function getRequiredParams(QueryBuilder $query, $params)
+    {
         if (isset($params['websites']) && !empty($params['websites'])) {
             $query->andWhere($query->expr()->in('w.id', ':websites'))
                 ->setParameter('websites', $params['websites']);
         }
-        
-        if (isset($params['options'])){
+
+        if (isset($params['options'])) {
             $query = $this->excludeData($query, $params['options'], 'posts', 'p', 1);
         }
-        
+
         return $query;
     }
 } 
