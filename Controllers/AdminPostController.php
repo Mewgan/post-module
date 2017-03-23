@@ -65,7 +65,8 @@ class AdminPostController extends AdminController
         if(!$this->isWebsiteOwner($auth, $website))
             return ['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour supprimer ces catégories'];
 
-        $post = Post::repo()->readAdmin($id);
+        if(!$this->getWebsite($website)) return ['status' => 'error', 'Site non trouvé'];
+        $post = Post::repo()->readAdmin($id, ['websites' => $this->websites, 'options' => $this->getWebsiteData($this->website)]);
 
         if (!is_null($post))
             return ['status' => 'success', 'resource' => $post];
@@ -135,6 +136,8 @@ class AdminPostController extends AdminController
                         if (isset($value->get('thumbnail')['id']) && !empty($value->get('thumbnail')['id'])) {
                             $thumbnail = Media::findOneById($value->get('thumbnail')['id']);
                             if (!is_null($thumbnail)) $post->setThumbnail($thumbnail);
+                        }else{
+                            $post->setThumbnail(null);
                         }
                     }
 
@@ -265,8 +268,8 @@ class AdminPostController extends AdminController
     {
         if(!$this->getWebsite($website)) return ['status' => 'error', 'Impossible de trouver le site web'];
         return [
-            'c' => PostCategory::repo()->listTableValues($this->websites, $this->getWebsiteData($this->website)),
-            'p' => Post::repo()->listTableValues($this->websites, $this->getWebsiteData($this->website))
+            'c' => PostCategory::repo()->listTableValues(['websites' => $this->websites, 'options' => $this->getWebsiteData($this->website)]),
+            'p' => Post::repo()->listTableValues(['websites' => $this->websites, 'options' => $this->getWebsiteData($this->website)])
         ];
 
     }
@@ -278,7 +281,7 @@ class AdminPostController extends AdminController
     public function listRuleValue($website)
     {
         if(!$this->getWebsite($website)) return ['status' => 'error', 'Impossible de trouver le site web'];
-        return Post::repo()->getPostRules($this->websites, $this->getWebsiteData($this->website));
+        return Post::repo()->getPostRules(['websites' => $this->websites, 'options' => $this->getWebsiteData($this->website)]);
     }
 
     /**
@@ -290,8 +293,8 @@ class AdminPostController extends AdminController
     {
         if(!$this->getWebsite($website)) return ['status' => 'error', 'Impossible de trouver le site web'];
         if($request->exists('categories'))
-            return ['resource' => Post::repo()->getPostByCategories($this->websites, $this->getWebsiteData($this->website), $request->get('categories'))];
-        return ['resource' => Post::repo()->getPostRules($this->websites, $this->getWebsiteData($this->website))];
+            return ['resource' => Post::repo()->getPostByCategories($request->get('categories'), ['websites' => $this->websites, 'options' => $this->getWebsiteData($this->website)])];
+        return ['resource' => Post::repo()->getPostRules(['websites' => $this->websites, 'options' => $this->getWebsiteData($this->website)])];
     }
 
     /**

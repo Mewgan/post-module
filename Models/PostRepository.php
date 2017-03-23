@@ -63,21 +63,7 @@ class PostRepository extends AppRepository
                 $query->andWhere($query->expr()->isNotNull($params['filter']['column']));
             else {
                 $query->andWhere($query->expr()->$op($params['filter']['column'], ':value'))
-                    ->setParameter('value', $params['filter']['value']);
-            }
-        }
-
-        if (isset($params['no_category']) && $params['no_category']) {
-            $countSearch = true;
-            if (isset($params['options']['parent_exclude']['post_categories']) && !empty($params['options']['parent_exclude']['post_categories'])) {
-                $query->andWhere(
-                    $query->expr()->orX(
-                        $query->expr()->isNull('c.id'),
-                        $query->expr()->in('c.id', ':exclude_cat')
-                    )
-                )->setParameter('exclude_cat', $params['options']['parent_exclude']['post_categories']);
-            } else {
-                $query->andWhere($query->expr()->isNull('c.id'));
+                    ->setParameter('value', $params['filter']['column']);
             }
         }
 
@@ -162,9 +148,10 @@ class PostRepository extends AppRepository
 
     /**
      * @param $id
+     * @param array $params
      * @return mixed
      */
-    public function readAdmin($id)
+    public function readAdmin($id, $params = [])
     {
         $query = Post::queryBuilder()
             ->select('p')
@@ -173,6 +160,8 @@ class PostRepository extends AppRepository
             ->leftJoin('p.website', 'w')
             ->where('p.id = :id')
             ->setParameter('id', $id);
+
+        $query = $this->getRequiredParams($query, $params);
 
         return $query->getQuery()->getOneOrNullResult();
     }
@@ -195,85 +184,30 @@ class PostRepository extends AppRepository
     }
 
     /**
-     * @param QueryBuilder $query
-     * @param $params
-     * @return mixed
-     */
-    private function getQueryWithParams(QueryBuilder $query, $params)
-    {
-        if (isset($params['published'])) {
-            $query->where($query->expr()->eq('p.published', ':published'))
-                ->setParameter('published', $params['published']);
-        }
-
-        if (isset($params['websites']) && !empty($params['websites'])) {
-            $query->andWhere($query->expr()->in('w.id', ':websites'))
-                ->setParameter('websites', $params['websites']);
-        }
-
-        if (isset($params['options'])) {
-            $query = $this->excludeData($query, $params['options'], 'posts');
-        }
-
-        if (isset($params['db']) && !empty($params['db'])) {
-            foreach ($params['db'] as $key => $db) {
-                if (isset($db['type'])) {
-                    if ($db['type'] == 'dynamic' && isset($db['route']) && !empty($db['route']) && isset($params['params'][$db['route']])) {
-                        $query->andWhere($query->expr()->eq($db['alias'] . '.' . $db['column'], ':column_' . $key))
-                            ->setParameter('column_' . $key, $params['params'][$db['route']]);
-                    } elseif ($db['type'] == 'static' && isset($db['value']) && !empty($db['value'])) {
-                        $replace_content = ($db['alias'] == 'p') ? 'posts' : 'post_categories';
-                        if (is_array($db['value'])) {
-                            if (isset($params['options']['parent_replace']) && isset($params['options']['parent_replace'][$replace_content])) {
-                                foreach ($db['value'] as $k => $id) {
-                                    if (isset($params['options']['parent_replace'][$replace_content][$id]))
-                                        $db['value'][$k] = $params['options']['parent_replace'][$replace_content][$id];
-                                }
-                            }
-                            $query->andWhere($query->expr()->in($db['alias'] . '.id', ':column_' . $key))
-                                ->setParameter('column_' . $key, $db['value']);
-                        } else {
-                            if (isset($params['options']['parent_replace']) && isset($params['options']['parent_replace'][$replace_content]) && isset($params['options']['parent_replace'][$replace_content][$db['value']]))
-                                $db['value'] = $params['options']['parent_replace'][$replace_content][$db['value']];
-                            $query->andWhere($query->expr()->eq($db['alias'] . '.id', ':column_' . $key))
-                                ->setParameter('column_' . $key, $db['value']);
-                        }
-                    }
-                }
-            }
-        }
-
-        return $query;
-    }
-
-    /**
-     * @param $websites
-     * @param $options
+     * @param array $params
      * @param array $select
      * @return array
      */
-    public function getPostRules($websites, $options, $select = ['p.id as id', 'p.title as name'])
+    public function getPostRules($params = [], $select = ['p.id as id', 'p.title as name'])
     {
         $query = Post::queryBuilder()
             ->select($select)
             ->from('Jet\Modules\Post\Models\Post', 'p')
             ->leftJoin('p.website', 'w');
 
-        $query = $this->getRequiredParams($query, ['websites' => $websites, 'options' => $options]);
+        $query = $this->getRequiredParams($query, $params);
 
         return $query->getQuery()
             ->getArrayResult();
     }
 
     /**
-     * @param $websites
-     * @param $options
-     * @param $categories
+     * @param array $categories
+     * @param array $params
      * @return array
      */
-    public function getPostByCategories($websites, $options, $categories = [])
+    public function getPostByCategories($categories = [], $params = [])
     {
-
         $query = Post::queryBuilder()
             ->select(['p.id as id', 'p.title as name'])
             ->from('Jet\Modules\Post\Models\Post', 'p')
@@ -285,18 +219,17 @@ class PostRepository extends AppRepository
                 ->setParameter('categories', $categories);
         }
 
-        $query = $this->getRequiredParams($query, ['websites' => $websites, 'options' => $options]);
+        $query = $this->getRequiredParams($query, $params);
 
         return $query->getQuery()
             ->getArrayResult();
     }
 
     /**
-     * @param $websites
-     * @param $options
+     * @param array $params
      * @return array
      */
-    public function listTableValues($websites, $options)
+    public function listTableValues($params = [])
     {
         $query = Post::queryBuilder()
             ->select(['p.id as id', 'p.title as name', 'p.slug as slug'])
@@ -305,7 +238,7 @@ class PostRepository extends AppRepository
             ->where('p.published = :published')
             ->setParameter('published', true);
 
-        $query = $this->getRequiredParams($query, ['websites' => $websites, 'options' => $options]);
+        $query = $this->getRequiredParams($query, $params);
 
         return $query->getQuery()
             ->getArrayResult();
@@ -340,7 +273,85 @@ class PostRepository extends AppRepository
         }
 
         if (isset($params['options'])) {
-            $query = $this->excludeData($query, $params['options'], 'posts', 'p', 1);
+            $query = $this->excludeData($query, $params['options'], 'posts', 'p');
+            /*$query = $this->excludeData($query, $params['options'], 'post_categories', 'c');*/
+        }
+
+        return $query;
+    }
+
+    /**
+     * @param QueryBuilder $query
+     * @param $params
+     * @return mixed
+     */
+    private function getQueryWithParams(QueryBuilder $query, $params)
+    {
+
+        $query = $this->getRequiredParams($query, $params);
+
+        if (isset($params['published'])) {
+            $query->andWhere($query->expr()->eq('p.published', ':published'))
+                ->setParameter('published', $params['published']);
+        }
+
+        if (isset($params['no_category']) && $params['no_category']) {
+            if (isset($params['options']['parent_exclude']['post_categories']) && !empty($params['options']['parent_exclude']['post_categories'])) {
+                $query->andWhere(
+                    $query->expr()->orX(
+                        $query->expr()->isNull('c.id'),
+                        $query->expr()->in('c.id', ':exclude_cat')
+                    )
+                )->setParameter('exclude_cat', $params['options']['parent_exclude']['post_categories']);
+            } else {
+                $query->andWhere($query->expr()->isNull('c.id'));
+            }
+        }
+
+        $query = $this->frontQueryParams($query, $params);
+
+        return $query;
+    }
+
+    /**
+     * @param QueryBuilder $query
+     * @param $params
+     * @return QueryBuilder
+     */
+    private function frontQueryParams(QueryBuilder $query, $params)
+    {
+        if (isset($params['db']) && !empty($params['db'])) {
+            foreach ($params['db'] as $key => $db) {
+                if (isset($db['type'])) {
+                    if ($db['type'] == 'dynamic' && isset($db['route']) && !empty($db['route']) && isset($params['params'][$db['route']])) {
+                        $query->andWhere($query->expr()->eq($db['alias'] . '.' . $db['column'], ':column_' . $key))
+                            ->setParameter('column_' . $key, $params['params'][$db['route']]);
+                    } elseif ($db['type'] == 'static' && isset($db['value']) && !empty($db['value'])) {
+                        $replace_content = ($db['alias'] == 'p') ? 'posts' : 'post_categories';
+                        if (is_array($db['value'])) {
+                            if (isset($params['options']['parent_exclude'][$replace_content]) && isset($params['options']['parent_replace'][$replace_content])) {
+                                foreach ($db['value'] as $k => $id) {
+                                    if (in_array($id, $params['options']['parent_exclude'][$replace_content]))
+                                        unset($db['value'][$key]);
+                                    if (isset($params['options']['parent_replace'][$replace_content][$id]))
+                                        $db['value'][] = $params['options']['parent_replace'][$replace_content][$id];
+                                }
+                            }
+                            $query->andWhere($query->expr()->in($db['alias'] . '.id', ':column_' . $key))
+                                ->setParameter('column_' . $key, $db['value']);
+                        } else {
+                            if (in_array($db['value'], $params['options']['parent_exclude'][$replace_content]))
+                                $db['value'] = null;
+                            if (isset($params['options']['parent_replace'][$replace_content][$db['value']]))
+                                $db['value'] = $params['options']['parent_replace'][$replace_content][$db['value']];
+                            if (!is_null($db['value'])) {
+                                $query->andWhere($query->expr()->eq($db['alias'] . '.id', ':column_' . $key))
+                                    ->setParameter('column_' . $key, $db['value']);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         return $query;

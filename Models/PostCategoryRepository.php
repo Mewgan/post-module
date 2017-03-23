@@ -52,9 +52,10 @@ class PostCategoryRepository extends AppRepository
             $op = (isset($params['filter']['operator'])) ? $params['filter']['operator'] : 'eq';
             if ($op == 'isNull')
                 $query->andWhere($query->expr()->isNull($params['filter']['column']));
-            else
+            else {
                 $query->andWhere($query->expr()->eq($params['filter']['column'], ':value'))
                     ->setParameter('value', $params['filter']['value']);
+            }
         }
 
         (isset($params['order']) && !empty($params['order']) && !empty($params['order']['column']))
@@ -70,7 +71,7 @@ class PostCategoryRepository extends AppRepository
      * @param $params
      * @return mixed
      */
-    public function frontListAll($params)
+    public function frontListAll($params = [])
     {
         $query = PostCategory::queryBuilder();
         $query->select('partial c.{id,name,slug}')
@@ -105,7 +106,7 @@ class PostCategoryRepository extends AppRepository
      */
     public function read($params = [])
     {
-        $query = PostCategory::em()->createQueryBuilder('c')
+        $query = PostCategory::queryBuilder()
             ->select('c')
             ->from('Jet\Modules\Post\Models\PostCategory', 'c')
             ->leftJoin('c.website', 'w');
@@ -153,18 +154,17 @@ class PostCategoryRepository extends AppRepository
     }
 
     /**
-     * @param $websites
-     * @param $options
+     * @param array $params
      * @return array
      */
-    public function listTableValues($websites, $options)
+    public function listTableValues($params = [])
     {
         $query = PostCategory::queryBuilder()
             ->select(['c.id as id', 'c.name as name', 'c.slug as slug'])
             ->from('Jet\Modules\Post\Models\PostCategory', 'c')
             ->leftJoin('c.website', 'w');
 
-        $query = $this->getQueryWithParams($query, ['websites' => $websites, 'options' => $options]);
+        $query = $this->getQueryWithParams($query, $params);
 
         return $query->getQuery()
             ->getArrayResult();

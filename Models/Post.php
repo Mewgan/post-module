@@ -162,9 +162,9 @@ class Post extends Model implements \JsonSerializable
     }
 
     /**
-     * @param Media $thumbnail
+     * @param mixed $thumbnail
      */
-    public function setThumbnail(Media $thumbnail)
+    public function setThumbnail($thumbnail)
     {
         $this->thumbnail = $thumbnail;
     }
