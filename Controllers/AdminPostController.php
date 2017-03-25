@@ -63,10 +63,25 @@ class AdminPostController extends AdminController
     {
 
         if(!$this->isWebsiteOwner($auth, $website))
-            return ['status' => 'error', 'message' => 'Vous n\'avez pas les permission pour supprimer ces catégories'];
+            return ['status' => 'error', 'message' => 'Vous n\'avez pas les permissions pour supprimer ces catégories'];
 
         if(!$this->getWebsite($website)) return ['status' => 'error', 'Site non trouvé'];
-        $post = Post::repo()->readAdmin($id, ['websites' => $this->websites, 'options' => $this->getWebsiteData($this->website)]);
+
+        $params = [
+            'websites' => $this->websites,
+            'options' => $this->getWebsiteData($this->website),
+            'db' => [
+                [
+                    'alias' => 'p',
+                    'type' => 'static',
+                    'column' => 'id',
+                    'route' => '',
+                    'value' => [$id],
+                ]
+            ],
+        ];
+
+        $post = Post::repo()->read($params);
 
         if (!is_null($post))
             return ['status' => 'success', 'resource' => $post];
@@ -110,7 +125,7 @@ class AdminPostController extends AdminController
                     $slug = ($value->has('slug') && !empty($value->get('slug')) && $auth->get('status')->level < 4)
                         ? $value->get('slug') : $slugify->slugify($value->get('title'));
 
-                    /* Check for douplon */
+                    /* Check for duplicate post */
                     $countPost = Post::repo()->countBySlug($slug, ['websites' => $this->websites, 'options' => $this->getWebsiteData($this->website)]);
                     if($id == 'create' && $countPost > 0 || $id != 'create' && $countPost > 1)
                         return ['status' => 'error', 'message' => 'Un article existe déjà avec ce titre'];
@@ -172,7 +187,7 @@ class AdminPostController extends AdminController
      * @param $post
      * @param $website
      */
-    public function emitPostEvent(EventProvider $event, $old_post, $post, $website){
+    public function emitPostUpdateEvent(EventProvider $event, $old_post, $post, $website){
         /* Emit event to listen */
         $event->emit('updatePost', ['old_post' => $old_post, 'post' => $post, 'website' => $website]);
     }
@@ -267,9 +282,14 @@ class AdminPostController extends AdminController
     public function listTableValues($website)
     {
         if(!$this->getWebsite($website)) return ['status' => 'error', 'Impossible de trouver le site web'];
+        $params = [
+            'websites' => $this->websites,
+            'options' => $this->getWebsiteData($this->website),
+            'published' => true
+        ];
         return [
-            'c' => PostCategory::repo()->listTableValues(['websites' => $this->websites, 'options' => $this->getWebsiteData($this->website)]),
-            'p' => Post::repo()->listTableValues(['websites' => $this->websites, 'options' => $this->getWebsiteData($this->website)])
+            'c' => PostCategory::repo()->listTableValues($params),
+            'p' => Post::repo()->listTableValues($params)
         ];
 
     }

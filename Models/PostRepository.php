@@ -45,34 +45,12 @@ class PostRepository extends AppRepository
 
         $query = $this->getQueryWithParams($query, $params);
 
-        if (isset($params['search']) && !empty($params['search'])) {
+        if ((isset($params['search']) && !empty($params['search'])) || isset($params['filter']['column'])) {
             $countSearch = true;
-            $query->andWhere($query->expr()->orX(
-                $query->expr()->like('p.title', ':search'),
-                $query->expr()->like('p.description', ':search'),
-                $query->expr()->like('c.name', ':search')
-            ))->setParameter('search', '%' . $params['search'] . '%');
         }
-
-        if (isset($params['filter']) && !empty($params['filter']) && !empty($params['filter']['column'])) {
-            $countSearch = true;
-            $op = (isset($params['filter']['operator'])) ? $params['filter']['operator'] : 'eq';
-            if ($op == 'isNull')
-                $query->andWhere($query->expr()->isNull($params['filter']['column']));
-            elseif ($op == 'isNotNull')
-                $query->andWhere($query->expr()->isNotNull($params['filter']['column']));
-            else {
-                $query->andWhere($query->expr()->$op($params['filter']['column'], ':value'))
-                    ->setParameter('value', $params['filter']['column']);
-            }
-        }
-
-        (isset($params['order']) && !empty($params['order']) && !empty($params['order']['column']))
-            ? $query->addOrderBy($params['order']['column'], strtoupper($params['order']['dir']))
-            : $query->orderBy('p.id', 'DESC');
 
         $pg = new Paginator($query);
-        $data = $pg->getQuery()->getArrayResult();
+        $data = $this->reassignCategories($pg->getQuery()->getArrayResult(), $params);
         return ['data' => $data, 'total' => ($countSearch) ? count($data) : (int)$this->countPost($params)];
     }
 
@@ -102,14 +80,20 @@ class PostRepository extends AppRepository
     {
         $query = Post::queryBuilder()
             ->select('p')
+            ->addSelect('partial c.{id,name,slug}')
+            ->addSelect('partial t.{id,path,alt}')
+            ->addSelect('partial w.{id,domain}')
             ->from('Jet\Modules\Post\Models\Post', 'p')
             ->leftJoin('p.categories', 'c')
+            ->leftJoin('p.thumbnail', 't')
             ->leftJoin('p.website', 'w');
 
-        $query = $this->getQueryWithParams($query, $params);
-        return $query->getQuery()->getOneOrNullResult();
-    }
+        $query = $this->getRequiredParams($query, $params);
+        $query = $this->frontQueryParams($query, $params);
 
+        $result = $this->reassignCategories($query->getQuery()->getArrayResult(), $params);
+        return isset($result[0]) ? $result[0] : null;
+    }
     /**
      * @param $ids
      * @return array
@@ -147,43 +131,6 @@ class PostRepository extends AppRepository
     }
 
     /**
-     * @param $id
-     * @param array $params
-     * @return mixed
-     */
-    public function readAdmin($id, $params = [])
-    {
-        $query = Post::queryBuilder()
-            ->select('p')
-            ->from('Jet\Modules\Post\Models\Post', 'p')
-            ->leftJoin('p.categories', 'c')
-            ->leftJoin('p.website', 'w')
-            ->where('p.id = :id')
-            ->setParameter('id', $id);
-
-        $query = $this->getRequiredParams($query, $params);
-
-        return $query->getQuery()->getOneOrNullResult();
-    }
-
-    /**
-     * @param $id
-     * @return mixed
-     */
-    public function getCategories($id)
-    {
-        $query = Post::queryBuilder()
-            ->select('partial p.{id}')
-            ->addSelect('c')
-            ->from('Jet\Modules\Post\Models\Post', 'p')
-            ->leftJoin('p.categories', 'c')
-            ->where('p.id = :id')
-            ->setParameter('id', $id);
-
-        return $query->getQuery()->getArrayResult()[0];
-    }
-
-    /**
      * @param array $params
      * @param array $select
      * @return array
@@ -197,8 +144,7 @@ class PostRepository extends AppRepository
 
         $query = $this->getRequiredParams($query, $params);
 
-        return $query->getQuery()
-            ->getArrayResult();
+        return $this->reassignCategories($query->getQuery()->getArrayResult(), $params);
     }
 
     /**
@@ -221,8 +167,7 @@ class PostRepository extends AppRepository
 
         $query = $this->getRequiredParams($query, $params);
 
-        return $query->getQuery()
-            ->getArrayResult();
+        return $this->reassignCategories($query->getQuery()->getArrayResult(), $params);
     }
 
     /**
@@ -234,14 +179,11 @@ class PostRepository extends AppRepository
         $query = Post::queryBuilder()
             ->select(['p.id as id', 'p.title as name', 'p.slug as slug'])
             ->from('Jet\Modules\Post\Models\Post', 'p')
-            ->leftJoin('p.website', 'w')
-            ->where('p.published = :published')
-            ->setParameter('published', true);
+            ->leftJoin('p.website', 'w');
 
         $query = $this->getRequiredParams($query, $params);
 
-        return $query->getQuery()
-            ->getArrayResult();
+        return $this->reassignCategories($query->getQuery()->getArrayResult(), $params);
     }
 
     /**
@@ -261,6 +203,33 @@ class PostRepository extends AppRepository
     }
 
     /**
+     * @param array $data
+     * @param array $params
+     * @return array
+     */
+    private function reassignCategories($data = [], $params = [])
+    {
+        $categories = PostCategory::repo()->frontListAll($params);
+        $exclude_ids = isset($params['options']['parent_exclude']['post_categories']) ? array_flip($params['options']['parent_exclude']['post_categories']) : [];
+        foreach ($data as $i => $post) {
+            if (isset($post['categories']) && is_array($post['categories'])) {
+                foreach ($post['categories'] as $y => $category) {
+                    if (isset($exclude_ids[$category['id']])) {
+                        unset($data[$i]['categories'][$y]);
+                    }
+                    if (isset($params['options']['parent_replace']['post_categories'][$category['id']])) {
+                        $index = findIndex($categories, 'id', $params['options']['parent_replace']['post_categories'][$category['id']]);
+                        if ($index !== false) {
+                            $data[$i]['categories'][$y] = $categories[$index];
+                        }
+                    }
+                }
+            }
+        }
+        return $data;
+    }
+
+    /**
      * @param QueryBuilder $query
      * @param $params
      * @return mixed
@@ -274,7 +243,6 @@ class PostRepository extends AppRepository
 
         if (isset($params['options'])) {
             $query = $this->excludeData($query, $params['options'], 'posts', 'p');
-            /*$query = $this->excludeData($query, $params['options'], 'post_categories', 'c');*/
         }
 
         return $query;
@@ -290,6 +258,34 @@ class PostRepository extends AppRepository
 
         $query = $this->getRequiredParams($query, $params);
 
+        if (isset($params['search']) && !empty($params['search'])) {
+            $query->andWhere($query->expr()->orX(
+                $query->expr()->like('p.title', ':search'),
+                $query->expr()->like('p.description', ':search'),
+                $query->expr()->like('c.name', ':search')
+            ))->setParameter('search', '%' . $params['search'] . '%');
+        }
+
+        if (isset($params['filter']) && !empty($params['filter']) && !empty($params['filter']['column'])) {
+            $op = (isset($params['filter']['operator'])) ? $params['filter']['operator'] : 'eq';
+            if ($op == 'isNull')
+                $query->andWhere($query->expr()->isNull($params['filter']['column']));
+            elseif ($op == 'isNotNull')
+                $query->andWhere($query->expr()->isNotNull($params['filter']['column']));
+            else {
+                $alias = explode('.', $params['filter']['column']);
+                $table = ($alias[0] == 'c') ? 'post_categories' : 'posts';
+                $value = $params['filter']['value'];
+                $flipped_array = array_flip($params['options']['parent_replace'][$table]);
+                if (isset($params['options']['parent_replace'][$table]) && isset($flipped_array[$value])) {
+                    $value = [$value, $flipped_array[$value]];
+                    $op = 'in';
+                }
+                $query->andWhere($query->expr()->$op($params['filter']['column'], ':value'))
+                    ->setParameter('value', $value);
+            }
+        }
+
         if (isset($params['published'])) {
             $query->andWhere($query->expr()->eq('p.published', ':published'))
                 ->setParameter('published', $params['published']);
@@ -297,18 +293,29 @@ class PostRepository extends AppRepository
 
         if (isset($params['no_category']) && $params['no_category']) {
             if (isset($params['options']['parent_exclude']['post_categories']) && !empty($params['options']['parent_exclude']['post_categories'])) {
-                $query->andWhere(
-                    $query->expr()->orX(
-                        $query->expr()->isNull('c.id'),
-                        $query->expr()->in('c.id', ':exclude_cat')
-                    )
-                )->setParameter('exclude_cat', $params['options']['parent_exclude']['post_categories']);
+                $orX = $query->expr()->orX();
+                $orX->add($query->expr()->isNull('c.id'));
+                if (isset($params['options']['parent_replace']['post_categories'])) {
+                    $orX->add($query->expr()->andX(
+                        $query->expr()->in('c.id', ':exclude_cat'),
+                        $query->expr()->notIn('c.id', ':replace_cat')
+                    ));
+                    $query->setParameter('replace_cat', array_keys($params['options']['parent_replace']['post_categories']));
+                } else {
+                    $orX->add($query->expr()->in('c.id', ':exclude_cat'));
+                }
+                $query->andWhere($orX)
+                    ->setParameter('exclude_cat', $params['options']['parent_exclude']['post_categories']);
             } else {
                 $query->andWhere($query->expr()->isNull('c.id'));
             }
         }
 
         $query = $this->frontQueryParams($query, $params);
+
+        (isset($params['order']) && !empty($params['order']) && !empty($params['order']['column']))
+            ? $query->addOrderBy($params['order']['column'], strtoupper($params['order']['dir']))
+            : $query->orderBy('p.id', 'DESC');
 
         return $query;
     }
@@ -323,32 +330,44 @@ class PostRepository extends AppRepository
         if (isset($params['db']) && !empty($params['db'])) {
             foreach ($params['db'] as $key => $db) {
                 if (isset($db['type'])) {
+                    $replace_content = ($db['alias'] == 'p') ? 'posts' : 'post_categories';
+                    $exclude_ids = (isset($params['options']['parent_exclude'][$replace_content])) ? array_flip($params['options']['parent_exclude'][$replace_content]) : [];
                     if ($db['type'] == 'dynamic' && isset($db['route']) && !empty($db['route']) && isset($params['params'][$db['route']])) {
-                        $query->andWhere($query->expr()->eq($db['alias'] . '.' . $db['column'], ':column_' . $key))
-                            ->setParameter('column_' . $key, $params['params'][$db['route']]);
-                    } elseif ($db['type'] == 'static' && isset($db['value']) && !empty($db['value'])) {
-                        $replace_content = ($db['alias'] == 'p') ? 'posts' : 'post_categories';
-                        if (is_array($db['value'])) {
-                            if (isset($params['options']['parent_exclude'][$replace_content]) && isset($params['options']['parent_replace'][$replace_content])) {
-                                foreach ($db['value'] as $k => $id) {
-                                    if (in_array($id, $params['options']['parent_exclude'][$replace_content]))
-                                        unset($db['value'][$key]);
-                                    if (isset($params['options']['parent_replace'][$replace_content][$id]))
-                                        $db['value'][] = $params['options']['parent_replace'][$replace_content][$id];
-                                }
-                            }
-                            $query->andWhere($query->expr()->in($db['alias'] . '.id', ':column_' . $key))
-                                ->setParameter('column_' . $key, $db['value']);
-                        } else {
-                            if (in_array($db['value'], $params['options']['parent_exclude'][$replace_content]))
-                                $db['value'] = null;
-                            if (isset($params['options']['parent_replace'][$replace_content][$db['value']]))
-                                $db['value'] = $params['options']['parent_replace'][$replace_content][$db['value']];
-                            if (!is_null($db['value'])) {
-                                $query->andWhere($query->expr()->eq($db['alias'] . '.id', ':column_' . $key))
-                                    ->setParameter('column_' . $key, $db['value']);
+                        $item = true;
+                        if($db['column'] != 'id') {
+                            $item = ($db['alias'] == 'c')
+                                ? PostCategory::select('id')->where($db['column'], $params['params'][$db['route']])->where('website', 'IN', $params['websites'])->get(true)
+                                : Post::select('id')->where($db['column'], $params['params'][$db['route']])->where('website', 'IN', $params['websites'])->get(true);
+                        }
+                        $value = [$params['params'][$db['route']]];
+                        if (!is_null($item) && isset($item['id'])) {
+                            $value = [$item['id']];
+                            if (isset($exclude_ids[$item['id']]))
+                                $value = [];
+                            if(isset($params['options']['parent_replace'][$replace_content])) {
+                                if (isset($params['options']['parent_replace'][$replace_content][$item['id']]))
+                                    $value = [$item['id'], $params['options']['parent_replace'][$replace_content][$item['id']]];
+                                elseif (in_array($item['id'], $params['options']['parent_replace'][$replace_content]))
+                                    $value = [$item['id'], array_search($item['id'], $params['options']['parent_replace'][$replace_content])];
                             }
                         }
+                        $query->andWhere($query->expr()->in($db['alias'] . '.id', ':column_' . $key))
+                            ->setParameter('column_' . $key, $value);
+                    } elseif ($db['type'] == 'static' && isset($db['value']) && !empty($db['value'])) {
+                        if (!is_array($db['value'])) $db['value'] = [$db['value']];
+                        if (isset($params['options']['parent_exclude'][$replace_content])) {
+                            foreach ($db['value'] as $k => $id) {
+                                if (isset($exclude_ids[$id]))
+                                    unset($db['value'][$k]);
+                                if (isset($params['options']['parent_replace'][$replace_content][$id]))
+                                    $db['value'] = array_merge([$id, $params['options']['parent_replace'][$replace_content][$id]], $db['value']);
+                                elseif (in_array($id, $params['options']['parent_replace'][$replace_content])){
+                                    $db['value'] = array_merge([$id, array_search($id, $params['options']['parent_replace'][$replace_content])], $db['value']);
+                                }
+                            }
+                        }
+                        $query->andWhere($query->expr()->in($db['alias'] . '.id', ':column_' . $key))
+                            ->setParameter('column_' . $key, $db['value']);
                     }
                 }
             }

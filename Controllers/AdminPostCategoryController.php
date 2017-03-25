@@ -20,40 +20,6 @@ class AdminPostCategoryController extends AdminController
 
     /**
      * @param Request $request
-     * @param $website
-     * @return array
-     */
-    public function all(Request $request, $website)
-    {
-        $max = ($request->exists('max')) ? (int)$request->query('max') : 10;
-        $page = ($request->exists('page')) ? (int)$request->query('page') : 1;
-
-        $website = Website::queryBuilder()->select('w')->from('Jet\Models\Website', 'w')->where('w.id = :id')->setParameter('id', $website)->getQuery()->getOneOrNullResult();
-        $this->websites[] = $website;
-        $this->getThemeWebsites($website);
-
-        $params = [
-            'websites' => $this->websites,
-            'options' => $this->getWebsiteData($website),
-            'search' => ($request->has('params') && isset($request->query('params')['search'])) ? $request->query('params')['search'] : '',
-            'order' => ($request->has('params') && isset($request->query('params')['order'])) ? $request->query('params')['order'] : [],
-            'filter' => ($request->has('params') && isset($request->query('params')['filter'])) ? $request->query('params')['filter'] : [],
-        ];
-
-        $response = PostCategory::repo()->listAll($page, $max, $params);
-        $pages_count = ceil($response['total'] / $max);
-
-        $themes = [
-            'current_page' => $page,
-            'count_pages' => $pages_count,
-            'count_all' => $response['total'],
-            'data' => $response['data']
-        ];
-        return ['status' => 'success', 'content' => $themes];
-    }
-
-    /**
-     * @param Request $request
      * @param Auth $auth
      * @param Slugify $slugify
      * @param $website
@@ -128,7 +94,6 @@ class AdminPostCategoryController extends AdminController
             if (PostCategory::watchAndSave($category)) {
                 if ($replace) {
                     $event->emit('updatePostCategory', ['old_post_category' => $old_category->getId(), 'post_category' => $category->getId(), 'website' => $website->getId()]);
-                    $this->createPosts($old_category, $category, $website, $event);
                     $website = $category->getWebsite();
                     $data = $this->replaceData($website->getData(), 'post_categories', $id, $category->getId());
                     $website->setData($data);
@@ -141,49 +106,6 @@ class AdminPostCategoryController extends AdminController
         }
         return ['status' => 'error', 'message' => 'Requête non autorisée'];
     }
-
-    /**
-     * @param PostCategory $old_category
-     * @param PostCategory $category
-     * @param Website $website
-     * @param EventProvider $event
-     */
-    private function createPosts(PostCategory $old_category, PostCategory $category, Website $website, EventProvider $event)
-    {
-        $data = $website->getData();
-        $this->getWebsite($website);
-        $posts = $old_category->getPosts();
-        /** @var Post $post */
-        foreach ($posts as $post) {
-            if (in_array($post->getWebsite()->getId(), $this->websites)) {
-                /** @var Post $post */
-                if ($post->getWebsite() != $website) {
-                    /** @var Post $new_post */
-                    $new_post = new Post;
-                    $new_post->setTitle($post->getTitle());
-                    $new_post->setSlug($post->getSlug());
-                    $new_post->setThumbnail($post->getThumbnail());
-                    $new_post->setDescription($post->getDescription());
-                    $new_post->setContent($post->getContent());
-                    $new_post->removePostCategory($old_category);
-                    $new_post->addPostCategory($category);
-                    $new_post->setWebsite($website);
-                    if (Post::watchAndSave($new_post)) $event->emit('updatePost', ['old_post' => $post->getId(), 'post' => $new_post->getId(), 'website' => $website->getId()]);
-
-                    $data = $this->excludeData($data, 'posts', $post->getId());
-                    $data = $this->replaceData($data, 'posts', $post->getId(), $new_post->getId());
-                } else {
-                    $post->removePostCategory($old_category);
-                    $post->addPostCategory($category);
-                    Post::watch($post);
-                    $event->emit('updatePost', ['post' => $post->getId(), 'website' => $website->getId()]);
-                }
-            }
-        }
-        $website->setData($data);
-        Website::watch($website);
-    }
-
 
     /**
      * @param Request $request

@@ -194,6 +194,12 @@
                                                 <span></span>
                                             </label>
                                         </div>
+                                        <div v-else class="checkbox checkbox-styled checkbox-primary">
+                                            <label>
+                                                <input type="checkbox" disabled="">
+                                                <span></span>
+                                            </label>
+                                        </div>
                                         <img v-if="post.thumbnail != null" class="pull-left width-3"
                                              v-img="post.thumbnail.path"
                                              :alt="post.thumbnail.alt"/>

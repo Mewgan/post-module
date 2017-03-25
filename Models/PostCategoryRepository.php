@@ -14,60 +14,6 @@ class PostCategoryRepository extends AppRepository
 {
 
     /**
-     * @param $page
-     * @param $max
-     * @param array $params
-     * @return array
-     */
-    public function listAll($page, $max, $params = [])
-    {
-
-        $countSearch = false;
-        $query = PostCategory::queryBuilder();
-
-        $query->select('c')
-            ->from('Jet\Modules\Post\Models\PostCategory', 'c')
-            ->leftJoin('c.website', 'w');
-
-        if (isset($params['total_row']) && !empty($params['total_row'])) {
-            $countSearch = true;
-            $query->setMaxResults($params['total_row']);
-        } else {
-            $query->setFirstResult(($page - 1) * $max)
-                ->setMaxResults($max);
-        }
-
-        $query = $this->getQueryWithParams($query, $params);
-
-        if (isset($params['search']) && !empty($params['search'])) {
-            $countSearch = true;
-            $query->andWhere($query->expr()->orX(
-                $query->expr()->like('c.slug', ':search'),
-                $query->expr()->like('c.name', ':search')
-            ))->setParameter('search', '%' . $params['search'] . '%');
-        }
-
-        if (isset($params['filter']) && !empty($params['filter']) && !empty($params['filter']['column'])) {
-            $countSearch = true;
-            $op = (isset($params['filter']['operator'])) ? $params['filter']['operator'] : 'eq';
-            if ($op == 'isNull')
-                $query->andWhere($query->expr()->isNull($params['filter']['column']));
-            else {
-                $query->andWhere($query->expr()->eq($params['filter']['column'], ':value'))
-                    ->setParameter('value', $params['filter']['value']);
-            }
-        }
-
-        (isset($params['order']) && !empty($params['order']) && !empty($params['order']['column']))
-            ? $query->addOrderBy($params['order']['column'], strtoupper($params['order']['dir']))
-            : $query->orderBy('c.id', 'DESC');
-
-        $pg = new Paginator($query);
-        $data = $pg->getQuery()->getResult();
-        return ['data' => $data, 'total' => ($countSearch) ? count($data) : $this->countPostCategory($params)];
-    }
-
-    /**
      * @param $params
      * @return mixed
      */
@@ -81,23 +27,6 @@ class PostCategoryRepository extends AppRepository
         $query = $this->getQueryWithParams($query, $params);
 
         return $query->getQuery()->getArrayResult();
-    }
-
-    /**
-     * @param array $params
-     * @return int
-     */
-    public function countPostCategory($params = [])
-    {
-        $query = PostCategory::queryBuilder();
-
-        $query->select('COUNT(c)')
-            ->from('Jet\Modules\Post\Models\PostCategory', 'c')
-            ->leftJoin('c.website', 'w');
-
-        $query = $this->getQueryWithParams($query, $params);
-
-        return (int)$query->getQuery()->getSingleScalarResult();
     }
 
     /**
