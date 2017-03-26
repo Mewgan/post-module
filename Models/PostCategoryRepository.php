@@ -63,6 +63,30 @@ class PostCategoryRepository extends AppRepository
 
 
     /**
+     * @param $column
+     * @param $value
+     * @param array $params
+     * @return null
+     */
+    public function findOneByColumn($column, $value, $params = [])
+    {
+        $query = PostCategory::queryBuilder()
+            ->select('c.id')
+            ->from('Jet\Modules\Post\Models\PostCategory', 'c')
+            ->leftJoin('c.website', 'w')
+            ->orderBy('c.id', 'ASC');
+
+        $query->where($query->expr()->eq('c.' . $column, ':value'))
+            ->setParameter('value', $value);
+
+        $query = $this->getQueryWithParams($query, $params);
+
+        $result = $query->getQuery()->getArrayResult();
+
+        return isset($result[0]) ? $result[0] : null;
+    }
+
+    /**
      * @param $websites
      * @param $options
      * @param string $select
@@ -106,7 +130,6 @@ class PostCategoryRepository extends AppRepository
      */
     private function getQueryWithParams(QueryBuilder $query, $params)
     {
-
         if (isset($params['websites'])) {
             $query->andWhere(
                 $query->expr()->orX(
@@ -117,8 +140,8 @@ class PostCategoryRepository extends AppRepository
         } else {
             $query->andWhere($query->expr()->isNull('w.id'));
         }
-        
-        if(isset($params['options'])){
+
+        if (isset($params['options'])) {
             $query = $this->excludeData($query, $params['options'], 'post_categories', 'c');
         }
 
