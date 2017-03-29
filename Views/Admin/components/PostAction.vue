@@ -381,16 +381,6 @@
             ...mapActions([
                 'create', 'read', 'update', 'destroy', 'createResource', 'updateResource', 'updateResourceValue', 'removeResource', 'removePagination', 'deleteResources'
             ]),
-            callDependencies(){
-                this.loadCategory();
-                this.read({
-                    api: custom_field_api.admin_render + this.website_id,
-                    options: {params: {params: this.custom_fields_params}}
-                }).then((response) => {
-                    if (response.data.resource !== undefined)
-                        this.custom_fields = response.data.resource;
-                })
-            },
             generateUrl(){
                 if (this.route.url !== undefined) {
                     let regex = {':slug': this.post.slug, ':id': this.post.id};
@@ -402,12 +392,48 @@
                     }
                 }
             },
+            updateContent (content) {
+                this.post.content = content;
+            },
+            targetUpdate(target){
+                this.post.thumbnail = target;
+            },
+            launchMedia () {
+                this.launch_media = !this.launch_media;
+            },
+            /* Read methods */
+            loadPost(){
+                return this.read({api: post_api.read + this.website_id + '/' + this.post_id}).then((response) => {
+                    if (response.data.status == 'success') {
+                        this.post = response.data.resource;
+                        this.launch_tinymce = true;
+                        this.generateUrl();
+                    }
+                })
+            },
+            loadCustomFields(){
+                this.read({
+                    api: custom_field_api.admin_render + this.website_id,
+                    options: {params: {params: this.custom_fields_params}}
+                }).then((response) => {
+                    if (response.data.resource !== undefined)
+                        this.custom_fields = response.data.resource;
+                })
+            },
+            loadSinglePostRoute(){
+                this.read({api: post_api.get_single_post_route + this.website_id}).then((response) => {
+                    if (response.data.resource !== undefined) {
+                        this.route = response.data.resource;
+                    }
+                })
+            },
             loadCategory(){
                 this.read({api: post_category_api.list_names + this.website_id}).then((response) => {
                     if (response.data.resource !== undefined)
                         this.categories = response.data.resource;
                 })
             },
+            /* Create or update methods */
             createCategory(){
                 if (this.new_category != '') {
                     this.create({
@@ -418,15 +444,6 @@
                     });
                 }
             },
-            updateContent (content) {
-                this.post.content = content;
-            },
-            targetUpdate(target){
-                this.post.thumbnail = target;
-            },
-            launchMedia () {
-                this.launch_media = !this.launch_media;
-            },
             updateOrCreatePost(){
                 this.post['new_categories'] = this.post_categories;
                 if (this.post_id == 'create') {
@@ -435,7 +452,7 @@
                         resource: 'posts_' + this.website_id,
                         value: this.post
                     }).then((response) => {
-                        this.updateOthers(response);
+                        this.updateAll(response);
                     });
                 } else {
                     this.updateResource({
@@ -443,19 +460,23 @@
                         resource: 'posts_' + this.website_id,
                         value: this.post
                     }).then((response) => {
-                        this.updateOthers(response);
+                        this.updateAll(response);
                     });
                 }
             },
-            updateOthers(response){
-                if (response.data.status == 'success') {
-                    if (response.data.resource !== undefined) {
-                        this.post = response.data.resource;
-                        this.generateUrl();
-                    }
-                    let post = response.data.resource.id;
-                    this.update({
-                        api: custom_field_api.update_or_create_front + this.website_id + '/post/' + post,
+            updateAll(response){
+                if (response.data.status == 'success' && response.data.resource !== undefined) {
+                    this.post = response.data.resource;
+                    this.generateUrl();
+                    this.updateCustomFields(this.post.id).then(() => {
+                        this.updateOthers(this.post.id)
+                    });
+                }
+            },
+            updateCustomFields(post_id){
+                if (this.custom_fields.length > 0) {
+                    return this.update({
+                        api: custom_field_api.update_or_create_front + this.website_id + '/post/' + post_id,
                         value: {
                             custom_fields: this.custom_fields,
                             old_content_key: 'post@' + this.post_id,
@@ -463,33 +484,39 @@
                             params: this.custom_fields_params
                         }
                     }).then((field_response) => {
-                        if (this.post_id != 'create') {
-                            this.read({api: post_api.emit_post_update_event + this.post_id + '/' + post + '/' + this.website_id})
-                        }
                         this.removePagination('custom_fields_' + this.website_id);
-                        if (this.post_id != post) {
-                            if (this.post_id != 'create') {
-                                this.removeResource({
-                                    resource: 'posts_' + this.website_id,
-                                    id: this.post_id
-                                });
-                            }
-                            this.$router.replace({
-                                name: 'module:post:action',
-                                params: {
-                                    website_id: this.website_id,
-                                    post_id: post
-                                }
-                            });
-                        }
-                        this.post_id = (this.post.id !== undefined) ? this.post.id : 'create';
                         if (field_response.data.resource !== undefined)
                             this.custom_fields = field_response.data.resource;
                         else if (field_response.data.reload !== undefined)
                             location.reload();
                     });
                 }
+                return new Promise((resolve, reject) => {
+                    resolve();
+                });
             },
+            updateOthers(post_id){
+                if (this.post_id != 'create') {
+                    this.read({api: post_api.emit_post_update_event + this.post_id + '/' + post_id + '/' + this.website_id})
+                    if (this.post_id != post_id) {
+                        this.removeResource({
+                            resource: 'posts_' + this.website_id,
+                            id: this.post_id
+                        });
+                    }
+                }
+                if (this.post_id != post_id) {
+                    this.$router.replace({
+                        name: 'module:post:action',
+                        params: {
+                            website_id: this.website_id,
+                            post_id: post_id
+                        }
+                    });
+                }
+                this.post_id = (this.post.id !== undefined) ? this.post.id : 'create';
+            },
+            /* Delete method */
             deletePost (){
                 if (this.post.id !== undefined) {
                     this.deleteResources({
@@ -498,32 +525,26 @@
                         ids: [this.post.id]
                     }).then((response) => {
                         if (response.data.status == 'success') {
-                            this.$router.push({name: 'module:post', params: {website_id: this.website_id}})
+                            this.$router.replace({name: 'module:post', params: {website_id: this.website_id}})
                         }
                     });
                 }
             }
         },
         mounted(){
-            this.read({api: post_api.get_single_post_route + this.website_id}).then((response) => {
-                if (response.data.resource !== undefined) this.route = response.data.resource;
-            })
+            this.loadSinglePostRoute();
             if (this.post_id == 'create') {
                 this.launch_tinymce = true;
-                this.callDependencies();
+                this.loadCategory();
+                this.loadCustomFields();
             } else {
-                this.read({api: post_api.read + this.website_id + '/' + this.post_id}).then((response) => {
-                    if (response.data.status == 'success') {
-                        this.post = response.data.resource;
-                        this.launch_tinymce = true;
-                        this.generateUrl();
-                    }
-                }).then(() => {
-                    this.callDependencies();
+                this.loadPost().then(() => {
+                    this.loadCategory();
+                    this.loadCustomFields();
                     for (let index in this.post.categories)
                         if (this.post.categories.hasOwnProperty(index))
                             this.post_categories.push(this.post.categories[index].id);
-                });
+                })
             }
         }
     }

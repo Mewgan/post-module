@@ -199,9 +199,13 @@ class PostRepository extends AppRepository
     {
         $query = Post::queryBuilder()
             ->select($keys)
-            ->from('Jet\Modules\Post\Models\Post', 'p')
-            ->where('p.id = :id')
-            ->setParameter('id', $id);
+            ->from('Jet\Modules\Post\Models\Post', 'p');
+
+        $query->where($query->expr()->eq('p.id', ':id'))
+            ->andWhere($query->expr()->eq('p.published', ':published'))
+            ->setParameter('id', $id)
+            ->setParameter('published', true);
+
         return $query->getQuery()->getOneOrNullResult();
     }
 
@@ -269,6 +273,12 @@ class PostRepository extends AppRepository
                 ->setParameter('websites', $params['websites']);
         }
 
+        if (isset($params['published'])) {
+            $query->andWhere($query->expr()->eq('p.published', ':published'))
+                ->setParameter('published', $params['published']);
+        }
+
+
         if (isset($params['options'])) {
             $query = $this->excludeData($query, $params['options'], 'posts', 'p');
         }
@@ -304,19 +314,14 @@ class PostRepository extends AppRepository
                 $alias = explode('.', $params['filter']['column']);
                 $table = ($alias[0] == 'c') ? 'post_categories' : 'posts';
                 $value = $params['filter']['value'];
-                $flipped_array = array_flip($params['options']['parent_replace'][$table]);
-                if (isset($params['options']['parent_replace'][$table]) && isset($flipped_array[$value])) {
+                $flipped_array = (isset($params['options']['parent_replace'][$table])) ? array_flip($params['options']['parent_replace'][$table]) : [];
+                if (isset($flipped_array[$value])) {
                     $value = [$value, $flipped_array[$value]];
                     $op = 'in';
                 }
                 $query->andWhere($query->expr()->$op($params['filter']['column'], ':value'))
                     ->setParameter('value', $value);
             }
-        }
-
-        if (isset($params['published'])) {
-            $query->andWhere($query->expr()->eq('p.published', ':published'))
-                ->setParameter('published', $params['published']);
         }
 
         if (isset($params['no_category']) && $params['no_category']) {
