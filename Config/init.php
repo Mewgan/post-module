@@ -11,6 +11,9 @@ return [
                 'prefix' => 'admin',
             ],
         ],
+        'fixtures' => [
+            'src/Modules/Post/Fixtures/'
+        ],
         'settings' => [
             'custom_field_type' => [
                 'content' => [
@@ -45,6 +48,22 @@ return [
                     'get_url' => '\\Jet\\Modules\\Post\\Controllers\\AdminPostCategoryController@getUrl'
                 ],
             ],
+        ],
+        'events' => [
+            'updatePost' => [
+                [
+                    'type' => 'async', // linear or async
+                    'method' => 'POST',
+                    'route' => 'api.navigation.update_url',
+                ]
+            ],
+            'updatePostCategory' => [
+                [
+                    'type' => 'async', // linear or async
+                    'method' => 'POST',
+                    'route' => 'api.navigation.update_url',
+                ]
+            ]
         ]
     ],
 

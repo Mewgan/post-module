@@ -406,6 +406,7 @@
                 return this.read({api: post_api.read + this.website_id + '/' + this.post_id}).then((response) => {
                     if (response.data.status == 'success') {
                         this.post = response.data.resource;
+                        if(this.post.content == null) this.post.content = '';
                         this.launch_tinymce = true;
                         this.generateUrl();
                     }

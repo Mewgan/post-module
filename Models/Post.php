@@ -31,13 +31,13 @@ class Post extends Model implements \JsonSerializable
      */
     protected $slug;
     /**
-     * @Column(type="text",nullable=true)
+     * @Column(type="text", nullable=true)
      */
-    protected $description;
+    protected $description = '';
     /**
-     * @Column(type="text",nullable=true)
+     * @Column(type="text", nullable=true)
      */
-    protected $content;
+    protected $content = '';
     /**
      * @ManyToOne(targetEntity="Jet\Models\Media")
      * @JoinColumn(name="thumbnail_id", referencedColumnName="id", nullable=true, onDelete="SET NULL")
