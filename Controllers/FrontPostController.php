@@ -112,13 +112,15 @@ class FrontPostController extends MainController
      */
     public function renderField(Website $website, $value){
         if (!empty($value) && !is_null($value) && is_numeric($value)){
+            /** @var Post $post */
             $post = Post::findOneById($value);
             if(!is_null($post)){
                 $this->refreshWebsite($website);
                 $data = $this->getWebsiteData($website);
                 if(isset($data['parent_replace']['posts'][$post->getId()])){
-                    return Post::findOneById($data['parent_replace']['posts'][$post->getId()]);
-                } else if(!isset($data['parent_exclude']['posts']) || !in_array($post->getId(), $data['parent_exclude']['posts']))
+                    $post = Post::findOneById($data['parent_replace']['posts'][$post->getId()]);
+                    if($post->isPublished()) return $post;
+                } else if($post->isPublished() && (!isset($data['parent_exclude']['posts']) || !in_array($post->getId(), $data['parent_exclude']['posts'])))
                     return $post;
             }
         }

@@ -83,9 +83,9 @@ class AdminPostController extends AdminController
 
         $post = Post::repo()->read($params);
 
-        if (!is_null($post))
-            return ['status' => 'success', 'resource' => $post];
-        return ['status' => 'error', 'message' => 'Article inexistant'];
+        return (!is_null($post))
+            ? ['status' => 'success', 'resource' => $post]
+            : ['status' => 'error', 'message' => 'Article inexistant'];
     }
 
     /**
@@ -94,8 +94,9 @@ class AdminPostController extends AdminController
      */
     public function getSinglePostRoute($website)
     {
-        if(!$this->getWebsite($website)) return ['status' => 'error', 'Site non trouvé'];
-        return ['resource' => Route::repo()->getRouteByName('module:post.type:dynamic.action:read', $this->websites, $this->getWebsiteData($this->website))];
+        return (!$this->getWebsite($website))
+            ? ['status' => 'error', 'Site non trouvé']
+            : ['resource' => Route::repo()->getRouteByName('module:post.type:dynamic.action:read', $this->websites, $this->getWebsiteData($this->website))];
     }
 
     /**

@@ -37,6 +37,7 @@ return [
                     'id' => 'post',
                     'name' => 'Article',
                     'plural' => 'Articles',
+                    'route' => 'module:post.type:dynamic.action:read',
                     'all' => '\\Jet\\Modules\\Post\\Controllers\\AdminPostController@listNames',
                     'get_url' => '\\Jet\\Modules\\Post\\Controllers\\AdminPostController@getUrl'
                 ],
@@ -44,6 +45,7 @@ return [
                     'id' => 'post_category',
                     'name' => 'Catégorie d\'article',
                     'plural' => 'Catégories d\'article',
+                    'route' => 'module:post.type:dynamic.action:all',
                     'all' => '\\Jet\\Modules\\Post\\Controllers\\AdminPostCategoryController@listNames',
                     'get_url' => '\\Jet\\Modules\\Post\\Controllers\\AdminPostCategoryController@getUrl'
                 ],
