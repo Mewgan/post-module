@@ -37,7 +37,7 @@ class LoadPostRoute extends AbstractFixture
             'subdomain' => null,
         ],
         [
-            'url' => '/service',
+            'url' => '/services',
             'name' => 'module:post.type:static.action:list.name:service',
             'method' => ['GET'],
             'argument' => ['slug' => '([a-zA-Z0-9-_]+)'],
@@ -45,7 +45,7 @@ class LoadPostRoute extends AbstractFixture
             'subdomain' => null,
         ],
         [
-            'url' => '/actualite',
+            'url' => '/actualites',
             'name' => 'module:post.type:static.action:list.name:actualite',
             'method' => ['GET'],
             'argument' => ['slug' => '([a-zA-Z0-9-_]+)'],
