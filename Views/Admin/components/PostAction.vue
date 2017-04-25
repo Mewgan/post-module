@@ -114,14 +114,6 @@
                                             </button>
                                         </div>
                                         <div class="row mar-top-10">
-                                            <button type="button" @click="preview = true" data-toggle="modal"
-                                                    data-target="#previewPageModal"
-                                                    class="col-md-12 btn ink-reaction btn-raised btn-info">
-                                                <i class="fa fa-eye"></i>
-                                                Prévisualisation
-                                            </button>
-                                        </div>
-                                        <div class="row mar-top-10">
                                             <button @click="updateOrCreatePost" type="button"
                                                     class="col-md-12 btn ink-reaction btn-raised btn-default">
                                                 <i class="fa fa-save"></i> Mettre à jour
@@ -284,24 +276,6 @@
                    :max_options="max_media_options"></media>
         </section>
 
-        <div class="modal fade" id="previewPageModal" tabindex="-1" role="dialog"
-             aria-labelledby="simpleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-xlg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                        <h4 class="modal-title" id="previewPageModalLabel">Prévisualisation</h4>
-                    </div>
-                    <div class="modal-body">
-                        <iframe v-if="preview" width="100%" height="500" :src="website.url + post_url"></iframe>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
-                    </div>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </div>
-
     </div>
 </template>
 
@@ -359,8 +333,7 @@
                 media_target_id: null,
                 launch_media: false,
                 launch_tinymce: false,
-                custom_fields: [],
-                preview: false
+                custom_fields: []
             }
         },
         computed: {
