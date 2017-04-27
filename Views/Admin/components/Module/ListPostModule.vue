@@ -63,7 +63,7 @@
                 </div>
             </div>
             <h5 class="module-title">Choix du template :</h5>
-            <template-editor :id="line" :templates="templates" :template="content.template" label="Template du contenu"></template-editor>
+            <template-editor @updateTemplate="updateTemplate" :id="line" :templates="templates" :template="content.template" label="Template du contenu"></template-editor>
             <div>
                 <h5 class="module-title">Configuration avancé :</h5>
                 <div class="form-group" v-if="page != null && 'route' in page && 'url' in page.route">
@@ -289,6 +289,9 @@
             updateRoute(route){
                 this.route = route;
                 this.content_data.route_name = route.name;
+            },
+            updateTemplate(template){
+                if (this.content.template !== undefined) this.content.template = template;
             },
             addDbField(){
                 this.content_data.db.push({

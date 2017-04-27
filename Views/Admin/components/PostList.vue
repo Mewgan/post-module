@@ -255,6 +255,15 @@
                 <!-- END TAB CONTENT -->
 
             </div><!--end .card -->
+            <router-link :to="{name: 'module:post:action', params: {website_id: website_id, post_id: 'create'}}"
+                         class="btn ml10 mb20 ink-reaction btn-raised btn-lg btn-info pull-right">
+                <i class="fa fa-plus" aria-hidden="true"></i> Ajouter un article
+            </router-link>
+            <button data-toggle="modal" data-target="#createPostCategoryModal"
+                    class="btn ink-reaction btn-raised btn-lg btn-info pull-right">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+                Ajouter une catégorie
+            </button>
         </div><!--end .section-body -->
 
         <div class="modal fade" id="deletePostModal" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel"
