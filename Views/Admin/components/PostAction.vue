@@ -28,6 +28,7 @@
         width: 100% !important;
         overflow: hidden;
         position: relative;
+        cursor: pointer;
         background: #c2bfbf;
     }
     .post-action .img-body img {
@@ -189,7 +190,8 @@
                                                     Supprimer l'image</a></li>
                                             </ul>
                                         </div>
-                                        <div v-if="post.thumbnail != null" class="img-body">
+                                        <div v-if="post.thumbnail != null" class="img-body" @click="launchMedia" data-toggle="modal"
+                                             data-target="#mediaLibrary0">
                                             <img v-img="post.thumbnail.path" :alt="post.thumbnail.alt" width="100%">
                                         </div>
                                         <div class="clearfix"></div>
