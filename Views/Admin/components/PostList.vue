@@ -66,26 +66,11 @@
     <section class="list-post">
         <div class="section-header">
             <ol class="breadcrumb">
-                <li class="active">Articles</li>
+                <li class="active">Articles <a data-toggle="modal" data-target="#infoPostListModal"><i class="fa fa-info-circle"></i></a></li>
             </ol>
-            <router-link :to="{name: 'module:post:action', params: {website_id: website_id, post_id: 'create'}}"
-                         class="btn ink-reaction btn-raised btn-lg btn-info pull-right">
-                <i class="fa fa-plus" aria-hidden="true"></i> Ajouter un article
-            </router-link>
-            <button data-toggle="modal" data-target="#createPostCategoryModal"
-                    class="btn ink-reaction btn-raised btn-lg btn-info pull-right">
-                <i class="fa fa-plus" aria-hidden="true"></i>
-                Ajouter une catégorie
-            </button>
         </div>
-        <div class="section-body">
 
-            <div class="alert alert-info" role="alert">
-                <strong><i class="fa fa-info-circle"></i> Sur cette page vous avez la possibilité de :</strong><br/>
-                <p>- de créer, modifier ou supprimer un article</p>
-                <p>- de publier ou dépublier un article</p>
-                <p>- de créer, modifier ou supprimer une catégorie</p>
-            </div>
+        <div class="section-body">
 
             <div class="card tabs-left style-default-light">
 
@@ -128,6 +113,11 @@
                         <span @click="selectCategory(category)" data-toggle="modal" data-target="#editPostCategoryModal"
                               class="pull-right clearfix edit-category"><i class="fa fa-pencil"></i></span>
                     </li>
+                    <button data-toggle="modal" data-target="#createPostCategoryModal"
+                            class="btn ink-reaction btn-raised btn-default pull-right mr10">
+                        <i class="fa fa-plus" aria-hidden="true"></i>
+                        Ajouter une catégorie
+                    </button>
                 </ul>
                 <!-- END TAB RESULTS -->
 
@@ -145,8 +135,12 @@
                                         </option>
                                     </select>
                                     <span class="text-light text-lg">Total <strong>{{resource.total}}</strong></span>
+                                    <router-link :to="{name: 'module:post:action', params: {website_id: website_id, post_id: 'create'}}"
+                                                 class="btn ink-reaction btn-raised ml10 btn-default pull-right">
+                                        <i class="fa fa-plus" aria-hidden="true"></i> Ajouter un article
+                                    </router-link>
                                     <div class="ml10 btn-group pull-right group-action">
-                                        <button type="button" class="btn ink-reaction btn-default">Trier</button>
+                                        <button type="button" class="btn ink-reaction btn-default" data-toggle="dropdown">Trier</button>
                                         <button type="button" class="btn ink-reaction btn-primary dropdown-toggle"
                                                 data-toggle="dropdown" aria-expanded="false"><i
                                                 class="fa fa-caret-down"></i>
@@ -167,7 +161,7 @@
                                         </ul>
                                     </div>
                                     <div class="btn-group pull-right group-action">
-                                        <button type="button" class="btn ink-reaction btn-default">Sélection</button>
+                                        <button type="button" class="btn ink-reaction btn-default" data-toggle="dropdown">Sélection</button>
                                         <button type="button" class="btn ink-reaction btn-primary dropdown-toggle"
                                                 data-toggle="dropdown" aria-expanded="false"><i
                                                 class="fa fa-caret-down"></i>
@@ -222,11 +216,11 @@
                                                 </div>
                                                 <router-link
                                                         :to="{name: 'module:post:action', params:{website_id: website_id, post_id: post.id}}"
-                                                        class="btn ink-reaction btn-floating-action btn-info"><i
+                                                        class="btn ink-reaction btn-default"><i
                                                         class="fa fa-pencil"></i></router-link>
                                                 <a @click="selectPost(post)" data-toggle="modal"
                                                    data-target="#deletePostModal"
-                                                   class="btn ink-reaction btn-floating-action btn-danger"><i
+                                                   class="btn ink-reaction btn-default"><i
                                                         class="fa fa-trash"></i></a>
                                                 <span v-show="auth.status.level < 4" class="post-icon"><i
                                                         :title="getIconTitle('Cet article', post.website)"
@@ -255,15 +249,6 @@
                 <!-- END TAB CONTENT -->
 
             </div><!--end .card -->
-            <router-link :to="{name: 'module:post:action', params: {website_id: website_id, post_id: 'create'}}"
-                         class="btn ml10 mb20 ink-reaction btn-raised btn-lg btn-info pull-right">
-                <i class="fa fa-plus" aria-hidden="true"></i> Ajouter un article
-            </router-link>
-            <button data-toggle="modal" data-target="#createPostCategoryModal"
-                    class="btn ink-reaction btn-raised btn-lg btn-info pull-right">
-                <i class="fa fa-plus" aria-hidden="true"></i>
-                Ajouter une catégorie
-            </button>
         </div><!--end .section-body -->
 
         <div class="modal fade" id="deletePostModal" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel"
@@ -335,17 +320,40 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" @click="deleteCategory" data-dismiss="modal" class="btn btn-danger">
-                                Supprimer la catégorie
+                            <button type="button" @click="deleteCategory" data-dismiss="modal" class="btn btn-default">
+                                <i class="fa fa-trash"></i> Supprimer la catégorie
                             </button>
                             <button type="button" @click="updateCategory" data-dismiss="modal" class="btn btn-primary">
-                                Enregistrer
+                                <i class="fa fa-save"></i> Enregistrer
                             </button>
                         </div>
                     </form>
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
+
+        <!-- Modal Structure -->
+        <div class="modal fade" id="infoPostListModal" tabindex="-1" role="dialog"
+             aria-labelledby="simpleModalLabel" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title" id="infoPostListModalLabel">Information</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-info" role="alert">
+                            <strong><i class="fa fa-info-circle"></i> Sur cette page vous avez la possibilité de :</strong><br/>
+                            <p>- créer, modifier ou supprimer un article</p>
+                            <p>- publier ou dépublier un article</p>
+                            <p>- créer, modifier ou supprimer une catégorie</p>
+                        </div>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div>
+
+
     </section>
 
 </template>

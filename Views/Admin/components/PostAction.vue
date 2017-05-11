@@ -109,14 +109,14 @@
                                         </div>
                                         <div class="row">
                                             <button data-toggle="modal" data-target="#deletePostModal" type="button"
-                                                    class="col-md-12 btn ink-reaction btn-raised btn-danger">
+                                                    class="col-md-12 btn ink-reaction btn-raised btn-default">
                                                 <i class="fa fa-trash"></i> Supprimer
                                             </button>
                                         </div>
                                         <div class="row mar-top-10">
                                             <button @click="updateOrCreatePost" type="button"
                                                     class="col-md-12 btn ink-reaction btn-raised btn-default">
-                                                <i class="fa fa-save"></i> Mettre à jour
+                                                <i class="fa fa-save"></i> Enregistrer
                                             </button>
                                         </div>
                                     </div>
@@ -196,7 +196,7 @@
                                         <h3 class="text-light">Catégories
                                             <button data-toggle="modal" data-target="#createPostCategoryModal"
                                                     type="button"
-                                                    class="btn pull-right ink-reaction btn-floating-action btn-info"><i
+                                                    class="btn pull-right ink-reaction btn-floating-action btn-primary"><i
                                                     class="fa fa-plus"></i></button>
                                         </h3>
                                         <ul class="nav nav-pills nav-stacked nav-transparent">
@@ -309,7 +309,7 @@
                     slug: '',
                     content: '',
                     description: '',
-                    published: false,
+                    published: true,
                     updated_at: {
                         date: ''
                     },
