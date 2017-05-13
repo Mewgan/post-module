@@ -11,6 +11,7 @@
         margin-top: -22px !important;
         margin-right: 10px !important;
     }
+
 </style>
 <template>
     <div class="edit-list-post-module">
@@ -51,23 +52,27 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <input type="number" class="form-control" v-model="content.data.total_row" :id="'content-total-row-' + line">
+                        <input type="number" class="form-control" v-model="content.data.total_row"
+                               :id="'content-total-row-' + line">
                         <label :for="'content-total-row-' + line">Nombre max d'articles à afficher</label>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="form-group" >
-                        <input type="text" class="form-control" v-model="content_data.class" :id="'content-class-' + line">
+                    <div class="form-group">
+                        <input type="text" class="form-control" v-model="content_data.class"
+                               :id="'content-class-' + line">
                         <label :for="'content-class-' + line">Class</label>
                     </div>
                 </div>
             </div>
             <h5 class="module-title">Choix du template :</h5>
-            <template-editor @updateTemplate="updateTemplate" :id="line" :templates="templates" :template="content.template" label="Template du contenu"></template-editor>
+            <template-editor @updateTemplate="updateTemplate" :id="line" :templates="templates"
+                             :template="content.template" label="Template du contenu"></template-editor>
             <div>
                 <h5 class="module-title">Configuration avancé :</h5>
-                <div class="form-group" v-if="page != null && 'route' in page && 'url' in page.route">
-                    <input type="text" class="form-control" id="page_url" :value="page.route.url" readonly><div class="form-control-line"></div>
+                <div class="form-group" v-if="page != null && page.route !== undefined && page.route.url !== undefined">
+                    <input type="text" class="form-control" id="page_url" :value="page.route.url" readonly>
+                    <div class="form-control-line"></div>
                     <label for="page_url">Page url</label>
                 </div>
                 <br>
@@ -86,15 +91,20 @@
                         <td style="width: 30%">
                             <div>
                                 <ul class="nav nav-tabs nav-justified" data-toggle="tabs">
-                                    <li :class="classDbStatic(i)"><a @click="changeDbType(i,'static')" :href="'#db_static'+i">Statique</a></li>
-                                    <li :class="classDbDynamic(i)"><a @click="changeDbType(i,'dynamic')" :href="'#db_dynamic'+i">Dynamique</a></li>
+                                    <li :class="classDbStatic(i)"><a @click="changeDbType(i,'static')"
+                                                                     :href="'#db_static'+i">Statique</a></li>
+                                    <li :class="classDbDynamic(i)"><a @click="changeDbType(i,'dynamic')"
+                                                                      :href="'#db_dynamic'+i">Dynamique</a></li>
                                 </ul>
                             </div><!--end .card-head -->
                             <div class="card-body tab-content">
                                 <div :class="[classDbStatic(i), 'tab-pane']" :id="'db_static'+i">
-                                    <select2 v-if="getValues(db.alias) instanceof Array && getValues(db.alias).length > 0" @updateValue="updateDbValue" :updateParams="{key: i}"
-                                             :contents="getValues(db.alias)" :id="'db-value-' + line + '-' + i" val_index="id" index="name" label="Valeur"
-                                             :val="db.value"></select2>
+                                    <select2
+                                            v-if="getValues(db.alias) instanceof Array && getValues(db.alias).length > 0"
+                                            @updateValue="updateDbValue" :updateParams="{key: i}"
+                                            :contents="getValues(db.alias)" :id="'db-value-' + line + '-' + i"
+                                            val_index="id" index="name" label="Valeur"
+                                            :val="db.value"></select2>
                                 </div>
                                 <div :class="[classDbDynamic(i), 'tab-pane']" :id="'db_dynamic'+i">
                                     <div class="form-group">
@@ -111,17 +121,22 @@
                             </div>
                         </td>
                         <td style="width: 5%">
-                            <button type="button" @click="removeDbField(i)" class="btn ink-reaction btn-floating-action btn-danger"><i class="fa fa-times"></i></button>
+                            <button type="button" @click="removeDbField(i)"
+                                    class="btn ink-reaction btn-floating-action btn-danger"><i class="fa fa-times"></i>
+                            </button>
                         </td>
                     </tr>
                     </tbody>
                 </table>
-                <button type="button" @click="addDbField" class="btn ink-reaction pull-right btn-floating-action btn-info add-field"><i class="fa fa-plus"></i></button>
+                <button type="button" @click="addDbField"
+                        class="btn ink-reaction pull-right btn-floating-action btn-info add-field"><i
+                        class="fa fa-plus"></i></button>
             </div>
             <div class="row">
                 <div class="col-md-12">
                     <h5 class="module-title">Url d'un article :</h5>
-                    <route-editor :line="line" :website_id="website" :route="route" @updateRoute="updateRoute"></route-editor>
+                    <route-editor v-if="route != null" :line="line" :website_id="website" :route="route"
+                                  @updateRoute="updateRoute"></route-editor>
                 </div>
             </div>
             <div>
@@ -147,8 +162,10 @@
                         <td style="width: 30%">
                             <div>
                                 <ul class="nav nav-tabs nav-justified" data-toggle="tabs">
-                                    <li :class="classLinkStatic(i)"><a @click="changeLinkType(i,'static')" :href="'#link_static'+i">Statique</a></li>
-                                    <li :class="classLinkDynamic(i)"><a @click="changeLinkType(i,'dynamic')" :href="'#link_dynamic'+i">Dynamique</a></li>
+                                    <li :class="classLinkStatic(i)"><a @click="changeLinkType(i,'static')"
+                                                                       :href="'#link_static'+i">Statique</a></li>
+                                    <li :class="classLinkDynamic(i)"><a @click="changeLinkType(i,'dynamic')"
+                                                                        :href="'#link_dynamic'+i">Dynamique</a></li>
                                 </ul>
                             </div><!--end .card-head -->
                             <div class="card-body tab-content">
@@ -160,8 +177,12 @@
                                         <label :for="'link_column_'+i">Colonne</label>
                                     </div>
                                     <div class="form-group">
-                                        <select :id="'link_value_'+i" @change="setValueId(i,link.alias,link.column,link.value)" v-model="link.value" class="form-control">
-                                            <option v-for="value in getValues(link.alias)" :value="value[link.column]">{{value.name}}</option>
+                                        <select :id="'link_value_'+i"
+                                                @change="setValueId(i,link.alias,link.column,link.value)"
+                                                v-model="link.value" class="form-control">
+                                            <option v-for="value in getValues(link.alias)" :value="value[link.column]">
+                                                {{value.name}}
+                                            </option>
                                         </select>
                                         <label :for="'link_value_'+i">Valeur</label>
                                     </div>
@@ -177,12 +198,16 @@
                             </div>
                         </td>
                         <td style="width: 5%">
-                            <button type="button" @click="removeLinkField(i)" class="btn ink-reaction btn-floating-action btn-danger"><i class="fa fa-times"></i></button>
+                            <button type="button" @click="removeLinkField(i)"
+                                    class="btn ink-reaction btn-floating-action btn-danger"><i class="fa fa-times"></i>
+                            </button>
                         </td>
                     </tr>
                     </tbody>
                 </table>
-                <button type="button" @click="addLinkField(content_data.link.length)" class="btn ink-reaction pull-right btn-floating-action btn-info add-field"><i class="fa fa-plus"></i></button>
+                <button type="button" @click="addLinkField(content_data.link.length)"
+                        class="btn ink-reaction pull-right btn-floating-action btn-info add-field"><i
+                        class="fa fa-plus"></i></button>
             </div>
         </form>
 
@@ -205,9 +230,15 @@
     export default{
         name: 'list-post',
         components: {
-            RouteEditor: resolve => { require(['@front/components/Helper/RouteEditor.vue'], resolve) },
-            TemplateEditor: resolve => { require(['@front/components/Helper/TemplateEditor.vue'], resolve) },
-            Select2: resolve => { require(['@front/components/Helper/Select2.vue'], resolve) }
+            RouteEditor: resolve => {
+                require(['@front/components/Helper/RouteEditor.vue'], resolve)
+            },
+            TemplateEditor: resolve => {
+                require(['@front/components/Helper/TemplateEditor.vue'], resolve)
+            },
+            Select2: resolve => {
+                require(['@front/components/Helper/Select2.vue'], resolve)
+            }
         },
         mixins: [module_mixin],
         props: {
@@ -243,7 +274,7 @@
                     c: null,
                     p: null
                 },
-                route: {},
+                route: null,
                 templates: []
             }
         },

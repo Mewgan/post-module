@@ -3,6 +3,12 @@
 return [
 
     'app' => [
+        'Post' => [
+            'order' => 1,
+            'hook' => [
+                'left_sidebar' => true
+            ]
+        ],
         'blocks' => [
             'PostModule' => [
                 'path' => 'src/Modules/Post/',

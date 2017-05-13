@@ -13,7 +13,6 @@ class LoadPostModuleCategory extends AbstractFixture
         'name' => 'Post',
         'title' => 'Article',
         'slug' => 'post',
-        'nav' => true,
         'description' => 'Module pour afficher des articles',
         'icon' => 'fa fa-newspaper-o',
         'author' => 'S.Sumugan',
