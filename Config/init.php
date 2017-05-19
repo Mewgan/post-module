@@ -7,6 +7,12 @@ return [
             'order' => 1,
             'hook' => [
                 'left_sidebar' => true
+            ],
+            'routes' => [
+                [
+                    'title' => 'Article',
+                    'name'=> 'module:post',
+                ]
             ]
         ],
         'blocks' => [
