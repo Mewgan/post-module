@@ -17,6 +17,11 @@ use JetFire\Framework\System\Request;
  */
 class FrontPostController extends MainController
 {
+
+    /**
+     * @var Post
+     */
+    private $post;
     
     /**
      * @param Request $request
@@ -59,10 +64,10 @@ class FrontPostController extends MainController
     {
         $data = $content->getData();
         if (!empty($data)) {
-            $post = Post::repo()->read($this->getParams($website, $data));
-            return (is_null($post))
+            $this->post = Post::repo()->read($this->getParams($website, $data));
+            return (is_null($this->post))
                 ? $this->redirect()->url('/404', 404)
-                : $this->_renderContent($content->getTemplate(), 'src/Modules/Post/Views/', compact('post'));
+                : $this->_renderContent($content->getTemplate(), 'src/Modules/Post/Views/', ['post' => $this->post]);
         }
         return $this->redirect()->url('/404', 404);
     }

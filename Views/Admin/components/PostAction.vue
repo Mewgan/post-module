@@ -54,9 +54,6 @@
         float: left;
         margin-top: 0;
     }
-
-
-
 </style>
 
 <template>
@@ -151,7 +148,11 @@
                                                 <div class="card-body no-padding">
                                                     <div v-if="custom_fields.length > 0"
                                                          v-for="custom_field in custom_fields">
-                                                        <h2>{{custom_field.title}}</h2>
+                                                        <div class="card">
+                                                            <div class="card-head card-head-sm style-primary">
+                                                                <header>{{custom_field.title}}</header>
+                                                            </div>
+                                                        </div>
                                                         <custom-field-render :id="post_id" :type="'post'"
                                                                              :fields="custom_field.fields"></custom-field-render>
                                                     </div>
@@ -516,10 +517,10 @@
             } else {
                 this.loadPost().then(() => {
                     this.loadCategory();
-                    this.loadCustomFields();
                     for (let index in this.post.categories)
                         if (this.post.categories.hasOwnProperty(index))
                             this.post_categories.push(this.post.categories[index].id);
+                    this.loadCustomFields();
                 })
             }
         }
