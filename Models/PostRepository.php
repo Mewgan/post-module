@@ -36,9 +36,8 @@ class PostRepository extends AppRepository
             ->leftJoin('p.thumbnail', 't')
             ->leftJoin('p.categories', 'c');
 
-        if (isset($params['total_row']) && !empty($params['total_row'])) {
-            $countSearch = true;
-            $query->setMaxResults($params['total_row']);
+        if (isset($params['total']) && !empty($params['total'])) {
+            $query->setMaxResults($params['total']);
         } else {
             $query->setFirstResult(($page - 1) * $max)
                 ->setMaxResults($max);

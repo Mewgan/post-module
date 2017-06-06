@@ -32,7 +32,7 @@ class FrontPostController extends MainController
     public function all(Request $request, Website $website, $content)
     {
         $data = $content->getData();
-        $max = (isset($data['total_row']) && !empty($data['total_row'])) ? (int)$data['total_row'] : 10;
+        $max = (isset($data['max']) && !empty($data['max'])) ? (int)$data['max'] : 10;
         $page = ($request->exists('page')) ? (int)$request->query('page') : 1;
 
         if (!empty($data)) {
@@ -99,11 +99,13 @@ class FrontPostController extends MainController
         $key = explode('@', $key);
         if(isset($key[1]) && $key[0] == 'post' && is_numeric($key[1])) $post = Post::findOneById($key[1]);
         if(!is_null($post)) {
+            $categories = [];
+            foreach ($post->getPostCategories() as $category)$categories[] = $category->getId();
             $rules = [
                 'everywhere' => null,
                 'publication_type' => 'post',
                 'post' => $post->getId(),
-                'post_category' => $post->getPostCategories()
+                'post_category' => $categories
             ];
             return CustomField::repo()->frontRender($websites, $this->getWebsiteData($website), $rules);
         }

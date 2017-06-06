@@ -52,12 +52,21 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <input type="number" class="form-control" v-model="content.data.total_row"
+                        <input type="number" class="form-control" v-model="content.data.total"
                                :id="'content-total-row-' + line">
                         <label :for="'content-total-row-' + line">Nombre max d'articles à afficher</label>
                     </div>
                 </div>
                 <div class="col-md-6">
+                    <div class="form-group">
+                        <input type="number" class="form-control" v-model="content.data.max"
+                               :id="'content-max-' + line">
+                        <label :for="'content-max-' + line">Nombre d'article par page</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
                     <div class="form-group">
                         <input type="text" class="form-control" v-model="content_data.class"
                                :id="'content-class-' + line">
@@ -261,7 +270,8 @@
                 content_data: {
                     class: '',
                     route_name: 'module:post.type:dynamic.action:read',
-                    total_row: 10,
+                    total: '',
+                    max: 10,
                     db: [],
                     link: []
                 },
