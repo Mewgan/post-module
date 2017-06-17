@@ -59,7 +59,7 @@ trait LoadPostFixture
                                         ? PostCategory::findOneBy(['slug' => $val, 'website' => $website]) : Post::findOneBy(['slug' => $val, 'website' => $website]);
                                 if(is_null($cat)){
                                     $cat = ($db_item['alias'] == 'c')
-                                        ? PostCategory::findOneBySlug($val) : Post::findOneBySlug($val);
+                                        ? PostCategory::findOneBy(['slug' => $val, 'website' => null]) : Post::findOneBy(['slug' => $val, 'website' => null]);
                                 }
                                 $new_db_item[] = $cat->getId();
                             }
@@ -79,7 +79,7 @@ trait LoadPostFixture
                                 ? PostCategory::findOneBy(['slug' => $db_item['value'], 'website' => $website]) : Post::findOneBy(['slug' => $db_item['value'], 'website' => $website]);
                         if(is_null($item)){
                             $item = ($db_item['alias'] == 'c')
-                                ? PostCategory::findOneBySlug($db_item['value']) : Post::findOneBySlug($db_item['value']);
+                                ? PostCategory::findOneBy(['slug' => $db_item['value'], 'website' => null]) : Post::findOneBy(['slug' => $db_item['value'], 'website' => null]);
                         }
                         $data['data']['link'][$key]['value_id'] = $item->getId();
                         $data['data']['link'][$key]['value'] = $item[$db_item['column']];

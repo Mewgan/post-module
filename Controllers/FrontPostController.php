@@ -52,7 +52,8 @@ class FrontPostController extends MainController
                 ? null
                 : $this->_renderContent($content->getTemplate(), 'src/Modules/Post/Views/', compact('categories', 'posts', 'pagination', 'args', 'route'));
         }
-        return $this->redirect()->url('/404', 404);
+        $this->redirect()->url('/404', 404);
+        exit;
     }
 
     /**
@@ -65,11 +66,12 @@ class FrontPostController extends MainController
         $data = $content->getData();
         if (!empty($data)) {
             $this->post = Post::repo()->read($this->getParams($website, $data));
-            return (is_null($this->post))
-                ? $this->redirect()->url('/404', 404)
-                : $this->_renderContent($content->getTemplate(), 'src/Modules/Post/Views/', ['post' => $this->post]);
+            if(!is_null($this->post)){
+                return $this->_renderContent($content->getTemplate(), 'src/Modules/Post/Views/', ['post' => $this->post]);
+            }
         }
-        return $this->redirect()->url('/404', 404);
+        $this->redirect()->url('/404', 404);
+        exit;
     }
 
     /**
