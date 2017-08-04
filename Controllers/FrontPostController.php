@@ -52,8 +52,7 @@ class FrontPostController extends MainController
                 ? null
                 : $this->_renderContent($content->getTemplate(), 'src/Modules/Post/Views/', compact('categories', 'posts', 'pagination', 'args', 'route'));
         }
-        $this->redirect()->url('/404', 404);
-        exit;
+        return $this->notFound();
     }
 
     /**
@@ -70,8 +69,7 @@ class FrontPostController extends MainController
                 return $this->_renderContent($content->getTemplate(), 'src/Modules/Post/Views/', ['post' => $this->post]);
             }
         }
-        $this->redirect()->url('/404', 404);
-        exit;
+        return $this->notFound();
     }
 
     /**
@@ -99,7 +97,9 @@ class FrontPostController extends MainController
         /** @var Post $post */
         $post = null;
         $key = explode('@', $key);
-        if(isset($key[1]) && $key[0] == 'post' && is_numeric($key[1])) $post = Post::findOneById($key[1]);
+        if(isset($key[1]) && $key[0] == 'post' && is_numeric($key[1])) {
+            $post = Post::findOneById($key[1]);
+        }
         if(!is_null($post)) {
             $categories = [];
             foreach ($post->getPostCategories() as $category)$categories[] = $category->getId();
@@ -128,9 +128,12 @@ class FrontPostController extends MainController
                 $data = $this->getWebsiteData($website);
                 if(isset($data['parent_replace']['posts'][$post->getId()])){
                     $post = Post::findOneById($data['parent_replace']['posts'][$post->getId()]);
-                    if($post->isPublished()) return $post;
-                } else if($post->isPublished() && (!isset($data['parent_exclude']['posts']) || !in_array($post->getId(), $data['parent_exclude']['posts'])))
+                    if($post->isPublished()) {
+                        return $post;
+                    }
+                } else if($post->isPublished() && (!isset($data['parent_exclude']['posts']) || !in_array($post->getId(), $data['parent_exclude']['posts']))) {
                     return $post;
+                }
             }
         }
         return null;

@@ -1,11 +1,11 @@
 <template>
     <router-link v-if="category != null"
             :to="{name: 'module:' + content.module.category.slug, params: {website_id: website, category: category}}"
-            class="btn ink-reaction btn-info">Modifier
+            class="btn ink-reaction btn-default-bright">Modifier
     </router-link>
     <router-link v-else
                  :to="{name: 'module:' + content.module.category.slug, params: {website_id: website}}"
-                 class="btn ink-reaction btn-info">Modifier
+                 class="btn ink-reaction btn-default-bright">Modifier
     </router-link>
 </template>
 

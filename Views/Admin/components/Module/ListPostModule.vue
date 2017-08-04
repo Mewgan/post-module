@@ -187,7 +187,6 @@
                                     </div>
                                     <div class="form-group">
                                         <select :id="'link_value_'+i"
-                                                @change="setValueId(i,link.alias,link.column,link.value)"
                                                 v-model="link.value" class="form-control">
                                             <option v-for="value in getValues(link.alias)" :value="value[link.column]">
                                                 {{value.name}}
@@ -298,12 +297,6 @@
         },
         methods: {
             ...mapActions(['read', 'setResponse']),
-            setValueId(key, table, col, val){
-                if (this.values[table] !== undefined && this.values[table] != null) {
-                    let index = this.values[table].findIndex((i) => i[col] == val);
-                    this.content_data.link[key].value_id = this.values[table][index].id
-                }
-            },
             updateDbValue(val, oldVal, params){
                 this.content_data.db[params.key].value = val;
             },

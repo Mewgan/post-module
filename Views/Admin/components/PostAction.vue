@@ -107,13 +107,13 @@
                                         </div>
                                         <div class="row">
                                             <button data-toggle="modal" data-target="#deletePostModal" type="button"
-                                                    class="col-md-12 btn ink-reaction btn-raised btn-default">
+                                                    class="col-md-12 btn ink-reaction btn-raised btn-default-bright">
                                                 <i class="fa fa-trash"></i> Supprimer
                                             </button>
                                         </div>
                                         <div class="row mar-top-10">
                                             <button @click="updateOrCreatePost" type="button"
-                                                    class="col-md-12 btn ink-reaction btn-raised btn-default">
+                                                    class="col-md-12 btn ink-reaction btn-raised btn-default-bright">
                                                 <i class="fa fa-save"></i> Enregistrer
                                             </button>
                                         </div>
@@ -177,17 +177,17 @@
                                         </h3>
                                         <div class="media-action-btn btn-group">
                                             <button type="button"
-                                                    class="btn ink-reaction btn-floating-action btn-primary"
+                                                    class="btn btn-default-bright m0"
                                                     data-toggle="dropdown" aria-expanded="false">
-                                                <i class="fa fa-bars"></i>
+                                                <i class="fa fa-bars m0"></i>
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                                 <li><a @click="launchMedia" data-toggle="modal"
                                                        data-target="#mediaLibrary0"><i
-                                                        class="fa text-info fa-pencil"></i>
+                                                        class="fa fa-pencil"></i>
                                                     Modifier l'image</a></li>
                                                 <li><a @click="post.thumbnail = null"><i
-                                                        class="fa text-danger fa-trash"></i>
+                                                        class="fa fa-trash"></i>
                                                     Supprimer l'image</a></li>
                                             </ul>
                                         </div>
@@ -199,8 +199,8 @@
                                         <h3 class="text-light">Catégories
                                             <button data-toggle="modal" data-target="#createPostCategoryModal"
                                                     type="button"
-                                                    class="btn pull-right ink-reaction btn-floating-action btn-primary"><i
-                                                    class="fa fa-plus"></i></button>
+                                                    class="btn pull-right btn-primary"><i
+                                                    class="fa fa-plus m0"></i></button>
                                         </h3>
                                         <ul class="nav nav-pills nav-stacked nav-transparent">
                                             <li v-for="category in categories">
@@ -398,7 +398,7 @@
                 })
             },
             loadSinglePostRoute(){
-                this.read({api: post_api.get_single_post_route + this.website_id}).then((response) => {
+                return this.read({api: post_api.get_single_post_route + this.website_id}).then((response) => {
                     if (response.data.resource !== undefined) {
                         this.route = response.data.resource;
                     }
@@ -509,20 +509,21 @@
             }
         },
         mounted(){
-            this.loadSinglePostRoute();
-            if (this.post_id == 'create') {
-                this.launch_tinymce = true;
-                this.loadCategory();
-                this.loadCustomFields();
-            } else {
-                this.loadPost().then(() => {
+            this.loadSinglePostRoute().then(() => {
+                if (this.post_id == 'create') {
+                    this.launch_tinymce = true;
                     this.loadCategory();
-                    for (let index in this.post.categories)
-                        if (this.post.categories.hasOwnProperty(index))
-                            this.post_categories.push(this.post.categories[index].id);
                     this.loadCustomFields();
-                })
-            }
+                } else {
+                    this.loadPost().then(() => {
+                        this.loadCategory();
+                        for (let index in this.post.categories)
+                            if (this.post.categories.hasOwnProperty(index))
+                                this.post_categories.push(this.post.categories[index].id);
+                        this.loadCustomFields();
+                    })
+                }
+            });
         }
     }
 </script>

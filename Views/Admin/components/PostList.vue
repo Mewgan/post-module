@@ -78,14 +78,14 @@
                 <div class="card-body style-primary no-y-padding">
                     <form class="form form-inverse search-item" @submit.prevent.stop="search">
                         <div class="form-group">
-                            <div class="input-group input-group-lg">
+                            <div class="input-group">
                                 <div class="input-group-content">
                                     <input type="text" class="form-control" id="searchInput" v-model="search_value"
                                            placeholder="Recherche">
                                     <div class="form-control-line"></div>
                                 </div>
                                 <div class="input-group-btn">
-                                    <button class="btn btn-floating-action btn-default-bright" @click="search"
+                                    <button class="btn btn-default-bright" @click="search"
                                             type="button"><i class="fa fa-search"></i></button>
                                 </div>
                             </div>
@@ -114,7 +114,7 @@
                               class="pull-right clearfix edit-category"><i class="fa fa-pencil"></i></span>
                     </li>
                     <button data-toggle="modal" data-target="#createPostCategoryModal"
-                            class="btn ink-reaction btn-raised btn-default pull-right mr10">
+                            class="btn btn-default-bright pull-right mt10 mr10">
                         <i class="fa fa-plus" aria-hidden="true"></i>
                         Ajouter une catégorie
                     </button>
@@ -130,17 +130,17 @@
                                 <!-- BEGIN PAGE HEADER -->
                                 <div class="margin-bottom-xxl">
                                     <label class="text-light text-lg">Lister : </label>
-                                    <select v-model.number="resource.max">
+                                    <select class="p5" v-model.number="resource.max">
                                         <option v-for="option in max_options" :value="option">{{option}}
                                         </option>
                                     </select>
                                     <span class="text-light text-lg">Total <strong>{{resource.total}}</strong></span>
                                     <router-link :to="{name: 'module:post:action', params: {website_id: website_id, post_id: 'create'}}"
-                                                 class="btn ink-reaction btn-raised ml10 btn-default pull-right">
+                                                 class="btn ml10 btn-default-bright pull-right">
                                         <i class="fa fa-plus" aria-hidden="true"></i> Ajouter un article
                                     </router-link>
                                     <div class="ml10 btn-group pull-right group-action">
-                                        <button type="button" class="btn ink-reaction btn-default" data-toggle="dropdown">Trier</button>
+                                        <button type="button" class="btn ink-reaction btn-default-bright" data-toggle="dropdown">Trier</button>
                                         <button type="button" class="btn ink-reaction btn-primary dropdown-toggle"
                                                 data-toggle="dropdown" aria-expanded="false"><i
                                                 class="fa fa-caret-down"></i>
@@ -161,18 +161,18 @@
                                         </ul>
                                     </div>
                                     <div class="btn-group pull-right group-action">
-                                        <button type="button" class="btn ink-reaction btn-default" data-toggle="dropdown">Sélection</button>
+                                        <button type="button" class="btn ink-reaction btn-default-bright" data-toggle="dropdown">Sélection</button>
                                         <button type="button" class="btn ink-reaction btn-primary dropdown-toggle"
                                                 data-toggle="dropdown" aria-expanded="false"><i
                                                 class="fa fa-caret-down"></i>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-right animation-dock" role="menu">
                                             <li><a @click="updatePostState(1)"><i
-                                                    class="fa fa-fw fa-check text-primary"></i> Publier</a></li>
+                                                    class="fa fa-fw fa-check"></i> Publier</a></li>
                                             <li><a @click="updatePostState(0)"><i
-                                                    class="fa fa-fw fa-times text-warning"></i> Dépublier</a></li>
+                                                    class="fa fa-fw fa-times"></i> Dépublier</a></li>
                                             <li><a data-toggle="modal" data-target="#deletePostModal"><i
-                                                    class="fa fa-fw fa-trash text-danger"></i> Supprimer</a></li>
+                                                    class="fa fa-fw fa-trash"></i> Supprimer</a></li>
                                         </ul>
                                     </div>
                                 </div><!--end .margin-bottom-xxl -->
@@ -200,7 +200,7 @@
                                         <div>
                                             <router-link
                                                     :to="{name: 'module:post:action', params:{website_id: website_id, post_id: post.id}}"
-                                                    class="text-medium text-lg text-primary">{{post.title}}
+                                                    class="text-medium text-lg">{{post.title}}
                                             </router-link>
                                             <div class="pull-right">
                                                 <div class="post-change-state" v-if="post.website.id == website_id">
@@ -216,11 +216,11 @@
                                                 </div>
                                                 <router-link
                                                         :to="{name: 'module:post:action', params:{website_id: website_id, post_id: post.id}}"
-                                                        class="btn ink-reaction btn-default"><i
+                                                        class="btn btn-default-bright"><i
                                                         class="fa fa-pencil"></i></router-link>
                                                 <a @click="selectPost(post)" data-toggle="modal"
                                                    data-target="#deletePostModal"
-                                                   class="btn ink-reaction btn-default"><i
+                                                   class="btn btn-default-bright"><i
                                                         class="fa fa-trash"></i></a>
                                                 <span v-show="auth.status.level < 4" class="post-icon"><i
                                                         :title="getIconTitle('Cet article', post.website)"
